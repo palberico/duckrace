@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Image } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+// Import your duck images
 import Lion from '../assets/images/ducks/Lion.png';
 import Elly from '../assets/images/ducks/Elly.png';
 import Mine from '../assets/images/ducks/Mine.png';
@@ -10,97 +11,50 @@ import Rich from '../assets/images/ducks/Rich.png';
 import Vacation from '../assets/images/ducks/Vacation.png';
 import Zebra from '../assets/images/ducks/Zebra.png';
 
+const ducks = [
+  { name: "Lando", image: Lion, footerColor: 'orange' },
+  { name: "Charles", image: Elly, footerColor: 'red' },
+  { name: "Carlos", image: Mine, footerColor: 'red' },
+  { name: "Max", image: Monster, footerColor: 'blue' },
+  { name: "Lewis", image: Ninja, footerColor: 'black' },
+  { name: "Esteban", image: Rich, footerColor: 'pink' },
+  { name: "Daniel", image: Vacation, footerColor: '#43a9d1' },
+  { name: "Fernando", image: Zebra, footerColor: '#00ACAB' },
+];
+
 const TempHome = () => {
-    return (
-      <div style={styles.homeContainer}>
-       <Link to="/">
+  return (
+    <div style={styles.homeContainer}>
+      {ducks.map((duck, index) => (
+        <Link to="/">
+        <Card key={index}>
+          <Image src={duck.image} wrapped ui={false} />
+          <Card.Content>
+            <Card.Header style={{ textAlign: 'center' }}>{duck.name}</Card.Header>
+          </Card.Content>
+          <div style={{ ...styles.footer, backgroundColor: duck.footerColor }}></div>
+        </Card>
+        </Link>
+      ))}
+   
+    </div>
+  );
+};
 
-        <Card>
-          <Image src={Lion} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Lando</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-        <Card>
-          <Image src={Elly} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Charles</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-        <Card>
-          <Image src={Mine} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Carlos</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-        <Card>
-          <Image src={Monster} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Max</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-        <Card>
-          <Image src={Ninja} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Lewis</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-        <Card>
-          <Image src={Rich} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Lance</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-        <Card>
-          <Image src={Vacation} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Daniel</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-        <Card>
-          <Image src={Zebra} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>Fernando</Card.Header> 
-          </Card.Content>
-          <div style={styles.redFooter}></div>
-        </Card>
-       </Link>
-      </div>
-    );
-  };
-  
-  export default TempHome;
-  
+export default TempHome;
 
-  const styles = {
-    homeContainer: {
-      display: 'grid',
-      
-      flexDirection: 'row',
-      justifyContent: 'center',
-    //   alignItems: 'center',
-      height: '100vh',
-      backgroundColor: '#f0f0f0',
-      color: '#333',
-      fontFamily: 'Arial, sans-serif',
-    },
-    redFooter: {
-      width: '100%', // Full width
-      height: '50px', // Footer height
-      backgroundSize: '20px 20px', // Size of each square
-      color: 'red'
-    },
-    blueFooter: {
-        width: '100%', // Full width
-        height: '50px', // Footer height
-        backgroundSize: '20px 20px', // Size of each square
-        color: 'blue'
-      },
-  };
+const styles = {
+  homeContainer: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', // Adjust based on your card size
+    gridGap: '20px', // Spacing between cards
+    justifyContent: 'center',
+    alignItems: 'start', // Align items to the start of each row
+    padding: '20px', // Padding around the entire grid
+    backgroundColor: '#f0f0f0',
+  },
+  footer: {
+    width: '100%', // Full width of the card
+    height: '50px', // Footer height
+  },
+};
