@@ -12,19 +12,20 @@ import Vacation from '../assets/images/ducks/Vacation.png';
 import Zebra from '../assets/images/ducks/Zebra.png';
 
 const ducks = [
-  { name: "Lando", image: Lion, footerColor: 'orange' },
-  { name: "Charles", image: Elly, footerColor: 'red' },
-  { name: "Carlos", image: Mine, footerColor: 'red' },
-  { name: "Max", image: Monster, footerColor: 'blue' },
-  { name: "Lewis", image: Ninja, footerColor: 'black' },
-  { name: "Esteban", image: Rich, footerColor: 'pink' },
-  { name: "Daniel", image: Vacation, footerColor: '#43a9d1' },
-  { name: "Fernando", image: Zebra, footerColor: '#00ACAB' },
+  { name: "Lando", image: Lion, footerColor: 'linear-gradient(to right, #ff8000, #47C7FC, #ffffff, #000000)' }, // Example gradient from orange to a lighter orange
+  { name: "Charles", image: Elly, footerColor: 'linear-gradient(to right, red, #ff0000)' }, // Gradient from red to a slightly different shade of red
+  { name: "Carlos", image: Mine, footerColor: 'linear-gradient(to right, red, #ff3232)' },
+  { name: "Max", image: Monster, footerColor: 'linear-gradient(to right, blue, #0066ff)' },
+  { name: "Lewis", image: Ninja, footerColor: 'linear-gradient(to right, black, #333333)' },
+  { name: "Esteban", image: Rich, footerColor: 'linear-gradient(to right, pink, #ff66b3)' },
+  { name: "Daniel", image: Vacation, footerColor: 'linear-gradient(to right, #43a9d1, #75b2d3)' },
+  { name: "Fernando", image: Zebra, footerColor: 'linear-gradient(to right, #00ACAB, #33bdbd)' },
 ];
+
 
 const TempHome = () => {
   return (
-    <div style={styles.homeContainer}>
+    <div key={duck.name} style={{ backgroundImage: duck.footerColor }}>
       {ducks.map((duck, index) => (
         <Link to="/">
         <Card key={index}>
