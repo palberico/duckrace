@@ -12,8 +12,8 @@ import Vacation from '../assets/images/ducks/Vacation.png';
 import Zebra from '../assets/images/ducks/Zebra.png';
 
 const ducks = [
-  { name: "Lando", image: Lion, footerColor: 'linear-gradient(to right, #ff8000, #47C7FC, #000000)' }, // Example gradient from orange to a lighter orange
-  { name: "Oscar", image: Elly, footerColor: 'linear-gradient(to right, #ff8000, #47C7FC, #000000)' }, // Gradient from red to a slightly different shade of red
+  { name: "Lando", image: Lion, footerColor: 'linear-gradient(to right, #ff8000, #47C7FC, #000000)' },
+  { name: "Oscar", image: Elly, footerColor: 'linear-gradient(to right, #ff8000, #47C7FC, #000000)' },
   { name: "Carlos", image: Rich, footerColor: 'linear-gradient(to right, #EF1A2D, #000000)' },
   { name: "Charles", image: Mine, footerColor: 'linear-gradient(to right, #EF1A2D, #000000)' },
   { name: "Max", image: Monster, footerColor: 'linear-gradient(to right, #E30118, #FDD900)' },
@@ -22,40 +22,38 @@ const ducks = [
   { name: "George", image: Vacation, footerColor: 'linear-gradient(to right, #000000, #00A19B, #565F64)' },
 ];
 
-
-const TempHome = () => {
+const Home = () => {
   return (
-    <div key={ducks.name} style={{ backgroundImage: ducks.footerColor }}>
-      {ducks.map((ducks, index) => (
-        <Link to="/">
-        <Card key={index}>
-          <Image src={ducks.image} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>{ducks.name}</Card.Header>
-          </Card.Content>
-          <div style={{ ...styles.footer, backgroundImage: ducks.footerColor }}></div>
-        </Card>
+    <div style={styles.homeContainer}>
+      {ducks.map((duck, index) => (
+        <Link to="/" key={index}>
+          <Card>
+            <Image src={duck.image} wrapped ui={false} />
+            <Card.Content>
+              <Card.Header style={{ textAlign: 'center' }}>{duck.name}</Card.Header>
+            </Card.Content>
+            <div style={{ ...styles.footer, backgroundImage: duck.footerColor }}></div>
+          </Card>
         </Link>
       ))}
-   
     </div>
   );
 };
 
-export default TempHome;
+export default Home;
 
 const styles = {
   homeContainer: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', // Adjust based on your card size
-    gridGap: '20px', // Spacing between cards
+    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+    gridGap: '20px',
     justifyContent: 'center',
-    alignItems: 'start', // Align items to the start of each row
-    padding: '20px', // Padding around the entire grid
+    alignItems: 'start',
+    padding: '20px',
     backgroundColor: '#f0f0f0',
   },
   footer: {
-    width: '100%', // Full width of the card
-    height: '50px', // Footer height
+    width: '100%',
+    height: '50px',
   },
 };

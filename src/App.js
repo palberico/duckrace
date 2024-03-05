@@ -1,6 +1,6 @@
 // src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes,} from 'react-router-dom';
 import TempHome from './views/TempHome'; 
 import Home from './views/Home'; 
 import 'semantic-ui-css/semantic.min.css';
