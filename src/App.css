@@ -1,41 +1,31 @@
-/* App.css */
+/* Add styles for the header, logo, and search box */
+.header {
+  display: flex;
+  justify-content: space-between; /* Spreads out logo and search box */
+  align-items: center;
+  padding: 1rem; /* Add some padding */
+}
 
-/* Reset the margin and padding of all elements to ensure consistency across browsers */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.headerLogo {
+  flex: 1; /* Allows logo to grow and take necessary space */
+}
+
+.headerSearch {
+  flex: 1; /* Allows search box to grow and take necessary space */
+}
+
+/* Mobile friendly adjustments */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column; /* Stack logo and search box vertically */
   }
-  
-  /* Styles for the Home container */
-  .homeContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Aligns children (LeaderBoard and DuckCard) to the center */
-    min-height: 100vh;
-    padding: 0 1rem; /* Adds some padding on the left and right */
+
+  .headerSearch {
+    width: 100%; /* Full width for the search box */
+    margin-top: 1rem; /* Add some space between logo and search box */
   }
-  
-  /* LeaderBoard card full width by default, adjust based on screen size */
-  .leaderboardCard {
-    width: 100%;
-    max-width: 1200px; /* Set a max-width if you want to limit how wide the card can get */
-    margin-bottom: 1rem; /* Adds some margin at the bottom */
-  }
-  
-  /* Styles for the DuckCard group */
+
   .duckCardGroup {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    width: 100%;
-    max-width: 1200px; /* Should be the same as the LeaderBoard max-width for alignment */
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Adjust the number of columns and card width on smaller screens */
   }
-  
-  /* Mobile friendly adjustments */
-  @media (max-width: 768px) {
-    .duckCardGroup {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Adjust the number of columns and card width on smaller screens */
-    }
-  }
-  
+}
