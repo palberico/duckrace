@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Button, Form} from 'semantic-ui-react';
-import { useParams } from 'react-router-dom';
+import { Card, Image, Button, Form } from 'semantic-ui-react';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { db } from '../firebase/Config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const DuckForm = () => {
   const { duckId } = useParams();
+  const navigate = useNavigate(); // Initialize useNavigate
   const [duckData, setDuckData] = useState({});
   const [placeFound, setPlaceFound] = useState('');
   const [lastPlace, setLastPlace] = useState('');
@@ -23,13 +24,17 @@ const DuckForm = () => {
     fetchDuckData();
   }, [duckId]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
     const duckRef = doc(db, 'ducks', duckId);
     await updateDoc(duckRef, {
       lastPlace: placeFound,
     });
     setLastPlace(placeFound); // Update last place found after successful submission
     setPlaceFound(''); // Clear input field after submission
+
+    // Redirect to the DuckProfile page of the duck
+    navigate(`/duck/${duckId}`);
   };
 
   return (
@@ -55,4 +60,3 @@ const DuckForm = () => {
 };
 
 export default DuckForm;
-
