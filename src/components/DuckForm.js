@@ -38,6 +38,7 @@ const DuckForm = () => {
   };
 
   return (
+    <div style={styles.homeContainer}>
     <Card>
       <Image src={duckData.image} wrapped ui={false} />
       <Card.Content>
@@ -55,8 +56,30 @@ const DuckForm = () => {
           <Button type='submit'>Submit</Button>
         </Form>
       </Card.Content>
+      <div style={styles.checkerboardFooter}></div>
     </Card>
+    </div>
   );
 };
 
 export default DuckForm;
+
+const styles = {
+  homeContainer: {
+    display: 'flex',
+    flexDirection: 'column', // Stack children vertically
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    backgroundColor: '#f0f0f0',
+    color: '#333',
+    fontFamily: 'Arial, sans-serif',
+  },
+  checkerboardFooter: {
+    width: '100%', // Full width
+    height: '50px', // Footer height
+    backgroundSize: '20px 20px', // Size of each square
+    backgroundImage: `linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%)`,
+    backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px', // Positioning the gradients
+  },
+};

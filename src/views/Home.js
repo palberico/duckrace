@@ -1,13 +1,10 @@
 import React from 'react';
 import DuckCard from '../components/DuckCard';
 
-// import { Card, Image } from 'semantic-ui-react';
-// import { Link } from 'react-router-dom';
-
-
 const Home = () => {
+
   return (
-    <div style={styles.homeContainer}>
+    <div style={homeContainerStyle}>
       <DuckCard />
     </div>
   );
@@ -15,18 +12,10 @@ const Home = () => {
 
 export default Home;
 
-const styles = {
-  homeContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gridGap: '20px',
-    justifyContent: 'center',
-    alignItems: 'start',
-    padding: '20px',
-    backgroundColor: '#f0f0f0',
-  },
-  footer: {
-    width: '100%',
-    height: '50px',
-  },
+const homeContainerStyle = {
+  display: 'flex',      // Use flexbox to center the card group
+  justifyContent: 'center', // Center horizontally
+  alignItems: 'center',     // Center vertically (if needed)
+  minHeight: '100vh',   // Minimum height to take full viewport height
+  padding: '30px',      // Add padding to create space around the card group
 };

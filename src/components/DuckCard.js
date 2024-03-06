@@ -17,20 +17,25 @@ const DuckCard = () => {
   }, []);
 
   return (
-    <Card.Group>
-    {ducks.map((duck) => (
-      <Link to={`/duck/${duck.id}`} key={duck.id}>
-        <Card className="duck-card">
-          <Image src={duck.image} wrapped ui={false} />
-          <Card.Content>
-            <Card.Header textAlign="center">{duck.name}</Card.Header>
-          </Card.Content>
-        </Card>
-      </Link>
-    ))}
-  </Card.Group>
+    // Use stackable to stack cards on mobile view and itemsPerRow to define the number of cards per row on larger screens
+    <Card.Group itemsPerRow={5} stackable>
+      {ducks.map((duck) => (
+        <Link to={`/duck/${duck.id}`} key={duck.id}>
+          <Card style={cardStyle}>
+            <Image src={duck.image} wrapped ui={false} />
+            <Card.Content>
+              <Card.Header textAlign="center">{duck.name}</Card.Header>
+            </Card.Content>
+          </Card>
+        </Link>
+      ))}
+    </Card.Group>
   );
 };
 
 export default DuckCard;
 
+const cardStyle = {
+  margin: '10px', // This will add space around each card
+  // Other styles if needed
+};
