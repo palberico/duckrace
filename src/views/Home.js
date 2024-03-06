@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, Image } from 'semantic-ui-react';
-// import { Link } from 'react-router-dom';
 import DuckCard from '../components/DuckCard';
+
+// import { Card, Image } from 'semantic-ui-react';
+// import { Link } from 'react-router-dom';
 
 
 const Home = () => {
