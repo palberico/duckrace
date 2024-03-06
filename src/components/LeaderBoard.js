@@ -25,26 +25,35 @@ const LeaderBoard = () => {
     fetchDucks();
   }, []);
 
+  const posAndDistanceCellStyle = {
+    textAlign: 'center', // Center text for position and distance
+    borderBottom: '1px solid lightgray', // Keeping the light gray line for rows
+  };
+
+  const nameCellStyle = {
+    borderBottom: '1px solid lightgray', // Keeping the light gray line for rows
+  };
+
   return (
-    <Card fluid>
+    <Card fluid style={{ marginBottom: '20px' }}> {/* Adding some bottom margin to separate from DuckCard grid */}
       <Card.Content>
         <Table celled unstackable>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell>Pos.</Table.HeaderCell>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Distance</Table.HeaderCell>
+              <Table.HeaderCell style={posAndDistanceCellStyle}>Pos.</Table.HeaderCell>
+              <Table.HeaderCell style={nameCellStyle}>Name</Table.HeaderCell>
+              <Table.HeaderCell style={posAndDistanceCellStyle}>Distance</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {ducks.map((duck) => (
               <Table.Row key={duck.pos}>
-                <Table.Cell>{duck.pos}</Table.Cell>
-                <Table.Cell>
+                <Table.Cell style={posAndDistanceCellStyle}>{duck.pos}</Table.Cell>
+                <Table.Cell style={nameCellStyle}>
                   <Image src={duck.image} avatar />
                   <span>{duck.name}</span>
                 </Table.Cell>
-                <Table.Cell>{duck.distance}</Table.Cell>
+                <Table.Cell style={posAndDistanceCellStyle}>{duck.distance}</Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>

@@ -14,9 +14,10 @@ const Home = () => {
 export default Home;
 
 const homeContainerStyle = {
-  display: 'flex',      // Use flexbox
-  flexDirection: 'column', // Stack items vertically
-  justifyContent: 'center', // Center horizontally, applies to the cross axis of column which is horizontal
-  minHeight: '100vh',   // Minimum height to take full viewport height
-  padding: '200px',      // Add padding to create space around the content
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  minHeight: '100vh',
+  paddingLeft: '100px', // Adjusted to apply padding only horizontally
+  paddingRight: '200px', // Adjusted to apply padding only horizontally
 };
