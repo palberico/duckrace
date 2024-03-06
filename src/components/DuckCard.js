@@ -18,17 +18,17 @@ const DuckCard = () => {
 
   return (
     <Card.Group>
-      {ducks.map((duck) => (
-        <Link to={`/duck/${duck.name}`} key={duck.id}>
-        <Card key={duck.id} className="duck-card">
+    {ducks.map((duck) => (
+      <Link to={`/duck/${duck.id}`} key={duck.id}>
+        <Card className="duck-card">
           <Image src={duck.image} wrapped ui={false} />
           <Card.Content>
             <Card.Header textAlign="center">{duck.name}</Card.Header>
           </Card.Content>
         </Card>
-        </Link>
-      ))}
-    </Card.Group>
+      </Link>
+    ))}
+  </Card.Group>
   );
 };
 
