@@ -10,7 +10,7 @@ const TempHome = () => {
         <Card>
           <Image src={raceStartImage} wrapped ui={false} />
           <Card.Content>
-            <Card.Header style={{ textAlign: 'center' }}>The Race Starts June 3</Card.Header> 
+            <Card.Header style={{ textAlign: 'center' }}>The Race Starts June 3, 2024</Card.Header> 
           </Card.Content>
           <div style={styles.checkerboardFooter}></div>
         </Card>
