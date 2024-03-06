@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes,} from 'react-router-dom';
 import TempHome from './views/TempHome'; 
 import Home from './views/Home'; 
 import DuckProfile from './components/DuckProfile'; 
+import DuckForm from './components/DuckForm';
 import 'semantic-ui-css/semantic.min.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<TempHome />} />
           <Route path="/Home" element={<Home />} /> 
           <Route path="/duck/:duckId" element={<DuckProfile />} /> 
+          <Route path="/log" element={<DuckForm />} /> 
         </Routes>
       </div>
     </Router>
