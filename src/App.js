@@ -6,6 +6,7 @@ import Home from './views/Home';
 import DuckProfile from './components/DuckProfile'; 
 import DuckForm from './components/DuckForm';
 import 'semantic-ui-css/semantic.min.css';
+import './App.css';
 
 function App() {
   return (

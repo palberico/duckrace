@@ -35,6 +35,7 @@ const LeaderBoard = () => {
   };
 
   return (
+    <div className="leaderboardCard">
     <Card fluid style={{ marginBottom: '20px' }}> {/* Adding some bottom margin to separate from DuckCard grid */}
       <Card.Content>
         <Table celled unstackable>
@@ -60,6 +61,7 @@ const LeaderBoard = () => {
         </Table>
       </Card.Content>
     </Card>
+    </div>
   );
 };
 

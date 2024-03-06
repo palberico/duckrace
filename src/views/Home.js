@@ -1,10 +1,11 @@
 import React from 'react';
 import DuckCard from '../components/DuckCard';
 import LeaderBoard from '../components/LeaderBoard';
+import '../App.css'; 
 
 const Home = () => {
   return (
-    <div style={homeContainerStyle}>
+    <div className="homeContainer">
       <LeaderBoard />
       <DuckCard />
     </div>
@@ -13,11 +14,4 @@ const Home = () => {
 
 export default Home;
 
-const homeContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  minHeight: '100vh',
-  paddingLeft: '100px', // Adjusted to apply padding only horizontally
-  paddingRight: '200px', // Adjusted to apply padding only horizontally
-};
+

@@ -17,7 +17,7 @@ const DuckCard = () => {
   }, []);
 
   return (
-    // Use stackable to stack cards on mobile view and itemsPerRow to define the number of cards per row on larger screens
+    <div className="duckCardGroup">
     <Card.Group itemsPerRow={5} stackable>
       {ducks.map((duck) => (
         <Link to={`/duck/${duck.id}`} key={duck.id}>
@@ -30,6 +30,7 @@ const DuckCard = () => {
         </Link>
       ))}
     </Card.Group>
+    </div>
   );
 };
 
