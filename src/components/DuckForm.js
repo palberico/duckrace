@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Button, Form, Header } from 'semantic-ui-react';
+import { Card, Image, Button, Form} from 'semantic-ui-react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase/Config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
