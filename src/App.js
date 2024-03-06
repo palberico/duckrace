@@ -15,7 +15,7 @@ function App() {
           <Route path="/" element={<TempHome />} />
           <Route path="/Home" element={<Home />} /> 
           <Route path="/duck/:duckId" element={<DuckProfile />} /> 
-          <Route path="/log" element={<DuckForm />} /> 
+          <Route path="/log-distance/:duckId" element={<DuckForm />} /> 
         </Routes>
       </div>
     </Router>
