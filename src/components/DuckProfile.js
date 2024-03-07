@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Image, Button, Modal, Input, Header, Message } from 'semantic-ui-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -67,6 +68,9 @@ const DuckProfile = () => {
         </Card.Content>
         <Card.Content extra>
           <Button primary onClick={handleOpen}>More Details</Button>
+          <Link to="/Home">
+            <Button primary>Home</Button>
+          </Link>
         </Card.Content>
         <div style={styles.checkerboardFooter}></div>
       </Card>
