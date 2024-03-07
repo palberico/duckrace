@@ -35,9 +35,9 @@ const DuckCard = () => {
                 <Card.Header>
                   {duck.position} - {duck.distance} miles
                 </Card.Header>
-                <Card.Meta>
+                <Card.Header>
                   <span>{duck.name}</span>
-                </Card.Meta>
+                </Card.Header>
                 <Card.Description>
                   {duck.shortBio}
                 </Card.Description>
