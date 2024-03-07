@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Table, Image } from 'semantic-ui-react';
+import { Link } from 'react-router-dom'; // Import Link component
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 
@@ -8,14 +9,11 @@ const LeaderBoard = () => {
 
   useEffect(() => {
     const fetchDucks = async () => {
-      // Reference to the collection
       const ducksCol = collection(db, 'ducks');
-      // Create a query against the collection, ordering by distance and limiting to top 10
       const q = query(ducksCol, orderBy('distance', 'desc'), limit(10));
-      
       const querySnapshot = await getDocs(q);
-      const ducksData = querySnapshot.docs.map((doc, index) => ({
-        pos: index + 1,
+      const ducksData = querySnapshot.docs.map((doc) => ({
+        id: doc.id, // Store the document ID for navigation
         ...doc.data(),
       }));
 
@@ -27,33 +25,35 @@ const LeaderBoard = () => {
 
   return (
     <div className="leaderboardCard">
-    <Card fluid style={{ marginBottom: '20px' }}> {/* Adding some bottom margin to separate from DuckCard grid */}
-    <div style={styles.checkerboardFooter}></div>
-      <Card.Content>
-        <Table singleLine unstackable>
-          <Table.Header textAlign='center'>
-            <Table.Row>
-              <Table.HeaderCell textAlign='center'>Pos.</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Name</Table.HeaderCell>
-              <Table.HeaderCell textAlign='center'>Distance</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {ducks.map((duck) => (
-              <Table.Row key={duck.pos}>
-                <Table.Cell textAlign='center'>{duck.pos}</Table.Cell>
-                <Table.Cell textAlign='left'>
-                  <Image src={duck.image} avatar />
-                  <span>{duck.name}</span>
-                </Table.Cell>
-                <Table.Cell textAlign='center'>{duck.distance}</Table.Cell>
+      <Card fluid style={{ marginBottom: '20px' }}>
+        <div style={styles.checkerboardFooter}></div>
+        <Card.Content>
+          <Table singleLine unstackable>
+            <Table.Header textAlign='center'>
+              <Table.Row>
+                <Table.HeaderCell textAlign='center'>Pos.</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Name</Table.HeaderCell>
+                <Table.HeaderCell textAlign='center'>Distance</Table.HeaderCell>
               </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Card.Content>
-      <div style={styles.checkerboardFooter}></div>
-    </Card>
+            </Table.Header>
+            <Table.Body>
+              {ducks.map((duck, index) => (
+                <Table.Row key={duck.id}>
+                  <Table.Cell textAlign='center'>{index + 1}</Table.Cell>
+                  <Table.Cell textAlign='left' style={{ cursor: 'pointer' }}>
+                    <Link to={`/duck/${duck.id}`}>
+                      <Image src={duck.image} avatar />
+                      <span>{duck.name}</span>
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell textAlign='center'>{duck.distance}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        </Card.Content>
+        <div style={styles.checkerboardFooter}></div>
+      </Card>
     </div>
   );
 };
