@@ -33,7 +33,10 @@ const DuckCard = () => {
               <Image src={duck.image} wrapped ui={false} />
               <Card.Content>
                 <Card.Header>
-                  {duck.position} - {duck.distance} miles
+                  {duck.position}
+                  </Card.Header>  
+                <Card.Header>               
+                  {duck.distance} miles
                 </Card.Header>
                 <Card.Header>
                   <span>{duck.name}</span>
