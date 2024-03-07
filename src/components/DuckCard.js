@@ -1,7 +1,8 @@
+// src/components/DuckCard.js
 import React, { useEffect, useState } from 'react';
-import { Card, Image } from 'semantic-ui-react';
+import { Card, Image, Grid } from 'semantic-ui-react';
 import { db } from '../firebase/Config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 
 const DuckCard = () => {
@@ -9,33 +10,44 @@ const DuckCard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, 'ducks'));
-      setDucks(querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      // Fetch ducks and order them by distance in descending order
+      const q = query(collection(db, 'ducks'), orderBy('distance', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const sortedDucks = querySnapshot.docs.map((doc, index) => ({
+        ...doc.data(),
+        id: doc.id,
+        position: `P${index + 1}` // Assign position based on order
+      }));
+      setDucks(sortedDucks);
     };
 
     fetchData();
   }, []);
 
   return (
-    <div className="duckCardGroup">
-    <Card.Group itemsPerRow={5} stackable>
-      {ducks.map((duck) => (
-        <Link to={`/duck/${duck.id}`} key={duck.id}>
-          <Card style={cardStyle}>
-            <Image src={duck.image} wrapped ui={false} />
-            <Card.Content>
-              <Card.Header textAlign="center">{duck.name}</Card.Header>
-            </Card.Content>
-          </Card>
-        </Link>
+    <Grid container stackable columns={4}>
+      {ducks.map((duck, index) => (
+        <Grid.Column key={duck.id}>
+          <Link to={`/duck/${duck.id}`}>
+            <Card>
+              <Image src={duck.image} wrapped ui={false} />
+              <Card.Content>
+                <Card.Header>
+                  {duck.position} - {duck.distance} miles
+                </Card.Header>
+                <Card.Meta>
+                  <span>{duck.name}</span>
+                </Card.Meta>
+                <Card.Description>
+                  {duck.shortBio}
+                </Card.Description>
+              </Card.Content>
+            </Card>
+          </Link>
+        </Grid.Column>
       ))}
-    </Card.Group>
-    </div>
+    </Grid>
   );
 };
 
 export default DuckCard;
-
-const cardStyle = {
-  margin: '10px', 
-};

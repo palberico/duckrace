@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Input, Image, Button, Message } from 'semantic-ui-react';
+import { Input, Image, Button, Message, Header, Grid } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase/Config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import logo from '../assets/images/Logo.png';
 import DuckCard from '../components/DuckCard';
-import LeaderBoard from '../components/LeaderBoard';
+// import LeaderBoard from '../components/LeaderBoard';
 import '../App.css';
 
 const Home = () => {
@@ -56,7 +56,9 @@ const Home = () => {
         </div>
       </div>
       <div>
-        <LeaderBoard />
+      <Header size='huge'textAlign='center'>Duck Race Leaderboard</Header>
+        {/* <LeaderBoard /> */}
+        
         <DuckCard />
       </div>
     </div>

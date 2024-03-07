@@ -32,4 +32,20 @@
     align-items: center; /* Center vertically if needed */
     min-height: 100vh; /* Ensure it takes at least the full height of the viewport */
   }
+  /* App.css */
+
+/* Card Styles */
+.ui.grid>.column>.ui.card, .ui.grid>.column>.link>.ui.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Make sure all cards have the same height */
+}
+
+/* Ensure the card content fits inside the card */
+.ui.card>.content {
+  flex: 1 0 auto; /* Allow the content to expand and contract as needed */
+}
+
+/* Other styles as necessary... */
+
 }
