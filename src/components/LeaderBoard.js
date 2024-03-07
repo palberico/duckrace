@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Image } from 'semantic-ui-react';
+import { Card, Table, Image, CardHeader } from 'semantic-ui-react';
 import { Link } from 'react-router-dom'; // Import Link component
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
@@ -28,6 +28,7 @@ const LeaderBoard = () => {
       <Card fluid style={{ marginBottom: '20px' }}>
         <div style={styles.checkerboardFooter}></div>
         <Card.Content>
+        <CardHeader textAlign='left' >Leader Board</CardHeader>
           <Table singleLine unstackable>
             <Table.Header textAlign='center'>
               <Table.Row>
