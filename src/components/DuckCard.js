@@ -37,6 +37,5 @@ const DuckCard = () => {
 export default DuckCard;
 
 const cardStyle = {
-  margin: '10px', // This will add space around each card
-  // Other styles if needed
+  margin: '10px', 
 };

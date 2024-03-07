@@ -25,44 +25,47 @@ const LeaderBoard = () => {
     fetchDucks();
   }, []);
 
-  const posAndDistanceCellStyle = {
-    textAlign: 'center', // Center text for position and distance
-    borderBottom: '1px solid lightgray', // Keeping the light gray line for rows
-  };
-
-  const nameCellStyle = {
-    borderBottom: '1px solid lightgray', // Keeping the light gray line for rows
-  };
-
   return (
     <div className="leaderboardCard">
     <Card fluid style={{ marginBottom: '20px' }}> {/* Adding some bottom margin to separate from DuckCard grid */}
+    <div style={styles.checkerboardFooter}></div>
       <Card.Content>
-        <Table celled unstackable>
-          <Table.Header>
+        <Table singleLine unstackable>
+          <Table.Header textAlign='center'>
             <Table.Row>
-              <Table.HeaderCell style={posAndDistanceCellStyle}>Pos.</Table.HeaderCell>
-              <Table.HeaderCell style={nameCellStyle}>Name</Table.HeaderCell>
-              <Table.HeaderCell style={posAndDistanceCellStyle}>Distance</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Pos.</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Name</Table.HeaderCell>
+              <Table.HeaderCell textAlign='center'>Distance</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {ducks.map((duck) => (
               <Table.Row key={duck.pos}>
-                <Table.Cell style={posAndDistanceCellStyle}>{duck.pos}</Table.Cell>
-                <Table.Cell style={nameCellStyle}>
+                <Table.Cell textAlign='center'>{duck.pos}</Table.Cell>
+                <Table.Cell textAlign='left'>
                   <Image src={duck.image} avatar />
                   <span>{duck.name}</span>
                 </Table.Cell>
-                <Table.Cell style={posAndDistanceCellStyle}>{duck.distance}</Table.Cell>
+                <Table.Cell textAlign='center'>{duck.distance}</Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
         </Table>
       </Card.Content>
+      <div style={styles.checkerboardFooter}></div>
     </Card>
     </div>
   );
 };
 
 export default LeaderBoard;
+
+const styles = {
+  checkerboardFooter: {
+    width: '100%', // Full width
+    height: '50px', // Footer height
+    backgroundSize: '20px 20px', // Size of each square
+    backgroundImage: `linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%)`,
+    backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px', // Positioning the gradients
+  },
+};

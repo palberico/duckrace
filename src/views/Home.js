@@ -16,7 +16,7 @@ const Home = () => {
           <Input icon='search' placeholder='Search...' fluid />
         </div>
       </div>
-      <div className="homeContainer">
+      <div>
         <LeaderBoard />
         <DuckCard />
       </div>
@@ -25,3 +25,4 @@ const Home = () => {
 };
 
 export default Home;
+
