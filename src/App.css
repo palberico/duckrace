@@ -52,16 +52,14 @@
 
   .headerSearch {
     width: 100%; /* Full width for the search box */
-    max-width: none; /* Removes max width constraint */
-    margin-left: 0; /* Resets the left margin */
     margin-top: 1rem; /* Add some space between logo and search box */
   }
 
-  /* Adjustments for duck card grid layout on smaller screens */
-  .ui.grid > .row > .column,
-  .ui.grid > .column {
-    width: 50% !important; /* Two columns on small screens */
-    padding: 0.5rem !important; /* Adjust padding */
+  /* Responsive grid adjustments for DuckCard on smaller screens */
+  .ui.grid>.row>.column, .ui.grid>.column {
+    flex-basis: 50% !important; /* Set to use 50% of the row */
+    max-width: 50% !important; /* Set a maximum width to 50% of the container */
+    display: inline-block !important; /* Needed to prevent full-width stretch on flex items */
   }
 
   .ui.grid {
