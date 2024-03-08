@@ -1,90 +1,63 @@
-// src/components/DuckCard.js
 import React, { useEffect, useState } from 'react';
-import { Card, 
-  Image, 
-  Grid, 
-  Header, 
-  Table, 
-  TableRow, 
-  TableHeader, 
-  TableHeaderCell,
-  TableBody,
-  TableCell,
-} from 'semantic-ui-react';
-import { db } from '../firebase/Config';
+import { Card, Image, Grid, Loader, Message, Header } from 'semantic-ui-react';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/Config';
 import { Link } from 'react-router-dom';
 import '../App.css';
 
 const DuckCard = () => {
   const [ducks, setDucks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch ducks and order them by distance in descending order
-      const q = query(collection(db, 'ducks'), orderBy('distance', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const sortedDucks = querySnapshot.docs.map((doc, index) => ({
-        ...doc.data(),
-        id: doc.id,
-        position: `P${index + 1}` // Assign position based on order
-      }));
-      setDucks(sortedDucks);
+      try {
+        const q = query(collection(db, 'ducks'), orderBy('distance', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const sortedDucks = querySnapshot.docs.map((doc, index) => ({
+          ...doc.data(),
+          id: doc.id,
+          position: `P${index + 1}` // Assign position based on order
+        }));
+        setDucks(sortedDucks);
+      } catch (err) {
+        setError('Failed to fetch ducks. Please try again later.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
   }, []);
 
+  if (loading) return <Loader active inline="centered">Loading Ducks...</Loader>;
+  if (error) return <Message error header="Error" content={error} />;
+
   return (
     <Grid container stackable columns={4}>
-      {ducks.map((duck, index) => (
+      {ducks.map((duck) => (
         <Grid.Column key={duck.id}>
-          <Link to={`/duck/${duck.id}`}>
-            <Card color='red'>
-              <Image src={duck.image} wrapped ui={false} />
+          <Link to={`/duck/${duck.id}`} className="duck-card-link">
+            <Card className="duck-card">
+              <Image src={duck.image} wrapped ui={false} alt={`Image of ${duck.name}`} />
               <Card.Content>
-                <Card.Content>
-                 <Card.Header>
-                    <Table basic='very' stackable >
-                      <TableHeader>
-                        <TableRow>
-                         <TableHeaderCell>Position</TableHeaderCell>
-                         <TableHeaderCell>Miles</TableHeaderCell>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>
-                            <Header>{duck.position}</Header>
-                          </TableCell>
-                          <TableCell>
-                            <Header>{duck.distance}</Header>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-
-  </Card.Header>
-</Card.Content>
-
-
- 
-                <Card.Header textAlign='center'>
-               
-                  
-               {duck.name}
-           
+                <Card.Header>
+                  <div className="duck-card-header">
+                    <span>{duck.position}</span>
+                    <span className="duck-card-distance">{duck.distance} Miles</span>
+                  </div>
                 </Card.Header>
-                <Card.Description>
-                  {duck.shortBio}
-                </Card.Description>
+                <Card.Meta textAlign='center'>
+                  <Header> {duck.name} </Header>
+                </Card.Meta>
               </Card.Content>
             </Card>
           </Link>
         </Grid.Column>
       ))}
     </Grid>
-
   );
 };
 

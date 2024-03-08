@@ -7,11 +7,41 @@
 }
 
 .headerLogo {
-  flex: 1; /* Allows logo to grow and take necessary space */
+  flex-grow: 1; /* Allows logo to grow and take necessary space */
 }
 
 .headerSearch {
-  flex: 1; /* Allows search box to grow and take necessary space */
+  flex-grow: 2; /* Allows search box to take more space */
+  max-width: 500px; /* Maximum width of the search box */
+  margin-left: auto; /* Ensures it stays to the right */
+}
+
+/* DuckCard styles */
+.duck-card-link {
+  display: block;
+  color: inherit; /* Ensure the link color does not change */
+  text-decoration: none; /* Remove underline from links */
+}
+
+.duck-card {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  margin-bottom: 1rem; /* Add space below the card */
+}
+
+.duck-card:hover {
+  box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Add a subtle shadow to indicate interactivity */
+}
+
+.duck-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem; /* Space between the header and the card content */
+}
+
+.duck-card-distance {
+  font-weight: bold; /* Make the distance stand out */
 }
 
 /* Mobile friendly adjustments */
@@ -22,51 +52,30 @@
 
   .headerSearch {
     width: 100%; /* Full width for the search box */
+    max-width: none; /* Removes max width constraint */
+    margin-left: 0; /* Resets the left margin */
     margin-top: 1rem; /* Add some space between logo and search box */
   }
 
-  .duckCardGroup {
-    display: flex;
-    margin-top: 30px;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically if needed */
-    min-height: 100vh; /* Ensure it takes at least the full height of the viewport */
+  /* Adjustments for duck card grid layout on smaller screens */
+  .ui.grid > .row > .column,
+  .ui.grid > .column {
+    width: 50% !important; /* Two columns on small screens */
+    padding: 0.5rem !important; /* Adjust padding */
   }
 
-  /* Card header styles to position P1 and distance
-.cardHeaderContent {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-} */
-
-/* Responsive adjustments for the card header on smaller screens */
-@media (max-width: 768px) {
-  .cardHeaderContent {
-    flex-direction: column;
-    align-items: flex-start;
+  .ui.grid {
+    margin-left: -0.5rem !important;
+    margin-right: -0.5rem !important;
   }
-  .cardHeaderContent > span:last-child {
-    align-self: flex-end;
-    margin-top: 0.5rem;
+
+  .duck-card {
+    margin-left: auto; /* Centers the card if it's less than full width */
+    margin-right: auto; /* Centers the card if it's less than full width */
+    max-width: 100%; /* Limits card width to prevent stretching */
   }
-  /* DuckCardHeader.css */
-.duck-card-header {
-  display: flex !important;
-  justify-content: space-between !important;
-  width: 100% !important;
-}
 
-.duck-card-header span {
-  flex: 1 !important;
-  /* Apply text-align to position and distance */
-  text-align: left !important; /* For the position */
-  &:last-child {
-    text-align: right !important; /* For the distance */
+  .duck-card-header {
+    flex-direction: row; /* Keeps items in a row */
   }
-}
-
-
-
-}
 }
