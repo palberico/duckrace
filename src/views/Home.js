@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, Image, Button, Message, Header } from 'semantic-ui-react';
+import { Input, Image, Button, Message } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase/Config';
 import { collection, query, where, getDocs } from 'firebase/firestore';

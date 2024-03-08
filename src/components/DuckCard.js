@@ -10,7 +10,6 @@ import { Card,
   TableHeaderCell,
   TableBody,
   TableCell,
-  Divider,
 } from 'semantic-ui-react';
 import { db } from '../firebase/Config';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
