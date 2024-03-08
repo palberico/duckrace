@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase/Config';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import logo from '../assets/images/Logo.png';
+import LeaderBoardImage from '../assets/images/LeaderBoard.png';
+
 import DuckCard from '../components/DuckCard';
-// import LeaderBoard from '../components/LeaderBoard';
 import '../App.css';
 
 const Home = () => {
@@ -56,8 +57,9 @@ const Home = () => {
         </div>
       </div>
       <div>
-      <Header size='huge'textAlign='center'>Duck Race Leaderboard</Header>
-        {/* <LeaderBoard /> */}
+      <Image src={LeaderBoardImage} centered />
+
+     
         
         <DuckCard />
       </div>

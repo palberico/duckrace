@@ -1,9 +1,21 @@
 // src/components/DuckCard.js
 import React, { useEffect, useState } from 'react';
-import { Card, Image, Grid } from 'semantic-ui-react';
+import { Card, 
+  Image, 
+  Grid, 
+  Header, 
+  Table, 
+  TableRow, 
+  TableHeader, 
+  TableHeaderCell,
+  TableBody,
+  TableCell,
+  Divider,
+} from 'semantic-ui-react';
 import { db } from '../firebase/Config';
 import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
+import '../App.css';
 
 const DuckCard = () => {
   const [ducks, setDucks] = useState([]);
@@ -29,17 +41,40 @@ const DuckCard = () => {
       {ducks.map((duck, index) => (
         <Grid.Column key={duck.id}>
           <Link to={`/duck/${duck.id}`}>
-            <Card>
+            <Card color='red'>
               <Image src={duck.image} wrapped ui={false} />
               <Card.Content>
-                <Card.Header>
-                  {duck.position}
-                  </Card.Header>  
-                <Card.Header>               
-                  {duck.distance} miles
-                </Card.Header>
-                <Card.Header>
-                  <span>{duck.name}</span>
+                <Card.Content>
+                 <Card.Header>
+                    <Table basic='very' stackable >
+                      <TableHeader>
+                        <TableRow>
+                         <TableHeaderCell>Position</TableHeaderCell>
+                         <TableHeaderCell>Miles</TableHeaderCell>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>
+                            <Header>{duck.position}</Header>
+                          </TableCell>
+                          <TableCell>
+                            <Header>{duck.distance}</Header>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+
+  </Card.Header>
+</Card.Content>
+
+
+ 
+                <Card.Header textAlign='center'>
+               
+                  
+               {duck.name}
+           
                 </Card.Header>
                 <Card.Description>
                   {duck.shortBio}
@@ -50,6 +85,7 @@ const DuckCard = () => {
         </Grid.Column>
       ))}
     </Grid>
+
   );
 };
 

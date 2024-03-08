@@ -32,12 +32,13 @@
     align-items: center; /* Center vertically if needed */
     min-height: 100vh; /* Ensure it takes at least the full height of the viewport */
   }
-  /* Card header styles to position P1 and distance */
+
+  /* Card header styles to position P1 and distance
 .cardHeaderContent {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
+} */
 
 /* Responsive adjustments for the card header on smaller screens */
 @media (max-width: 768px) {
@@ -49,6 +50,23 @@
     align-self: flex-end;
     margin-top: 0.5rem;
   }
+  /* DuckCardHeader.css */
+.duck-card-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+.duck-card-header span {
+  flex: 1 !important;
+  /* Apply text-align to position and distance */
+  text-align: left !important; /* For the position */
+  &:last-child {
+    text-align: right !important; /* For the distance */
+  }
+}
+
+
 
 }
 }
