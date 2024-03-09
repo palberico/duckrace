@@ -44,6 +44,22 @@
   font-weight: bold; /* Make the distance stand out */
 }
 
+/* Color styles for different positions */
+.red-card {
+  background-color: #ffe5e5; /* Light red background */
+  color: red; /* Red text color */
+}
+
+.blue-card {
+  background-color: #e5e5ff; /* Light blue background */
+  color: blue; /* Blue text color */
+}
+
+.green-card {
+  background-color: #e5ffe5; /* Light green background */
+  color: green; /* Green text color */
+}
+
 /* Mobile friendly adjustments */
 @media (max-width: 768px) {
   .header {
@@ -62,11 +78,6 @@
     display: inline-block !important; /* Needed to prevent full-width stretch on flex items */
   }
 
-  .ui.grid {
-    margin-left: -0.5rem !important;
-    margin-right: -0.5rem !important;
-  }
-
   .duck-card {
     margin-left: auto; /* Centers the card if it's less than full width */
     margin-right: auto; /* Centers the card if it's less than full width */
@@ -74,6 +85,14 @@
   }
 
   .duck-card-header {
-    flex-direction: row; /* Keeps items in a row */
+    flex-direction: column; /* Position above distance */
+    text-align: center; /* Center the text for mobile */
+  }
+
+  .duck-card-distance, .position, .ui.header.h3 {
+    display: block; /* Stack position, distance, and name */
+    width: 100%; /* Full width of the card */
+    margin-top: 5px; /* Space between position, distance, and name */
+    text-align: center; /* Center the text */
   }
 }
