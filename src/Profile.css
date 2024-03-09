@@ -71,15 +71,18 @@
       padding: 1em; /* Reduced padding for smaller screens */
     }
   
+    /* Full-width image on top */
     .duck-image img {
       width: 100%; /* Full width */
       margin-bottom: 0.5em; /* Space after the image */
     }
   
+    /* Centered name under the image */
     .duck-name-header {
       margin-bottom: 0.5em; /* Space after the name */
     }
   
+    /* Full-width bio under the name */
     .duck-bio-segment {
       order: 3; /* Ensures bio comes after the name */
       width: 100%; /* Full width */
@@ -87,6 +90,7 @@
       margin-bottom: 1em; /* Space after the bio */
     }
   
+    /* Full-width details segment under the bio */
     .details-segment {
       order: 2; /* Ensures details come after the image */
       width: 100%; /* Full width */
@@ -94,31 +98,33 @@
       margin-bottom: 1em; /* Space after the details */
     }
   
+    /* Adjustments for the map cards and image containers */
     .map-cards-group,
     .image-scroll-container {
-      order: 4; /* Ensures map cards come after bio */
+      order: 4; /* Ensures they come after bio */
       width: 100%; /* Full width */
-      justify-content: center; /* Center the cards */
-      padding: 0; /* Remove padding for the scrollable area */
-      margin-top: 1em; /* Space before the map cards */
+      padding: 0; /* Remove padding */
+      margin-top: 1em; /* Space before the cards */
+      justify-content: center; /* Center the content */
     }
   
     .map-cards-group > *,
     .image-scroll-container > * {
       width: 100%; /* Each item takes the full width of its container */
-      max-width: none; /* Overrides any max-width */
       margin-right: 0; /* No margin on the right */
     }
   
+    /* Adjust the button styles for full width */
     .more-details-button,
     .back-button {
       width: 100%; /* Full width buttons */
       margin-bottom: 1em; /* Space after the buttons */
     }
   
-    /* Adjustments for the list of details to ensure proper spacing */
-    .details-list-item {
-      margin-bottom: 1em; /* Increase spacing between list items */
+    /* Ensure the cards and images take up the full width and are centered */
+    .map-cards-group > *:last-child,
+    .image-scroll-container > *:last-child {
+      margin-right: 0; /* No margin for the last child */
     }
   }
   
