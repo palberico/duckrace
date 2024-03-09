@@ -95,4 +95,17 @@
     margin-top: 5px; /* Space between position, distance, and name */
     text-align: center; /* Center the text */
   }
+  /* Text color styles for positions */
+.red-text {
+  color: #db2828 !important; /* Semantic UI red text color */
+}
+
+.blue-text {
+  color: #2185d0 !important; /* Semantic UI blue text color */
+}
+
+.green-text {
+  color: #21ba45 !important; /* Semantic UI green text color */
+}
+
 }

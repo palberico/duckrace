@@ -4,7 +4,6 @@ import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import { Link } from 'react-router-dom';
 import '../App.css';
-import classNames from 'classnames';
 
 const DuckCard = () => {
   const [ducks, setDucks] = useState([]);
@@ -36,24 +35,33 @@ const DuckCard = () => {
   if (loading) return <Loader active inline="centered">Loading Ducks...</Loader>;
   if (error) return <Message error header="Error" content={error} />;
 
+  // Function to determine card color based on position
+  const getPositionColor = (position) => {
+    switch (position) {
+      case 'P1':
+        return 'red';
+      case 'P2':
+        return 'blue';
+      case 'P3':
+        return 'green';
+      default:
+        return ''; // Default case doesn't add a color
+    }
+  };
+
   return (
     <Grid container stackable columns={4}>
       {ducks.map((duck) => {
-        const cardColorClass = classNames({
-          'red': duck.position === 'P1',
-          'blue': duck.position === 'P2',
-          'green': duck.position === 'P3',
-        });
+        const positionColor = getPositionColor(duck.position);
+
         return (
           <Grid.Column key={duck.id}>
             <Link to={`/duck/${duck.id}`} className="duck-card-link">
-              <Card className={classNames("duck-card", cardColorClass)}>
+              <Card className={`duck-card ${positionColor}`}>
                 <Image src={duck.image} wrapped ui={false} alt={`Image of ${duck.name}`} />
                 <Card.Content>
-                  <Card.Header>
-                    <div className={classNames("duck-card-header", cardColorClass)}>
-                      <span className="position">{duck.position}</span>
-                    </div>
+                  <Card.Header className="duck-card-header">
+                    <span className={`position ${positionColor}-text`}>{duck.position}</span>
                   </Card.Header>
                   <Card.Meta textAlign='center'>
                     <span className="duck-card-distance">{duck.distance} Miles</span>
