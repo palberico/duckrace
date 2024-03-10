@@ -79,12 +79,12 @@ const DuckProfile = () => {
 <CardGroup centered>
        
          <Card>
+            <Header textAlign='center'>{duckData.name}</Header>
             <Image src={duckData.image} size="large" />
 </Card>
         <Grid.Row>
           <Grid.Column width={16}>
    
-            <Header textAlign='center'>{duckData.name}</Header>
               <p><strong>Position:</strong> {duckData.position}</p>
               <p><strong>Distance:</strong> {duckData.distance}</p>
               <p><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
