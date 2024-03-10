@@ -1,6 +1,19 @@
-// DuckProfile.js
 import React, { useEffect, useState } from 'react';
-import { Button, Grid, Image, Loader, Message, Modal, Header, Input, Segment } from 'semantic-ui-react';
+import { 
+  Button,
+  ButtonOr,
+  ButtonGroup, 
+  Grid, 
+  Image, 
+  Loader, 
+  Message, 
+  Modal, 
+  Header, 
+  Input, 
+  Segment, 
+  CardGroup,
+  Card,
+ } from 'semantic-ui-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/Config';
@@ -38,6 +51,7 @@ const DuckProfile = () => {
   }, [duckId]);
 
   const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const handleCodeSubmit = () => {
     if (code === duckData.code) {
       navigate(`/log-distance/${duckId}`);
@@ -47,75 +61,85 @@ const DuckProfile = () => {
     }
   };
 
+  const handleBack = () => navigate(-1);
+
   if (loading) {
-    return <Loader active inline="centered">Box..Box...Box...</Loader>;
+    return <Loader active inline="centered">Loading Duck...</Loader>;
   }
 
   if (!duckData) {
     return <Message error header="Error" content="No Duck Data" />;
   }
 
-  const handleBack = () => navigate(-1);
-
   return (
     <>
+     
+      
       <Grid container stackable>
-  <Grid.Row>
-    <Grid.Column width={16}>
-      <Image src={duckData.image} size="large" />
-      <Header textAlign='center'>{duckData.name}</Header>
-    </Grid.Column>
-  </Grid.Row>
-  <Grid.Row>
-    <Grid.Column width={16}>
-      <Segment>
-        <p><strong>Position:</strong> {duckData.position}</p>
-        <p><strong>Distance:</strong> {duckData.distance}</p>
-        <p><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
-        <p><strong>Hometown:</strong> {duckData.hometown}</p>
-        <Button color='orange' onClick={handleOpen}>More Details</Button>
-        <Button color='grey' onClick={handleBack}>Back</Button>
-      </Segment>
-    </Grid.Column>
-  </Grid.Row>
-  <Grid.Row>
-    <Grid.Column width={16}>
-      <Segment>
-        {duckData.shortBio}
-      </Segment>
-    </Grid.Column>
-  </Grid.Row>
-
-        {/* Horizontal scroll for maps and images */}
+<CardGroup centered>
+       
+         <Card>
+            <Image src={duckData.image} size="large" />
+</Card>
         <Grid.Row>
           <Grid.Column width={16}>
-            <div className="map-cards-group">
+   
+            <Header textAlign='center'>{duckData.name}</Header>
+              <p><strong>Position:</strong> {duckData.position}</p>
+              <p><strong>Distance:</strong> {duckData.distance}</p>
+              <p><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
+              <p><strong>Hometown:</strong> {duckData.hometown}</p>
+              <ButtonGroup>
+              <Button color='orange' onClick={handleOpen}>I Found {duckData.name}</Button>
+              <ButtonOr />
+              <Button color='grey' onClick={handleBack}>Leaderboard</Button>
+              </ButtonGroup>
+          </Grid.Column>
+        </Grid.Row>
+        <Card>
+
+        <Grid.Row>
+          <Grid.Column width={16}>
+            <Segment>
+              {duckData.shortBio}
+              </Segment>
+          </Grid.Column>
+        </Grid.Row>
+        </Card>
+        </CardGroup>
+
+
+       
+            
+
+
+        {/* Horizontal scroll for maps and images */}
+        <Grid.Row centered>
               {/* Maps placeholder */}
-              {/* Replace <Image /> with actual map cards when available */}
-              <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
+<Card className="map-cards-group">
+<div className="map-cards-group">
               <Image src={Images} />
               <Image src={Images} />
               <Image src={Images} />
               {/* ... other images or components */}
-            </div>
+              </div>
+              </Card>
+              <Card>
             <div className="image-scroll-container">
               {/* Images placeholder */}
               <Image src={Images} />
               <Image src={Images} />
               <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
               {/* ... other images */}
             </div>
-          </Grid.Column>
+            </Card>
         </Grid.Row>
+
       </Grid>
 
-      <Modal open={open} onClose={() => setOpen(false)} size='small'>
+
+
+      <Modal open={open} onClose={handleClose} size='small'>
         <Header content='Enter Duck Code' />
         <Modal.Content>
           <p>To log distances for this duck, please enter its unique code:</p>
@@ -128,10 +152,12 @@ const DuckProfile = () => {
           )}
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={handleClose}>Cancel</Button>
           <Button positive onClick={handleCodeSubmit}>Submit</Button>
         </Modal.Actions>
       </Modal>
+
+      
     </>
   );
 };

@@ -1,4 +1,4 @@
-/* Profile.css */
+Profile.css
 
 .duck-profile-container {
     padding: 2em; /* Adjust the padding as necessary */
@@ -65,6 +65,8 @@
     background-color: #767676; /* Semantic UI grey */
   }
   
+  
+  
   /* Media query for smaller screens */
   @media (max-width: 768px) {
     .duck-profile-container {
@@ -77,11 +79,6 @@
       margin-bottom: 0.5em; /* Space after the image */
     }
   
-    /* Centered name under the image */
-    .duck-name-header {
-      margin-bottom: 0.5em; /* Space after the name */
-    }
-  
     /* Full-width bio under the name */
     .duck-bio-segment {
       order: 3; /* Ensures bio comes after the name */
@@ -90,14 +87,7 @@
       margin-bottom: 1em; /* Space after the bio */
     }
   
-    /* Full-width details segment under the bio */
-    .details-segment {
-      order: 2; /* Ensures details come after the image */
-      width: 100%; /* Full width */
-      padding: 1em; /* Adjusted padding for details */
-      margin-bottom: 1em; /* Space after the details */
-    }
-  
+    
     /* Adjustments for the map cards and image containers */
     .map-cards-group,
     .image-scroll-container {
@@ -125,6 +115,12 @@
     .map-cards-group > *:last-child,
     .image-scroll-container > *:last-child {
       margin-right: 0; /* No margin for the last child */
+    }
+  
+    /* Adjustments for the checkerboard pattern on smaller screens */
+    .checkerboard-pattern {
+      height: 20px; /* Smaller height for checkerboard pattern */
+      background-size: 10px 10px; /* Smaller squares for checkerboard pattern */
     }
   }
   

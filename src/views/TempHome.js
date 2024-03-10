@@ -59,7 +59,11 @@ const styles = {
         width: '100%', // Full width
         height: '50px', // Footer height
         backgroundSize: '20px 20px', // Size of each square
-        backgroundImage: `linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%)`,
+        backgroundImage: 
+            `linear-gradient(45deg, #000 25%, transparent 25%), 
+            linear-gradient(-45deg, #000 25%, transparent 25%), 
+            linear-gradient(45deg, transparent 75%, #000 75%), 
+            linear-gradient(-45deg, transparent 75%, #000 75%)`,
         backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px', // Positioning the gradients
     },
 };
