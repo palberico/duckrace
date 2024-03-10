@@ -16,7 +16,7 @@ const TempHome = () => {
     if (isLoading) {
         return (
             <div style={styles.loaderContainer}>
-                <Loader active inline='centered' size='massive'>Box...Box...Box...</Loader>
+                <Loader active inline='centered' size='massive'>Box...Box...</Loader>
             </div>
         );
     }

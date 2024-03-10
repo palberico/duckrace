@@ -96,9 +96,7 @@ return (
     <Card>
      <Grid.Row>
       <Grid.Column width={16}>
-       <Segment>
-        {duckData.shortBio}
-       </Segment>
+      <Segment dangerouslySetInnerHTML={{ __html: duckData.longBio }}></Segment>
       </Grid.Column>
      </Grid.Row>
     </Card>
