@@ -71,71 +71,62 @@ const DuckProfile = () => {
     return <Message error header="Error" content="No Duck Data" />;
   }
 
-  return (
-    <>
-     
-      
-      <Grid container stackable>
-<CardGroup centered>
-       
-         <Card>
-            <Header textAlign='center'>{duckData.name}</Header>
-            <Image src={duckData.image} size="large" />
-</Card>
-        <Grid.Row>
-          <Grid.Column width={16}>
-   
-              <p><strong>Position:</strong> {duckData.position}</p>
-              <p><strong>Distance:</strong> {duckData.distance}</p>
-              <p><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
-              <p><strong>Hometown:</strong> {duckData.hometown}</p>
-              <ButtonGroup>
-              <Button color='orange' onClick={handleOpen}>I Found {duckData.name}</Button>
-              <ButtonOr />
-              <Button color='grey' onClick={handleBack}>Leaderboard</Button>
-              </ButtonGroup>
-          </Grid.Column>
-        </Grid.Row>
-        <Card>
+return (
+ <>
+  <Grid container stackable>
+   <CardGroup centered>
+   <Card style={{ marginTop: '50px' }}>
+    <Header textAlign='center' style={{ paddingTop: '20px' }}>{duckData.name}</Header>
+      <Image src={duckData.image} size="large" />
+   </Card>
+    <Grid.Row>
+     <Grid.Column width={16}>
+      <p><strong>Position:</strong> {duckData.position}</p>
+      <p><strong>Distance:</strong> {duckData.distance}</p>
+      <p><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
+      <p><strong>Hometown:</strong> {duckData.hometown}</p>
+       <ButtonGroup>
+        <Button color='orange' onClick={handleOpen}>I Found {duckData.name}</Button>
+          <ButtonOr />
+        <Button color='grey' onClick={handleBack}>Leaderboard</Button>
+       </ButtonGroup>
+     </Grid.Column>
+    </Grid.Row>
 
-        <Grid.Row>
-          <Grid.Column width={16}>
-            <Segment>
-              {duckData.shortBio}
-              </Segment>
-          </Grid.Column>
-        </Grid.Row>
-        </Card>
-        </CardGroup>
+    <Card>
+     <Grid.Row>
+      <Grid.Column width={16}>
+       <Segment>
+        {duckData.shortBio}
+       </Segment>
+      </Grid.Column>
+     </Grid.Row>
+    </Card>
+   </CardGroup>
 
+{/* Horizontal scroll for maps and images */}
 
-       
-            
-
-
-        {/* Horizontal scroll for maps and images */}
-        <Grid.Row centered>
-              {/* Maps placeholder */}
-<Card className="map-cards-group">
-<div className="map-cards-group">
-              <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
-              {/* ... other images or components */}
-              </div>
-              </Card>
-              <Card>
-            <div className="image-scroll-container">
-              {/* Images placeholder */}
-              <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
-              {/* ... other images */}
-            </div>
-            </Card>
-        </Grid.Row>
-
-      </Grid>
+  <Grid.Row centered>
+{/* Maps placeholder */}
+   <Card style={{ marginTop: '20px' }}>
+    <div className="map-cards-group">
+      <Image src={Images} />
+      <Image src={Images} />
+      <Image src={Images} />
+{/* ... other images or components */}
+    </div>
+   </Card>
+   <Card>
+    <div className="image-scroll-container">
+{/* Images placeholder */}
+      <Image src={Images} />
+      <Image src={Images} />
+      <Image src={Images} />
+{/* ... other images */}
+    </div>
+   </Card>
+  </Grid.Row>
+ </Grid>
 
 
 

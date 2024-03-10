@@ -87,13 +87,15 @@
   .duck-card-header {
     flex-direction: column; /* Position above distance */
     text-align: center; /* Center the text for mobile */
+    font-size: 24px; /* Adjust font size as needed */
+    font-weight: bold; /* Make the font bold */
   }
 
   .duck-card-distance, .position, .ui.header.h3 {
     display: block; /* Stack position, distance, and name */
     width: 100%; /* Full width of the card */
     margin-top: 5px; /* Space between position, distance, and name */
-    text-align: center; /* Center the text */
+    /* text-align: center; Center the text */
   }
   /* Text color styles for positions */
 .red-text {

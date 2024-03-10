@@ -58,14 +58,14 @@ const DuckCard = () => {
           <Grid.Column key={duck.id}>
             <Link to={`/duck/${duck.id}`} className="duck-card-link">
               <Card className={`duck-card ${positionColor}`}>
-                <Image src={duck.image} wrapped ui={false} alt={`Image of ${duck.name}`} />
-                <Card.Content>
                   <Card.Header className="duck-card-header">
                     <span className={`position ${positionColor}-text`}>{duck.position}</span>
                   </Card.Header>
-                  <Card.Meta textAlign='center'>
-                    <span className="duck-card-distance">{duck.distance} Miles</span>
+                <Image src={duck.image} wrapped ui={false} alt={`Image of ${duck.name}`} />
+                <Card.Content>
                     <Header as='h3'>{duck.name}</Header>
+                  <Card.Meta>
+                    <span className="duck-card-distance">{duck.distance} Miles</span>
                   </Card.Meta>
                 </Card.Content>
               </Card>
