@@ -56,14 +56,21 @@ Profile.css
     margin-right: 1em; /* Spacing between buttons */
   }
   
-  /* Button color styles */
-  .orange-button {
-    background-color: #f2711c; /* Semantic UI orange */
+  .orange-gray-gradient-button {
+    background: linear-gradient(to right, #f2711c, #808080); /* Gradient from orange to gray */
+    color: white; /* Set the text color to white for better visibility */
+    border: none; /* Optional: Removes the border */
+}
+
+/* Optional: Add styles for hover state */
+.orange-gray-gradient-button:hover {
+    background: linear-gradient(to right, #e6600d, #707070);
+}
+
+  .large-text {
+    font-size: 15px;
   }
   
-  .grey-button {
-    background-color: #767676; /* Semantic UI grey */
-  }
   
   
   

@@ -66,17 +66,18 @@ return (
   <Grid container stackable>
    <CardGroup centered>
    <Card style={{ marginTop: '50px' }}>
-    <Header textAlign='center' style={{ paddingTop: '20px' }}>{duckData.name}</Header>
+    <Header as='h1' textAlign='center' style={{ paddingTop: '20px' }}>{duckData.name}</Header>
       <Image src={duckData.image} size="large" />
    </Card>
     <Grid.Row>
      <Grid.Column width={16}>
-      <p><strong>Current Position:</strong> {position}</p>
-      <p><strong>Distance:</strong> {duckData.distance}</p>
-      <p><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
-      <p><strong>Hometown:</strong> {duckData.hometown}</p>
+       <p className="large-text"><strong>Current Position:</strong> {position}</p>
+       <p className="large-text"><strong>Distance:</strong> {duckData.distance}</p>
+       <p className="large-text"><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
+       <p className="large-text"><strong>Hometown:</strong> {duckData.hometown}</p> 
        <ButtonGroup>
         <Button color='orange' onClick={handleOpen}>I Found {duckData.name}</Button>
+        {/* <Button className="orange-gray-gradient-button" onClick={handleOpen}>I Found {duckData.name}</Button> */}
           <ButtonOr />
         <Button color='grey' onClick={handleBack}>Leaderboard</Button>
        </ButtonGroup>
@@ -86,7 +87,7 @@ return (
     <Card>
      <Grid.Row>
       <Grid.Column width={16}>
-      <Segment dangerouslySetInnerHTML={{ __html: duckData.longBio }}></Segment>
+      <Segment as='h3' dangerouslySetInnerHTML={{ __html: duckData.longBio }}></Segment>
       </Grid.Column>
      </Grid.Row>
     </Card>
