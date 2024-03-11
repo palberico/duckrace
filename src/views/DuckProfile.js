@@ -1,21 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Button,
-  ButtonOr,
-  ButtonGroup, 
-  Grid, 
-  Image, 
-  Loader, 
-  Message, 
-  Modal, 
-  Header, 
-  Input, 
-  Segment, 
-  CardGroup,
-  Card,
- } from 'semantic-ui-react';
+import { Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message, Modal, Header, Input, Segment, CardGroup, Card } from 'semantic-ui-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import '../Profile.css';
 import Images from '../assets/images/IMG_0598.WEBP';
@@ -25,18 +11,22 @@ const DuckProfile = () => {
   const navigate = useNavigate();
   const [duckData, setDuckData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [code, setCode] = useState('');
-  const [isCodeIncorrect, setIsCodeIncorrect] = useState(false);
+  const [position, setPosition] = useState(null); // Position state
+  const [open, setOpen] = useState(false); // Modal open state
+  const [code, setCode] = useState(''); // Code input state
+  const [isCodeIncorrect, setIsCodeIncorrect] = useState(false); // Incorrect code state
 
   useEffect(() => {
     const fetchDuckData = async () => {
       try {
-        const docRef = doc(db, 'ducks', duckId);
-        const docSnap = await getDoc(docRef);
+        const q = query(collection(db, 'ducks'), orderBy('distance', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const ducks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        if (docSnap.exists()) {
-          setDuckData(docSnap.data());
+        const currentDuckIndex = ducks.findIndex(duck => duck.id === duckId);
+        if (currentDuckIndex !== -1) {
+          setDuckData(ducks[currentDuckIndex]);
+          setPosition(`P${currentDuckIndex + 1}`);
         } else {
           console.error('No such document!');
         }
@@ -64,11 +54,11 @@ const DuckProfile = () => {
   const handleBack = () => navigate(-1);
 
   if (loading) {
-    return <Loader active inline="centered">Loading Duck...</Loader>;
+    return <Loader active inline="centered">Box...Box...</Loader>;
   }
 
   if (!duckData) {
-    return <Message error header="Error" content="No Duck Data" />;
+    return <Message error header="Error" content="No Duck Found" />;
   }
 
 return (
@@ -81,7 +71,7 @@ return (
    </Card>
     <Grid.Row>
      <Grid.Column width={16}>
-      <p><strong>Position:</strong> {duckData.position}</p>
+      <p><strong>Current Position:</strong> {position}</p>
       <p><strong>Distance:</strong> {duckData.distance}</p>
       <p><strong>Last Place Found:</strong> {duckData.lastPlace}</p>
       <p><strong>Hometown:</strong> {duckData.hometown}</p>
@@ -107,6 +97,7 @@ return (
   <Grid.Row centered>
 {/* Maps placeholder */}
    <Card style={{ marginTop: '20px' }}>
+   <Header textAlign='center' style={{ paddingTop: '20px' }}>Maps</Header>
     <div className="map-cards-group">
       <Image src={Images} />
       <Image src={Images} />
@@ -115,6 +106,7 @@ return (
     </div>
    </Card>
    <Card>
+   <Header textAlign='center' style={{ paddingTop: '20px' }}>User Images</Header>
     <div className="image-scroll-container">
 {/* Images placeholder */}
       <Image src={Images} />
