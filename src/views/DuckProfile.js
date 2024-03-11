@@ -54,7 +54,7 @@ const DuckProfile = () => {
   const handleBack = () => navigate(-1);
 
   if (loading) {
-    return <Loader active inline="centered">Box...Box...</Loader>;
+    return <Loader active inline='centered' size='massive'>Box...Box...</Loader>;
   }
 
   if (!duckData) {
@@ -106,7 +106,7 @@ return (
 {/* ... other images or components */}
     </div>
    </Card>
-   <Card>
+   <Card style={{ marginBottom: '50px' }}>
    <Header textAlign='center' style={{ paddingTop: '20px' }}>User Images</Header>
     <div className="image-scroll-container">
 {/* Images placeholder */}

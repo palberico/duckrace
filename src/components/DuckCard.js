@@ -32,7 +32,7 @@ const DuckCard = () => {
     fetchData();
   }, []);
 
-  if (loading) return <Loader active inline="centered">Loading Ducks...</Loader>;
+  if (loading) return <Loader active inline='centered' size='massive'>Box...Box...</Loader>;
   if (error) return <Message error header="Error" content={error} />;
 
   // Function to determine card color based on position

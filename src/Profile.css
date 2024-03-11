@@ -55,17 +55,24 @@ Profile.css
   .more-details-button {
     margin-right: 1em; /* Spacing between buttons */
   }
-  
+
+  /* Revisit gradient buttons*/
   .orange-gray-gradient-button {
     background: linear-gradient(to right, #f2711c, #808080); /* Gradient from orange to gray */
     color: white; /* Set the text color to white for better visibility */
     border: none; /* Optional: Removes the border */
-}
+  }
 
-/* Optional: Add styles for hover state */
-.orange-gray-gradient-button:hover {
+/* Optional: Add styles for hover state - revisit this */
+  .orange-gray-gradient-button:hover {
     background: linear-gradient(to right, #e6600d, #707070);
-}
+  }
+
+  .bottom-spaced-card {
+    margin-top: 20px;
+  }
+  
+
 
   .large-text {
     font-size: 15px;
