@@ -5,6 +5,7 @@ import TempHome from './views/TempHome';
 import Home from './views/Home'; 
 import DuckProfile from './views/DuckProfile'; 
 import DuckForm from './components/DuckForm';
+import Admin from './views/DuckAdmin';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 
@@ -14,7 +15,8 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<TempHome />} />
-          <Route path="/Home" element={<Home />} /> 
+          <Route path="/Home" element={<Home />} />
+          <Route path="/Admin" element={<Admin />} />
           <Route path="/duck/:duckId" element={<DuckProfile />} /> 
           <Route path="/log-distance/:duckId" element={<DuckForm />} /> 
         </Routes>
