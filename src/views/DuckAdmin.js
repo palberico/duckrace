@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Message } from 'semantic-ui-react';
+import { Button, Form, Input, Message, Segment, Header } from 'semantic-ui-react';
 import { addDoc, collection, GeoPoint } from 'firebase/firestore';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -83,30 +83,34 @@ const DuckAdmin = () => {
   };
 
   return (
-    <Form error={!!error} onSubmit={handleSubmit}>
-      <Form.Field>
-        <label>Duck Name</label>
-        <Input placeholder='Enter Duck Name' value={name} onChange={(e) => setName(e.target.value)} />
-      </Form.Field>
-      <Form.Field>
-        <label>Code</label>
-        <Input placeholder='Enter Duck Code' value={code} onChange={(e) => setCode(e.target.value)} />
-      </Form.Field>
-      <Form.Field>
-        <label>Start Location</label>
-        <Input placeholder='Enter Start Location' value={startLocation} onChange={(e) => setStartLocation(e.target.value)} />
-      </Form.Field>
-      <Form.Field>
-        <label>Image</label>
-        {/* This input field will be used for image upload in the future */}
-        <Input type='file' onChange={(e) => setImage(e.target.files[0])} />
-      </Form.Field>
-      {error && <Message error header='Error' content={error} />}
-      <Button type='submit'>Submit</Button>
-       <Link to="/Home">
-        <Button color='grey'>Leaderboard</Button>
-       </Link>
-    </Form>
+    <Segment padded="very" style={{ maxWidth: '600px', margin: '0 auto', marginTop: '20px' }}>
+      <Header as='h2' textAlign='center'>
+        Duck Registration
+      </Header>
+      <Form error={!!error} onSubmit={handleSubmit}>
+        <Form.Field>
+          <label>Duck Name</label>
+          <Input placeholder='Enter Duck Name' value={name} onChange={(e) => setName(e.target.value)} />
+        </Form.Field>
+        <Form.Field>
+          <label>Code</label>
+          <Input placeholder='Enter Duck Code' value={code} onChange={(e) => setCode(e.target.value)} />
+        </Form.Field>
+        <Form.Field>
+          <label>Start Location</label>
+          <Input placeholder='Enter Start Location' value={startLocation} onChange={(e) => setStartLocation(e.target.value)} />
+        </Form.Field>
+        <Form.Field>
+          <label>Image</label>
+          <Input type='file' onChange={(e) => setImage(e.target.files[0])} />
+        </Form.Field>
+        {error && <Message error header='Error' content={error} />}
+        <Button type='submit' primary fluid>Submit</Button>
+        <Link to="/Home">
+          <Button color='grey' fluid style={{ marginTop: '10px' }}>Back to Leaderboard</Button>
+        </Link>
+      </Form>
+    </Segment>
   );
 };
 

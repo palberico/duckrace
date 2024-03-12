@@ -76,14 +76,13 @@ const DuckProfile = () => {
           <Card style={{ marginTop: '50px' }}>
             <Header as='h1' textAlign='center' style={{ paddingTop: '20px' }}>{duckData.name}</Header>
             <Image src={duckData.image} size="large" />
-          </Card>
           <Grid.Row>
-            <Grid.Column >
+            <Grid.Column style={{ padding: '10px'}}>
               <p className="large-text"><strong>Current Position:</strong> {position}</p>
               <p className="large-text"><strong>Distance:</strong> {duckData.distance} Miles</p>
               <p className="large-text"><strong>Last Place Found:</strong> {formatLastLocation(duckData.lastLocation)}</p>
               <p className="large-text"><strong>Hometown:</strong> {duckData.hometown}</p> 
-              <ButtonGroup>
+              <ButtonGroup style={{marginBottom: '10px'}}>
                 <Button color='orange' onClick={handleOpen}>I Found {duckData.name}</Button>
         {/* <Button className="orange-gray-gradient-button" onClick={handleOpen}>I Found {duckData.name}</Button> */}
                 <ButtonOr />
@@ -93,6 +92,7 @@ const DuckProfile = () => {
               </ButtonGroup>
             </Grid.Column>
           </Grid.Row>
+          </Card>
 
           <Card>
             <Grid.Row>
