@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Loader } from 'semantic-ui-react';
+import { Card, Image, Loader, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import raceStartImage from '../assets/images/IMG_0598.WEBP';
 
@@ -31,6 +31,9 @@ const TempHome = () => {
                     </Card.Content>
                     <div style={styles.checkerboardFooter}></div>
                 </Card>
+                <Link to="/Admin">
+                  <Button>Admin</Button>
+                </Link>
             </Link>
         </div>
     );

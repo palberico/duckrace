@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Form, Input, Message } from 'semantic-ui-react';
 import { addDoc, collection, GeoPoint } from 'firebase/firestore';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
 
 const DuckAdmin = () => {
@@ -102,6 +103,9 @@ const DuckAdmin = () => {
       </Form.Field>
       {error && <Message error header='Error' content={error} />}
       <Button type='submit'>Submit</Button>
+       <Link to="/Home">
+        <Button color='grey'>Leaderboard</Button>
+       </Link>
     </Form>
   );
 };

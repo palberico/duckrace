@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Button, Form } from 'semantic-ui-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Card, Image, Button, Form, ButtonOr, ButtonGroup, Segment } from 'semantic-ui-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
@@ -60,13 +60,16 @@ const DuckForm = () => {
     }
   };
 
+  const handleBack = () => navigate(-1);
+
   return (
     <div style={styles.homeContainer}>
       <Card>
-        <Card.Header>You found {duckData.name}.</Card.Header>
+        <Card.Header as='h2'>{duckData.name}</Card.Header>
+          <Card.Meta style={styles.lastLocation}>{lastLocation}</Card.Meta>
         <Image src={duckData.image} wrapped ui={false} />
         <Card.Content>
-          <div>Last place found: {lastLocation}</div>
+          <Segment textAlign='center'>Enter the city, state, and country of where you found {duckData.name}.</Segment>
           <Form onSubmit={handleSubmit}>
             <Form.Field>
               <label>City</label>
@@ -92,7 +95,13 @@ const DuckForm = () => {
                 onChange={(e) => setCountry(e.target.value)}
               />
             </Form.Field>
-            <Button type='submit'>Submit</Button>
+            <ButtonGroup>
+              <Button color='orange'>Submit</Button>
+                 <ButtonOr />
+            <Link to="/Home">
+              <Button color='grey' onClick={handleBack}>Back</Button>
+            </Link>
+            </ButtonGroup>
           </Form>
         </Card.Content>
         <div style={styles.checkerboardFooter}></div>
@@ -109,10 +118,21 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100vh',
-    backgroundColor: '#f0f0f0',
+    // backgroundColor: '#f0f0f0',
     color: '#333',
     fontFamily: 'Arial, sans-serif',
+    marginTop: '50px',
+    marginBottom: '50px',
+  },
+  lastLocation: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // color: '#333',
+    // fontFamily: 'Arial, sans-serif',
+    // marginTop: '10px',
+    marginBottom: '10px',
   },
   checkerboardFooter: {
     width: '100%',

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Input, Image, Button, Message, Popup } from 'semantic-ui-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import logo from '../assets/images/Logo.png';
@@ -50,7 +50,9 @@ const Home = () => {
     <div>
       <div className="header">
         <div className="headerLogo">
-          <Image src={logo} size='small' />
+          <Link to="/">
+           <Image src={logo} size='small' />
+          </Link>
         </div>
         <div className="headerSearch">
           <Input

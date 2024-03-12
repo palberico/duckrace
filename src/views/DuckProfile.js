@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message, Modal, Header, Input, Segment, CardGroup, Card } from 'semantic-ui-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import '../Profile.css';
@@ -51,7 +51,7 @@ const DuckProfile = () => {
     }
   };
 
-  const handleBack = () => navigate(-1);
+  // const handleBack = () => navigate(-1);
 
   if (loading) {
     return <Loader active inline='centered' size='massive'>Box...Box...</Loader>;
@@ -87,7 +87,9 @@ const DuckProfile = () => {
                 <Button color='orange' onClick={handleOpen}>I Found {duckData.name}</Button>
         {/* <Button className="orange-gray-gradient-button" onClick={handleOpen}>I Found {duckData.name}</Button> */}
                 <ButtonOr />
-                <Button color='grey' onClick={handleBack}>Leaderboard</Button>
+                <Link to="/Home">
+                <Button color='grey'>Leaderboard</Button>
+                </Link>
               </ButtonGroup>
             </Grid.Column>
           </Grid.Row>
