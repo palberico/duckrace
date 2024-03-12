@@ -1,29 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Loader, Button } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Card, Image, Loader, Button, Modal, Form, Input } from 'semantic-ui-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import raceStartImage from '../assets/images/IMG_0598.WEBP';
 
 const TempHome = () => {
     const [isLoading, setIsLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [authError, setAuthError] = useState('');
+    const navigate = useNavigate();
+    const auth = getAuth();
 
-    // Simulate loading process, you can replace this with your actual loading logic
     useEffect(() => {
         setTimeout(() => {
             setIsLoading(false);
         }, 3000); // Adjust time as needed for your actual loading process
     }, []);
 
+    const handleAdminClick = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleLogin = async (e) => {
+        e.preventDefault(); // Prevent the form from submitting traditionally
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            navigate('/Admin'); // Navigate to Admin page upon successful login
+            setIsModalOpen(false); // Close the modal
+        } catch (error) {
+            setAuthError('Failed to log in. Please check your credentials.');
+            console.error('Login error:', error);
+        }
+    };
+
     if (isLoading) {
         return (
             <div style={styles.loaderContainer}>
-                <Loader active inline='centered' size='massive'>Box...Box...</Loader>
+                <Loader active inline='centered' size='massive'>Box..Box...</Loader>
             </div>
         );
     }
 
     return (
         <div style={styles.homeContainer}>
-            <Link to="/Home">
+            <Link to="/Home" style={{ textDecoration: 'none' }}>
                 <Card>
                     <Image src={raceStartImage} wrapped ui={false} />
                     <Card.Content>
@@ -31,10 +53,26 @@ const TempHome = () => {
                     </Card.Content>
                     <div style={styles.checkerboardFooter}></div>
                 </Card>
-                <Link to="/Admin">
-                  <Button>Admin</Button>
-                </Link>
             </Link>
+            <Button onClick={handleAdminClick}>Admin</Button>
+
+            <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <Modal.Header>Admin Login</Modal.Header>
+                <Modal.Content>
+                    <Form onSubmit={handleLogin}>
+                        <Form.Field>
+                            <label>Email</label>
+                            <Input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </Form.Field>
+                        <Form.Field>
+                            <label>Password</label>
+                            <Input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        </Form.Field>
+                        <Button type="submit">Login</Button>
+                        {authError && <div style={{ color: 'red', marginTop: '10px' }}>{authError}</div>}
+                    </Form>
+                </Modal.Content>
+            </Modal>
         </div>
     );
 };
