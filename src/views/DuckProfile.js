@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message, Modal, Header, Input, Segment, CardGroup, Card } from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, updateDoc, GeoPoint } from 'firebase/firestore'; // Ensure these imports are included
 import { db } from '../firebase/Config';
 import '../Profile.css';
 import Images from '../assets/images/IMG_0598.WEBP';
@@ -12,7 +12,6 @@ const DuckProfile = () => {
   const navigate = useNavigate();
   const [duckData, setDuckData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [position, setPosition] = useState(null);
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
   const [isCodeIncorrect, setIsCodeIncorrect] = useState(false);
@@ -27,7 +26,6 @@ const DuckProfile = () => {
         const currentDuckIndex = ducks.findIndex(duck => duck.id === duckId);
         if (currentDuckIndex !== -1) {
           setDuckData(ducks[currentDuckIndex]);
-          setPosition(`P${currentDuckIndex + 1}`);
         } else {
           console.error('No such document!');
         }
@@ -41,10 +39,38 @@ const DuckProfile = () => {
     fetchDuckData();
   }, [duckId]);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const handleCodeSubmit = () => {
+  const geocodeAndSaveLocation = async (city, state, country) => {
+    const address = `${city}, ${state}, ${country}`;
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; // Ensure you have defined this environment variable
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.status === 'OK') {
+        const { lat, lng } = data.results[0].geometry.location;
+        const coordinates = new GeoPoint(lat, lng);
+        await updateDuckLastLocation(coordinates);
+      } else {
+        console.error('Geocoding failed:', data.status);
+      }
+    } catch (error) {
+      console.error('Error fetching geocode:', error);
+    }
+  };
+
+  const updateDuckLastLocation = async (coordinates) => {
+    const duckRef = doc(db, 'ducks', duckId);
+    await updateDoc(duckRef, {
+      'lastLocation.coordinates': coordinates
+    });
+  };
+
+  const handleCodeSubmit = async () => {
     if (code === duckData.code) {
+      if (duckData.lastLocation && duckData.lastLocation.city && duckData.lastLocation.state && duckData.lastLocation.country) {
+        await geocodeAndSaveLocation(duckData.lastLocation.city, duckData.lastLocation.state, duckData.lastLocation.country);
+      }
       navigate(`/log-distance/${duckId}`);
     } else {
       setIsCodeIncorrect(true);
@@ -52,7 +78,8 @@ const DuckProfile = () => {
     }
   };
 
-  // const handleBack = () => navigate(-1);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   if (loading) {
     return <Loader active inline='centered' size='massive'>Box...Box...</Loader>;
@@ -79,7 +106,7 @@ const DuckProfile = () => {
             <Image src={duckData.image} size="large" />
           <Grid.Row>
             <Grid.Column style={{ padding: '10px'}}>
-              <p className="large-text"><strong>Current Position:</strong> {position}</p>
+              <p className="large-text"><strong>Current Position:</strong> {duckData.position}</p>
               <p className="large-text"><strong>Distance:</strong> {duckData.distance} Miles</p>
               <p className="large-text"><strong>Last Place Found:</strong> {formatLastLocation(duckData.lastLocation)}</p>
               <p className="large-text"><strong>Hometown:</strong> {duckData.hometown}</p> 

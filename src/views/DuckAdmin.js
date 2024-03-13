@@ -8,85 +8,66 @@ import { db } from '../firebase/Config';
 const DuckAdmin = () => {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
-  const [startLocation, setStartLocation] = useState('');
-  const [image, setImage] = useState(null); // For future image handling
+  const [startLocation, setStartLocation] = useState({ city: '', state: '', country: '' });
+  const [image, setImage] = useState(null);
   const [error, setError] = useState('');
 
   const getCoordinates = async (address) => {
     try {
-      const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-        params: {
-          address: address,
-          key: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        },
-      });
-  
-      console.log(response.data); // Additional log for debugging
-  
-      if (response.data.results.length > 0) {
+      const fullAddress = `${address.city}, ${address.state}, ${address.country}`;
+      const encodedAddress = encodeURIComponent(fullAddress);
+
+      const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`);
+
+      if (response.data.status === 'OK' && response.data.results.length > 0) {
         const { lat, lng } = response.data.results[0].geometry.location;
-        return new GeoPoint(lat, lng); // Use the GeoPoint constructor for Firestore
+        return new GeoPoint(lat, lng);
       } else {
-        console.log('Location not found in the results.'); // Additional log for debugging
-        throw new Error("Location not found.");
+        throw new Error(response.data.error_message || 'Failed to geocode address');
       }
     } catch (error) {
+      setError(`Geocoding failed: ${error.message}`);
       console.error('Error getting coordinates:', error);
-      setError(error.message);
       return null;
     }
   };
-  
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-  
+
     const coordinates = await getCoordinates(startLocation);
-  
+
     if (!coordinates) {
-      // Log and set an error message if coordinates are not found
-      console.error('No coordinates found for the location.');
       setError('Failed to get coordinates for the location.');
       return;
     }
-  
-    // Log the data about to be submitted to Firestore
-    console.log('Submitting to Firestore:', { name, code, startLocation, coordinates, image });
-  
+
     try {
-      // Attempt to add a new document to the Firestore collection
       const docRef = await addDoc(collection(db, 'ducks'), {
         name,
         code,
         startLocation: {
-          city: startLocation, // This should be updated with more specific fields
-          coordinates: coordinates,
+          ...startLocation,
+          coordinates
         },
-        image, // Placeholder URL for the image
+        image, // Assuming you handle image uploads separately
       });
-  
-      // Log the Firestore response
+
       console.log('Document written with ID: ', docRef.id);
-  
-      // Reset form fields after successful submission
       setName('');
       setCode('');
-      setStartLocation('');
+      setStartLocation({ city: '', state: '', country: '' });
       setImage(null);
-      setError(''); // Clear any errors
     } catch (e) {
-      // Catch and log any errors during submission
+      setError(`Error adding document: ${e.message}`);
       console.error('Error adding document: ', e);
-      setError('Error adding document: ' + e.message);
     }
   };
 
   return (
     <Segment padded="very" style={{ maxWidth: '600px', margin: '0 auto', marginTop: '20px' }}>
-      <Header as='h2' textAlign='center'>
-        Duck Registration
-      </Header>
+      <Header as='h2' textAlign='center'>Duck Registration</Header>
       <Form error={!!error} onSubmit={handleSubmit}>
         <Form.Field>
           <label>Duck Name</label>
@@ -98,7 +79,21 @@ const DuckAdmin = () => {
         </Form.Field>
         <Form.Field>
           <label>Start Location</label>
-          <Input placeholder='Enter Start Location' value={startLocation} onChange={(e) => setStartLocation(e.target.value)} />
+          <Input
+            placeholder='Enter City'
+            value={startLocation.city}
+            onChange={(e) => setStartLocation({ ...startLocation, city: e.target.value })}
+          />
+          <Input
+            placeholder='Enter State'
+            value={startLocation.state}
+            onChange={(e) => setStartLocation({ ...startLocation, state: e.target.value })}
+          />
+          <Input
+            placeholder='Enter Country'
+            value={startLocation.country}
+            onChange={(e) => setStartLocation({ ...startLocation, country: e.target.value })}
+          />
         </Form.Field>
         <Form.Field>
           <label>Image</label>
