@@ -5,6 +5,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import '../Profile.css';
 import Images from '../assets/images/IMG_0598.WEBP';
+import MapCard from '../components/MapCard';
 
 const DuckProfile = () => {
   const { duckId } = useParams();
@@ -109,9 +110,7 @@ const DuckProfile = () => {
           <Card style={{ marginTop: '20px' }}>
             <Header textAlign='center' style={{ paddingTop: '20px' }}>Maps</Header>
             <div className="map-cards-group">
-              <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
+              <MapCard duckId={duckId} />
               {/* ... other images or components */}
             </div>
           </Card>
