@@ -202,11 +202,14 @@ const validateBioWordCount = (text) => {
         </Form.Field>
         <Form.Field>
           <label>Start Location</label>
+          <div style={{ marginBottom: '10px' }}>
           <Input
             placeholder='Enter City'
             value={startLocation.city}
             onChange={(e) => setStartLocation({ ...startLocation, city: e.target.value })}
-          />
+            />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
           <Dropdown
             placeholder="Select State"
             fluid
@@ -216,6 +219,8 @@ const validateBioWordCount = (text) => {
             value={startLocation.state}
             onChange={(e, { value }) => setStartLocation({ ...startLocation, state: value })}
           />
+          </div>
+          <div style={{ marginBottom: '10px' }}>
           <Dropdown
             placeholder="Select Country"
             fluid
@@ -226,6 +231,7 @@ const validateBioWordCount = (text) => {
             onChange={(e, { value }) => setStartLocation({ ...startLocation, country: value })}
             
           />
+        </div>
         </Form.Field>
         <Form.Field>
           <label>Image</label>
