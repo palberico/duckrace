@@ -103,7 +103,7 @@ const DuckProfile = () => {
         <CardGroup centered>
           <Card style={{ marginTop: '50px' }}>
             <Header as='h1' textAlign='center' style={{ paddingTop: '20px' }}>{duckData.name}</Header>
-            <Image src={duckData.image} size="large" />
+            <Image src={duckData.imageUrl} size="large" />
           <Grid.Row>
             <Grid.Column style={{ padding: '10px'}}>
               <p className="large-text"><strong>Current Position:</strong> {duckData.position}</p>

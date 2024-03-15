@@ -61,7 +61,7 @@ const DuckCard = () => {
                   <Card.Header className="duck-card-header">
                     <span className={`position ${positionColor}-text`}>{duck.position}</span>
                   </Card.Header>
-                <Image src={duck.image} wrapped ui={false} alt={`Image of ${duck.name}`} />
+                <Image src={duck.imageUrl} wrapped ui={false} alt={`Image of ${duck.name}`} />
                 <Card.Content>
                     <Header as='h3'>{duck.name}</Header>
                   <Card.Meta>

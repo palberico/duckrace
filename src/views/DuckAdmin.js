@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Button, Form, Input, Message, Segment, Header, Dropdown, Loader } from 'semantic-ui-react';
 import { addDoc, collection, GeoPoint, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import axios from 'axios'; // Make sure axios is installed and imported
 import { db } from '../firebase/Config';
 import countryOptions from '../components/data/Countries';
 import stateOptions from '../components/data/States';
@@ -14,10 +14,11 @@ const DuckAdmin = () => {
   const [bio, setBio] = useState('');
   const [hometown, setHometown] = useState('');
   const [startLocation, setStartLocation] = useState({ city: '', state: '', country: '' });
+  const [distance, setDistance] = useState('');
   const [image, setImage] = useState(null);
   const [error, setError] = useState('');
-  const [deleteInput, setDeleteInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteInput, setDeleteInput] = useState('');
 
   const handleDeleteInputChange = (e) => {
     setDeleteInput(e.target.value);
@@ -80,13 +81,14 @@ const DuckAdmin = () => {
         const docRef = await addDoc(collection(db, 'ducks'), {
           name,
           code,
+          bio,
+          hometown, 
+          imageUrl, 
           startLocation: {
             ...startLocation,
             coordinates,
           },
-          imageUrl, 
-          bio,
-          hometown, 
+          distance: parseFloat(distance) || 0,
         });
   
         console.log('Document written with ID: ', docRef.id);
@@ -105,10 +107,11 @@ const DuckAdmin = () => {
     // Reset form states and bio after processing
     setName('');
     setCode('');
-    setStartLocation({ city: '', state: '', country: '' });
-    setImage(null);
     setBio('');
     setHometown(''); 
+    setImage(null);
+    setDistance(''); // Reset the distance field
+    setStartLocation({ city: '', state: '', country: '' });
   };
 
   
@@ -184,6 +187,15 @@ const validateBioWordCount = (text) => {
           <label>Code</label>
           <Input placeholder='Enter Duck Code' value={code} onChange={(e) => setCode(e.target.value)} />
         </Form.Field>
+        <Form.Field>
+            <label>Distance Traveled (miles)</label>
+            <Input
+              placeholder='Enter Distance Traveled'
+              value={distance}
+              onChange={(e) => setDistance(e.target.value)}
+              type='number' // Ensure numeric input
+            />
+          </Form.Field>
         <Form.Field>
           <label>Bio (up to 100 words)</label>
             <textarea
