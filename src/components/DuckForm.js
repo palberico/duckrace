@@ -55,32 +55,73 @@ const DuckForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
-    const newCoordinates = await getCoordinates(city, state, country);
+  
+    const newLastLocation = await getCoordinates(city, state, country);
     setIsLoading(false);
-
-    if (!newCoordinates) {
+  
+    if (!newLastLocation) {
       alert('Failed to get geolocation data. Please check the city, state, and country values and try again.');
       return;
     }
-
+  
     try {
       const duckRef = doc(db, 'ducks', duckId);
+      const duckSnap = await getDoc(duckRef);
+      
+      if (!duckSnap.exists()) {
+        alert('Duck not found in the database.');
+        return;
+      }
+      
+      const duckData = duckSnap.data();
+      const startLocation = duckData.startLocation.coordinates;
+      const currentDistance = duckData.distance || 0;
+  
+      const distanceToAdd = getDistanceFromLatLonInKm(
+        startLocation.latitude,
+        startLocation.longitude,
+        newLastLocation.latitude,
+        newLastLocation.longitude
+      );
+  
+      // Convert km to miles and round the result
+      const newDistance = currentDistance + Math.round(distanceToAdd * 0.621371);
+  
       await updateDoc(duckRef, {
         lastLocation: {
           city,
           state,
           country,
-          coordinates: newCoordinates
+          coordinates: newLastLocation
         },
+        distance: newDistance // Update the total distance
       });
-
+  
       navigate(`/duck/${duckId}`);
     } catch (error) {
       console.error("Error updating document: ", error);
       alert("An error occurred while updating the location. Please try again.");
     }
   };
+  
+
+  // Function to calculate the distance between two coordinates in kilometers
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius of the earth in kilometers
+  const dLat = deg2rad(lat2 - lat1); // deg2rad below
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Distance in kilometers
+  return distance;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180)
+}
 
   return (
     <div style={styles.homeContainer}>
