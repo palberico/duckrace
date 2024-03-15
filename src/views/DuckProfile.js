@@ -125,7 +125,7 @@ const DuckProfile = () => {
           <Card>
             <Grid.Row>
               <Grid.Column width={16}>
-                <Segment as='h3' dangerouslySetInnerHTML={{ __html: duckData.longBio }}></Segment>
+                <Segment as='h3' dangerouslySetInnerHTML={{ __html: duckData.bio }}></Segment>
               </Grid.Column>
             </Grid.Row>
           </Card>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Message, Segment, Header, Dropdown } from 'semantic-ui-react';
+import { Button, Form, Input, Message, Segment, Header, Dropdown, Loader } from 'semantic-ui-react';
 import { addDoc, collection, GeoPoint, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import axios from 'axios';
@@ -11,12 +11,20 @@ import stateOptions from '../components/data/States';
 const DuckAdmin = () => {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
+  const [bio, setBio] = useState('');
+  const [hometown, setHometown] = useState('');
   const [startLocation, setStartLocation] = useState({ city: '', state: '', country: '' });
   const [image, setImage] = useState(null);
   const [error, setError] = useState('');
   const [deleteInput, setDeleteInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleDeleteInputChange = (e) => {
+    setDeleteInput(e.target.value);
+  };
 
   const getCoordinates = async (address) => {
+    setIsLoading(true); // Start loading
     try {
       const fullAddress = `${address.city}, ${address.state}, ${address.country}`;
       const encodedAddress = encodeURIComponent(fullAddress);
@@ -25,6 +33,7 @@ const DuckAdmin = () => {
 
       if (response.data.status === 'OK' && response.data.results.length > 0) {
         const { lat, lng } = response.data.results[0].geometry.location;
+        setIsLoading(false); // Stop loading
         return new GeoPoint(lat, lng);
       } else {
         throw new Error(response.data.error_message || 'Failed to geocode address');
@@ -32,15 +41,24 @@ const DuckAdmin = () => {
     } catch (error) {
       setError(`Geocoding failed: ${error.message}`);
       console.error('Error getting coordinates:', error);
+      setIsLoading(false); // Stop loading
       return null;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading
     setError('');
   
-    // Start with image upload
+    // Optional: Validate the bio word count
+    if (!validateBioWordCount(bio)) {
+      setError('Bio must be 100 words or less.');
+      setIsLoading(false); // Stop loading
+      return;
+    }
+  
+    // Continue with image upload if an image is selected
     if (image) {
       const storage = getStorage();
       const storageRef = ref(storage, `ducks/${image.name}-${Date.now()}`); // Unique path for each image
@@ -49,14 +67,16 @@ const DuckAdmin = () => {
         const uploadTaskSnapshot = await uploadBytes(storageRef, image);
         const imageUrl = await getDownloadURL(uploadTaskSnapshot.ref);
   
-        // Once you have the image URL, proceed with the rest of the form submission
+        // Proceed with the rest of the form submission once you have the image URL
         const coordinates = await getCoordinates(startLocation);
   
         if (!coordinates) {
           setError('Failed to get coordinates for the location.');
+          setIsLoading(false); // Stop loading
           return;
         }
   
+        // Add the bio and hometown fields to the document being added to Firestore
         const docRef = await addDoc(collection(db, 'ducks'), {
           name,
           code,
@@ -64,7 +84,9 @@ const DuckAdmin = () => {
             ...startLocation,
             coordinates,
           },
-          imageUrl, // Use the imageUrl from Storage in your document
+          imageUrl, 
+          bio,
+          hometown, 
         });
   
         console.log('Document written with ID: ', docRef.id);
@@ -72,23 +94,26 @@ const DuckAdmin = () => {
       } catch (error) {
         console.error('Error during the image upload or document creation:', error);
         setError(`Error during the image upload or document creation: ${error.message}`);
+      } finally {
+        setIsLoading(false); // Stop loading
       }
     } else {
       setError('No image selected for upload.');
+      setIsLoading(false); // Stop loading
     }
   
-    // Reset form states after processing
+    // Reset form states and bio after processing
     setName('');
     setCode('');
     setStartLocation({ city: '', state: '', country: '' });
     setImage(null);
+    setBio('');
+    setHometown(''); 
   };
 
-  const handleDeleteInputChange = (e) => {
-    setDeleteInput(e.target.value);
-  };
+  
 
-//Deletion Logic below:
+//Delete Logic below:
 
 const handleDeleteDuck = async () => {
   if (!deleteInput.trim()) return;
@@ -138,9 +163,16 @@ const handleDeleteDuck = async () => {
 
   setDeleteInput(''); // Clear the delete input field
 };
+
+const validateBioWordCount = (text) => {
+  const words = text.trim().split(/\s+/); // Split based on one or more whitespace characters
+  return words.length <= 100;
+};
   
 
   return (
+    <>
+    {isLoading && <Loader active inline='centered'>Processing...</Loader>}
     <Segment padded="very" style={{ maxWidth: '600px', margin: '0 auto', marginTop: '20px' }}>
       <Header as='h2' textAlign='center'>Duck Registration</Header>
       <Form error={!!error} onSubmit={handleSubmit}>
@@ -151,6 +183,22 @@ const handleDeleteDuck = async () => {
         <Form.Field>
           <label>Code</label>
           <Input placeholder='Enter Duck Code' value={code} onChange={(e) => setCode(e.target.value)} />
+        </Form.Field>
+        <Form.Field>
+          <label>Bio (up to 100 words)</label>
+            <textarea
+              placeholder='Enter Bio Here...'
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+            />
+        </Form.Field>
+        <Form.Field>
+          <label>Hometown</label>
+            <Input
+              placeholder='Enter Hometown'
+              value={hometown}
+              onChange={(e) => setHometown(e.target.value)}
+            />
         </Form.Field>
         <Form.Field>
           <label>Start Location</label>
@@ -204,6 +252,7 @@ const handleDeleteDuck = async () => {
 </Segment>
 
     </Segment>
+    </>
   );
 };
 
