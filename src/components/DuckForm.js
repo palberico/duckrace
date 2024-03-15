@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Button, Form, ButtonOr, ButtonGroup, Segment } from 'semantic-ui-react';
+import { Card, Image, Button, Form, ButtonOr, ButtonGroup, Segment, Dropdown, Loader } from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, GeoPoint } from 'firebase/firestore';
+import axios from 'axios';
+
+import countryOptions from '../components/data/Countries';
+import stateOptions from '../components/data/States';
 
 const DuckForm = () => {
   const { duckId } = useParams();
@@ -11,7 +15,8 @@ const DuckForm = () => {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
-  const [lastLocation, setLastLocation] = useState('Not yet found');
+  const [isLoading, setIsLoading] = useState(false);
+  const [setError] = useState('');
 
   useEffect(() => {
     const fetchDuckData = async () => {
@@ -19,39 +24,56 @@ const DuckForm = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setDuckData(docSnap.data());
-        console.log("Fetched lastLocation:", docSnap.data().lastLocation); // Debug log
-        const lastLoc = docSnap.data().lastLocation || 'Not yet found';
-        if (lastLoc && typeof lastLoc === 'object') {
-          setLastLocation(`${lastLoc.city || ''}, ${lastLoc.state || ''}, ${lastLoc.country || ''}`.trim());
-        } else {
-          setLastLocation(lastLoc);
-        }
+      } else {
+        console.log('No such document!');
       }
     };
-  
+
     fetchDuckData();
   }, [duckId]);
 
+  const getCoordinates = async (city, state, country) => {
+    const fullAddress = `${city}, ${state}, ${country}`;
+    const encodedAddress = encodeURIComponent(fullAddress);
+
+    try {
+      const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`);
+      setIsLoading(false); // Stop loading
+      if (response.data.status === 'OK' && response.data.results.length > 0) {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        return new GeoPoint(lat, lng);
+      } else {
+        setError(response.data.error_message || 'Failed to geocode address');
+        return null;
+      }
+    } catch (error) {
+      setError(error.message);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    if (!city || !state || !country) {
-      alert("Please fill in all fields: City, State, and Country.");
+    const newCoordinates = await getCoordinates(city, state, country);
+    setIsLoading(false);
+
+    if (!newCoordinates) {
+      alert('Failed to get geolocation data. Please check the city, state, and country values and try again.');
       return;
     }
-
-    const locationString = `${city}, ${state}, ${country}`;
 
     try {
       const duckRef = doc(db, 'ducks', duckId);
       await updateDoc(duckRef, {
-        lastLocation: { city, state, country }, // Object stored in Firestore
+        lastLocation: {
+          city,
+          state,
+          country,
+          coordinates: newCoordinates
+        },
       });
-
-      setLastLocation(locationString); // String for UI display
-      setCity('');
-      setState('');
-      setCountry('');
 
       navigate(`/duck/${duckId}`);
     } catch (error) {
@@ -60,52 +82,59 @@ const DuckForm = () => {
     }
   };
 
-  const handleBack = () => navigate(-1);
-
   return (
     <div style={styles.homeContainer}>
-      <Card>
-        <Card.Header as='h2'>{duckData.name}</Card.Header>
-          <Card.Meta style={styles.lastLocation}>{lastLocation}</Card.Meta>
-        <Image src={duckData.image} wrapped ui={false} />
-        <Card.Content>
-          <Segment textAlign='center'>Enter the city, state, and country of where you found {duckData.name}.</Segment>
-          <Form onSubmit={handleSubmit}>
-            <Form.Field>
-              <label>City</label>
-              <input
-                placeholder='City'
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-            </Form.Field>
-            <Form.Field>
-              <label>State</label>
-              <input
-                placeholder='State'
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-              />
-            </Form.Field>
-            <Form.Field>
-              <label>Country</label>
-              <input
-                placeholder='Country'
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-              />
-            </Form.Field>
-            <ButtonGroup>
-              <Button color='orange'>Submit</Button>
-                 <ButtonOr />
-            <Link to="/Home">
-              <Button color='grey' onClick={handleBack}>Back</Button>
-            </Link>
-            </ButtonGroup>
-          </Form>
-        </Card.Content>
-        <div style={styles.checkerboardFooter}></div>
-      </Card>
+      {isLoading ? <Loader active inline='centered' /> : (
+        <Card>
+          <Card.Header as='h2'>{duckData.name}</Card.Header>
+          <Image src={duckData.imageUrl} wrapped ui={false} />
+          <Card.Content>
+            <Segment textAlign='center'>Enter the city, state, and country of where you found {duckData.name}.</Segment>
+            <Form onSubmit={handleSubmit}>
+              <Form.Field>
+                <label>City</label>
+                <input
+                  placeholder='City'
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
+              </Form.Field>
+              <Form.Field>
+                <label>State</label>
+                <Dropdown
+                  placeholder='Select State'
+                  fluid
+                  search
+                  selection
+                  options={stateOptions}
+                  value={state}
+                  onChange={(e, { value }) => setState(value)}
+                />
+              </Form.Field>
+              <Form.Field>
+                <label>Country</label>
+                <Dropdown
+                  placeholder='Select Country'
+                  fluid
+                  search
+                  selection
+                  options={countryOptions}
+                  value={country}
+                  onChange={(e, { value }) => setCountry(value)}
+                />
+              </Form.Field>
+              <ButtonGroup>
+                <Button color='orange' type='submit'>Submit</Button>
+                <ButtonOr />
+                <Link to="/Home">
+                  <Button color='grey'>Back</Button>
+                </Link>
+              </ButtonGroup>
+            </Form>
+          </Card.Content>
+          <div style={styles.checkerboardFooter}></div>
+        </Card>
+      )}
     </div>
   );
 };
@@ -118,9 +147,6 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: '#f0f0f0',
-    color: '#333',
-    fontFamily: 'Arial, sans-serif',
     marginTop: '50px',
     marginBottom: '50px',
   },
@@ -129,9 +155,6 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    // color: '#333',
-    // fontFamily: 'Arial, sans-serif',
-    // marginTop: '10px',
     marginBottom: '10px',
   },
   checkerboardFooter: {
