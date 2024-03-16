@@ -1,77 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import { GoogleMap, LoadScript, Marker, Polyline } from '@react-google-maps/api';
+import React, { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 
 const MapCard = ({ duckId }) => {
-  const [startLocation, setStartLocation] = useState(null);
-  const [lastLocation, setLastLocation] = useState(null);
+  const mapRef = useRef(null); // Reference to the map container
 
   useEffect(() => {
-    const fetchLocations = async () => {
+    const fetchLocationsAndRenderMap = async () => {
       if (duckId) {
         const docRef = doc(db, 'ducks', duckId);
         const docSnap = await getDoc(docRef);
-
+  
         if (docSnap.exists()) {
           const data = docSnap.data();
           const startLoc = data.startLocation.coordinates; // Assuming this is a Firestore GeoPoint
           const lastLoc = data.lastLocation.coordinates;   // Assuming this is a Firestore GeoPoint
-
-          // Update state with the GeoPoint latitude and longitude
-          setStartLocation({
-            lat: startLoc.latitude,
-            lng: startLoc.longitude
-          });
-          setLastLocation({
-            lat: lastLoc.latitude,
-            lng: lastLoc.longitude
-          });
+  
+          // Clean up the existing map before initializing a new one
+          if (mapRef.current.leafletMap) {
+            mapRef.current.leafletMap.remove();
+          }
+  
+          // Initialize the map
+          const map = L.map(mapRef.current).setView([startLoc.latitude, startLoc.longitude], 13);
+          mapRef.current.leafletMap = map; // Store the map instance for later access
+  
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+          }).addTo(map);
+  
+          // Add markers for the startLocation and lastLocation
+          L.marker([startLoc.latitude, startLoc.longitude]).addTo(map);
+          L.marker([lastLoc.latitude, lastLoc.longitude]).addTo(map);
+  
+          // Draw a line between startLocation and lastLocation
+          const latlngs = [
+            [startLoc.latitude, startLoc.longitude],
+            [lastLoc.latitude, lastLoc.longitude]
+          ];
+          const polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+          mapRef.current.polyline = polyline; // Store the polyline for later access
+  
+          map.fitBounds(polyline.getBounds());
         } else {
           console.log('No such document!');
         }
       }
     };
-
-    fetchLocations();
+  
+    fetchLocationsAndRenderMap();
+  
+    // Cleanup function to remove the map instance on component unmount
+    return () => {
+      if (mapRef.current && mapRef.current.leafletMap) {
+        mapRef.current.leafletMap.remove();
+        mapRef.current.leafletMap = null;
+      }
+    };
   }, [duckId]);
 
-  const containerStyle = {
-    width: '300px',
-    height: '300px'
-  };
-
-  // Set defaultCenter to one of your known locations to avoid displaying the wrong area
-  const defaultCenter = startLocation || {
-    lat: 0, // Use a sensible default
-    lng: 0  // Use a sensible default
-  };
-
-  const renderMap = () => {
-    // Adjust the center of the map dynamically based on the locations
-    const center = startLocation || defaultCenter;
-
-    return (
-      <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={10}
-        >
-          {startLocation && <Marker position={startLocation} />}
-          {lastLocation && <Marker position={lastLocation} />}
-          {startLocation && lastLocation && (
-            <Polyline
-              path={[startLocation, lastLocation]}
-              options={{ strokeColor: "#FF0000" }}
-            />
-          )}
-        </GoogleMap>
-      </LoadScript>
-    );
-  };
-
-  return renderMap();
+  return <div id="map" ref={mapRef} style={{ height: '300px', width: '100%' }}></div>;
 };
 
 export default MapCard;
