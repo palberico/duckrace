@@ -16,7 +16,8 @@ const DuckForm = () => {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [setError] = useState('');
+  const [error, setError] = useState('');
+
 
   useEffect(() => {
     const fetchDuckData = async () => {

@@ -61,7 +61,9 @@ const MapCard = ({ duckId }) => {
     };
   }, [duckId]);
 
-  return <div id="map" ref={mapRef} style={{ height: '300px', width: '100%' }}></div>;
+  // Use a dynamic id for the map container
+return <div id={`map-${duckId}`} ref={mapRef} style={{ height: '300px', width: '100%' }}></div>;
+
 };
 
 export default MapCard;
