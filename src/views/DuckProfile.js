@@ -111,9 +111,11 @@ const DuckProfile = () => {
 
   console.log('Duck Locations:', duckLocations);
 
-  const mapCards = duckLocations.map((location, index) => (
-    <MapCard key={location.id || index} location={location} />
-  ));
+  // const mapCards = duckLocations.map((location, index) => (
+  //   <div className="map-card-wrapper" key={location.id || index}>
+  //     <MapCard location={location} />
+  //   </div>
+  // ));
 
   return (
     <>
@@ -151,13 +153,18 @@ const DuckProfile = () => {
 
         {/* Horizontal scroll for maps and images */}
         
-        <Grid.Row centered>
-          <Card style={{ overflowX: 'auto', whiteSpace: 'nowrap', display: 'flex' }}>
-            <Header textAlign='center' style={{ paddingTop: '20px' }}>Maps</Header>
-            <div className="map-cards-group">
-              {mapCards}
-            </div>
-          </Card>
+        <div className="map-cards-container">
+  {duckLocations.map((location, index) => (
+    <div key={location.id || index} className="map-card">
+      <Card>
+        <Card.Content>
+          <Card.Header>Maps</Card.Header>
+        </Card.Content>
+        <MapCard location={location} />
+      </Card>
+    </div>
+  ))}
+</div>
 
 
           <Card style={{ marginBottom: '50px' }}>
@@ -170,7 +177,7 @@ const DuckProfile = () => {
               {/* ... other images */}
             </div>
           </Card>
-        </Grid.Row>
+  
       </Grid>
 
       <Modal open={open} onClose={handleClose} size='small'>

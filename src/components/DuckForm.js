@@ -132,9 +132,9 @@ const DuckForm = () => {
     }
   };
   
+ // Function to calculate the distance between two coordinates in kilometers
 
-  // Function to calculate the distance between two coordinates in kilometers
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371; // Radius of the earth in kilometers
   const dLat = deg2rad(lat2 - lat1); // deg2rad below
   const dLon = deg2rad(lon2 - lon1);
