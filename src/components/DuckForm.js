@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Image, Button, Form, ButtonOr, ButtonGroup, Segment, Dropdown, Loader } from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
-import { doc, getDoc, updateDoc, GeoPoint } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import axios from 'axios';
 
 import countryOptions from '../components/data/Countries';
@@ -16,7 +16,7 @@ const DuckForm = () => {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [setError] = useState('');
 
 
   useEffect(() => {
@@ -39,14 +39,19 @@ const DuckForm = () => {
 
     try {
       const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`);
+      console.log(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
       setIsLoading(false); // Stop loading
+      
       if (response.data.status === 'OK' && response.data.results.length > 0) {
         const { lat, lng } = response.data.results[0].geometry.location;
-        return new GeoPoint(lat, lng);
+        const result = { latitude: lat, longitude: lng };
+        console.log(result); // Log the result to debug
+        return result;
       } else {
         setError(response.data.error_message || 'Failed to geocode address');
-        return null;
+        return null; // Make sure to return null if geocoding fails
       }
+
     } catch (error) {
       setError(error.message);
       return null;
@@ -57,10 +62,10 @@ const DuckForm = () => {
     e.preventDefault();
     setIsLoading(true);
   
-    const newLastLocation = await getCoordinates(city, state, country);
+    const newLocationCoordinates = await getCoordinates(city, state, country);
     setIsLoading(false);
   
-    if (!newLastLocation) {
+    if (!newLocationCoordinates) {
       alert('Failed to get geolocation data. Please check the city, state, and country values and try again.');
       return;
     }
@@ -68,40 +73,62 @@ const DuckForm = () => {
     try {
       const duckRef = doc(db, 'ducks', duckId);
       const duckSnap = await getDoc(duckRef);
-      
+  
       if (!duckSnap.exists()) {
         alert('Duck not found in the database.');
         return;
       }
-      
+  
+      // Extract the data from the snapshot
       const duckData = duckSnap.data();
-      const startLocation = duckData.startLocation.coordinates;
-      const currentDistance = duckData.distance || 0;
   
-      const distanceToAdd = getDistanceFromLatLonInKm(
-        startLocation.latitude,
-        startLocation.longitude,
-        newLastLocation.latitude,
-        newLastLocation.longitude
-      );
+      // Use the current lastLocation as the startLocation for the new leg, or use startLocation if lastLocation doesn't exist
+      const startLocation = duckData.lastLocation ?? duckData.startLocation;
   
-      // Convert km to miles and round the result
-      const newDistance = currentDistance + Math.round(distanceToAdd * 0.621371);
+      // Calculate the new distance only if startLocation exists
+      let newDistance = duckData.distance || 0;
+      if (startLocation && startLocation.coordinates) {
+        const distanceToAdd = getDistanceFromLatLonInKm(
+          startLocation.coordinates.latitude,
+          startLocation.coordinates.longitude,
+          newLocationCoordinates.latitude,
+          newLocationCoordinates.longitude
+        );
+        newDistance += Math.round(distanceToAdd * 0.621371); // Convert km to miles and round the result
+      }
   
+      // Update the duck's lastLocation and total distance in the ducks collection
       await updateDoc(duckRef, {
         lastLocation: {
           city,
           state,
           country,
-          coordinates: newLastLocation
+          coordinates: newLocationCoordinates
         },
-        distance: newDistance // Update the total distance
+        distance: newDistance
       });
+  
+      // Add a new document to the locations collection only if startLocation is defined
+      if (startLocation && startLocation.coordinates) {
+        const locationsRef = collection(db, 'locations');
+        await addDoc(locationsRef, {
+          duckId,
+          startLocation: startLocation, // This will be the previous lastLocation or startLocation if lastLocation doesn't exist
+          newLocation: {
+            city,
+            state,
+            country,
+            coordinates: newLocationCoordinates
+          },
+          timestamp: new Date(),
+        });
+      }
   
       navigate(`/duck/${duckId}`);
     } catch (error) {
       console.error("Error updating document: ", error);
       alert("An error occurred while updating the location. Please try again.");
+      setIsLoading(false); // Make sure to turn off the loading indicator in case of error
     }
   };
   

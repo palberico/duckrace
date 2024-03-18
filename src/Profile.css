@@ -1,140 +1,126 @@
-Profile.css
-
 .duck-profile-container {
-    padding: 2em; /* Adjust the padding as necessary */
-  }
-  
-  /* Styles for the duck image */
-  .duck-image {
-    margin-bottom: 1em;
-  }
-  
-  /* Styles for the duck name header */
-  .duck-name-header {
-    margin-top: 1em;
-    text-align: center; /* Center the duck's name */
-  }
-  
-  /* Styles for bio and details segments */
-  .duck-bio-segment,
-  .details-segment {
-    padding: 2em;
-  }
-  
-  /* Horizontal scrolling for the map cards */
-  .map-cards-group,
-  .image-scroll-container {
-    display: flex;
-    overflow-x: auto;
-    padding: 1em 0;
-    margin-top: 2em;
-  }
-  
-  .map-cards-group > *,
-  .image-scroll-container > * {
-    flex: 0 0 auto; /* Prevent flex items from shrinking */
-    margin-right: 1em; /* Space between items */
-  }
-  
-  /* Fix for the last child in horizontal scroll */
-  .map-cards-group > *:last-child,
-  .image-scroll-container > *:last-child {
-    margin-right: 0;
-  }
-  
-  /* Styles for the list details */
-  .details-list {
-    list-style-type: none; /* Removes bullet points */
-    padding: 0;
-  }
-  
-  .details-list-item {
-    margin-bottom: 0.5em; /* Spacing between items */
-  }
-  
-  .more-details-button {
-    margin-right: 1em; /* Spacing between buttons */
-  }
+  padding: 2em; /* Adjust the padding as necessary */
+}
 
-  /* Revisit gradient buttons*/
-  .orange-gray-gradient-button {
-    background: linear-gradient(to right, #f2711c, #808080); /* Gradient from orange to gray */
-    color: white; /* Set the text color to white for better visibility */
-    border: none; /* Optional: Removes the border */
-  }
+/* Styles for the duck image */
+.duck-image {
+  margin-bottom: 1em;
+}
+
+/* Styles for the duck name header */
+.duck-name-header {
+  margin-top: 1em;
+  text-align: center; /* Center the duck's name */
+}
+
+/* Styles for bio and details segments */
+.duck-bio-segment,
+.details-segment {
+  padding: 2em;
+}
+
+/* Horizontal scrolling for the map cards */
+.map-cards-group,
+.image-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  padding: 1em 0;
+  margin-top: 2em;
+}
+
+.map-cards-group > *,
+.image-scroll-container > * {
+  flex: 0 0 auto; /* Prevent flex items from shrinking */
+  margin-right: 1em; /* Space between items */
+  max-width: 100%; /* Ensure items do not exceed container width */
+}
+
+/* Fix for the last child in horizontal scroll */
+.map-cards-group > *:last-child,
+.image-scroll-container > *:last-child {
+  margin-right: 0;
+}
+
+/* Styles for the list details */
+.details-list {
+  list-style-type: none; /* Removes bullet points */
+  padding: 0;
+}
+
+.details-list-item {
+  margin-bottom: 0.5em; /* Spacing between items */
+}
+
+.more-details-button {
+  margin-right: 1em; /* Spacing between buttons */
+}
+
+/* Revisit gradient buttons*/
+.orange-gray-gradient-button {
+  background: linear-gradient(to right, #f2711c, #808080); /* Gradient from orange to gray */
+  color: white; /* Set the text color to white for better visibility */
+  border: none; /* Optional: Removes the border */
+}
 
 /* Optional: Add styles for hover state - revisit this */
-  .orange-gray-gradient-button:hover {
-    background: linear-gradient(to right, #e6600d, #707070);
+.orange-gray-gradient-button:hover {
+  background: linear-gradient(to right, #e6600d, #707070);
+}
+
+.bottom-spaced-card {
+  margin-top: 20px;
+}
+
+.large-text {
+  font-size: 15px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .duck-profile-container {
+    padding: 1em; /* Reduced padding for smaller screens */
   }
 
-  .bottom-spaced-card {
-    margin-top: 20px;
+  /* Full-width image on top */
+  .duck-image img {
+    width: 100%; /* Full width */
+    margin-bottom: 0.5em; /* Space after the image */
   }
-  
 
+  /* Full-width bio under the name */
+  .duck-bio-segment {
+    order: 3; /* Ensures bio comes after the name */
+    width: 100%; /* Full width */
+    padding: 1em; /* Adjusted padding for bio */
+    margin-bottom: 1em; /* Space after the bio */
+  }
 
-  .large-text {
-    font-size: 15px;
+  /* Adjustments for the map cards and image containers */
+  .map-cards-group,
+  .image-scroll-container {
+    order: 4; /* Ensures they come after bio */
+    width: 100%; /* Full width */
+    padding: 0; /* Remove padding */
+    margin-top: 1em; /* Space before the cards */
+    justify-content: center; /* Center the content */
   }
-  
-  
-  
-  
-  /* Media query for smaller screens */
-  @media (max-width: 768px) {
-    .duck-profile-container {
-      padding: 1em; /* Reduced padding for smaller screens */
-    }
-  
-    /* Full-width image on top */
-    .duck-image img {
-      width: 100%; /* Full width */
-      margin-bottom: 0.5em; /* Space after the image */
-    }
-  
-    /* Full-width bio under the name */
-    .duck-bio-segment {
-      order: 3; /* Ensures bio comes after the name */
-      width: 100%; /* Full width */
-      padding: 1em; /* Adjusted padding for bio */
-      margin-bottom: 1em; /* Space after the bio */
-    }
-  
-    
-    /* Adjustments for the map cards and image containers */
-    .map-cards-group,
-    .image-scroll-container {
-      order: 4; /* Ensures they come after bio */
-      width: 100%; /* Full width */
-      padding: 0; /* Remove padding */
-      margin-top: 1em; /* Space before the cards */
-      justify-content: center; /* Center the content */
-    }
-  
-    .map-cards-group > *,
-    .image-scroll-container > * {
-      width: 100%; /* Each item takes the full width of its container */
-      margin-right: 0; /* No margin on the right */
-    }
-  
-    /* Adjust the button styles for full width */
-    .more-details-button,
-    .back-button {
-      width: 100%; /* Full width buttons */
-      margin-bottom: 1em; /* Space after the buttons */
-    }
-  
-    /* Ensure the cards and images take up the full width and are centered */
-    .map-cards-group > *:last-child,
-    .image-scroll-container > *:last-child {
-      margin-right: 0; /* No margin for the last child */
-    }
-  
-    /* Adjustments for the checkerboard pattern on smaller screens */
-    .checkerboard-pattern {
-      height: 20px; /* Smaller height for checkerboard pattern */
-      background-size: 10px 10px; /* Smaller squares for checkerboard pattern */
-    }
+
+  .map-cards-group > *,
+  .image-scroll-container > * {
+    width: 100%; /* Each item takes the full width of its container */
+    margin-right: 0; /* No margin on the right */
   }
-  
+
+  /* Adjust the button styles for full width */
+  .more-details-button,
+  .back-button {
+    width: 100%; /* Full width buttons */
+    margin-bottom: 1em; /* Space after the buttons */
+  }
+
+  /* Ensure the cards and images take up the full width and are centered */
+  .map-cards-group > *:last-child,
+  .image-scroll-container > *:last-child {
+    margin-right: 0; /* No margin for the last child */
+  }
+}

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message, Modal, Header, Input, Segment, CardGroup, Card } from 'semantic-ui-react';
+import {
+  Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message, Modal,
+  Header, Input, Segment, CardGroup, Card
+} from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { collection, getDocs, query, orderBy, doc, updateDoc, GeoPoint } from 'firebase/firestore'; // Ensure these imports are included
+import { collection, getDocs, getDoc, query, orderBy, doc, updateDoc, GeoPoint, limit, where } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import '../Profile.css';
 import Images from '../assets/images/IMG_0598.WEBP';
@@ -15,28 +18,37 @@ const DuckProfile = () => {
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
   const [isCodeIncorrect, setIsCodeIncorrect] = useState(false);
+  const [duckLocations, setDuckLocations] = useState([]);
+
+  // Fetch the duck's data
+  const fetchDuckData = async () => {
+    const duckRef = doc(db, 'ducks', duckId);
+    const docSnap = await getDoc(duckRef);
+
+    if (docSnap.exists()) {
+      setDuckData(docSnap.data());
+    } else {
+      console.error('No such duck!');
+    }
+  };
+
+  // Fetch the last five locations
+  const fetchLocations = async () => {
+    const locationsQuery = query(
+      collection(db, 'locations'),
+      where('duckId', '==', duckId),
+      orderBy('timestamp', 'desc'),
+      limit(5)
+    );
+    const querySnapshot = await getDocs(locationsQuery);
+    setDuckLocations(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+  };
 
   useEffect(() => {
-    const fetchDuckData = async () => {
-      try {
-        const q = query(collection(db, 'ducks'), orderBy('distance', 'desc'));
-        const querySnapshot = await getDocs(q);
-        const ducks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-        const currentDuckIndex = ducks.findIndex(duck => duck.id === duckId);
-        if (currentDuckIndex !== -1) {
-          setDuckData(ducks[currentDuckIndex]);
-        } else {
-          console.error('No such document!');
-        }
-      } catch (error) {
-        console.error('Error getting document:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDuckData();
+    setLoading(true);
+    Promise.all([fetchDuckData(), fetchLocations()]).then(() => {
+      setLoading(false);
+    });
   }, [duckId]);
 
   const geocodeAndSaveLocation = async (city, state, country) => {
@@ -82,7 +94,7 @@ const DuckProfile = () => {
   const handleClose = () => setOpen(false);
 
   if (loading) {
-    return <Loader active inline='centered' size='massive'>Box...Box...</Loader>;
+    return <Loader active inline='centered' size='massive'>Loading...</Loader>;
   }
 
   if (!duckData) {
@@ -96,6 +108,12 @@ const DuckProfile = () => {
     const { city, state, country } = lastLocation;
     return [city, state, country].filter(Boolean).join(', ');
   };
+
+  console.log('Duck Locations:', duckLocations);
+
+  const mapCards = duckLocations.map((location, index) => (
+    <MapCard key={location.id || index} location={location} />
+  ));
 
   return (
     <>
@@ -132,15 +150,16 @@ const DuckProfile = () => {
         </CardGroup>
 
         {/* Horizontal scroll for maps and images */}
+        
         <Grid.Row centered>
-          {/* Maps placeholder */}
-          <Card style={{ marginTop: '20px' }}>
+          <Card style={{ overflowX: 'auto', whiteSpace: 'nowrap', display: 'flex' }}>
             <Header textAlign='center' style={{ paddingTop: '20px' }}>Maps</Header>
             <div className="map-cards-group">
-              <MapCard duckId={duckId} />
-              {/* ... other images or components */}
+              {mapCards}
             </div>
           </Card>
+
+
           <Card style={{ marginBottom: '50px' }}>
             <Header textAlign='center' style={{ paddingTop: '20px' }}>User Images</Header>
             <div className="image-scroll-container">
