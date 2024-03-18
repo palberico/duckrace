@@ -20,35 +20,35 @@ const DuckProfile = () => {
   const [isCodeIncorrect, setIsCodeIncorrect] = useState(false);
   const [duckLocations, setDuckLocations] = useState([]);
 
-  // Fetch the duck's data
-  const fetchDuckData = async () => {
-    const duckRef = doc(db, 'ducks', duckId);
-    const docSnap = await getDoc(duckRef);
-
-    if (docSnap.exists()) {
-      setDuckData(docSnap.data());
-    } else {
-      console.error('No such duck!');
-    }
-  };
-
-  // Fetch the last five locations
-  const fetchLocations = async () => {
-    const locationsQuery = query(
-      collection(db, 'locations'),
-      where('duckId', '==', duckId),
-      orderBy('timestamp', 'desc'),
-      limit(5)
-    );
-    const querySnapshot = await getDocs(locationsQuery);
-    setDuckLocations(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-  };
-
   useEffect(() => {
+    const fetchDuckData = async () => {
+      const duckRef = doc(db, 'ducks', duckId);
+      const docSnap = await getDoc(duckRef);
+
+      if (docSnap.exists()) {
+        setDuckData(docSnap.data());
+      } else {
+        console.error('No such duck!');
+      }
+    };
+
+    const fetchLocations = async () => {
+      const locationsQuery = query(
+        collection(db, 'locations'),
+        where('duckId', '==', duckId),
+        orderBy('timestamp', 'desc'),
+        limit(5)
+      );
+      const querySnapshot = await getDocs(locationsQuery);
+      setDuckLocations(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    };
+
     setLoading(true);
     Promise.all([fetchDuckData(), fetchLocations()]).then(() => {
       setLoading(false);
     });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duckId]);
 
   const geocodeAndSaveLocation = async (city, state, country) => {
