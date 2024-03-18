@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
-import { Button, Form, Input, Message, Segment, Header, Dropdown, Loader } from 'semantic-ui-react';
-import { addDoc, collection, GeoPoint, query, where, getDocs, deleteDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { 
+  Button, 
+  Form, 
+  Input, 
+  Message, 
+  Segment, 
+  Header, 
+  Dropdown, 
+  Loader } from 'semantic-ui-react';
+import { 
+  addDoc, 
+  collection, 
+  GeoPoint, 
+  query, 
+  where, 
+  getDocs,  
+  writeBatch, 
+  doc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // Make sure axios is installed and imported
 import { db } from '../firebase/Config';
@@ -114,14 +130,33 @@ const DuckAdmin = () => {
     setStartLocation({ city: '', state: '', country: '' });
   };
 
+  const deleteDuckAndLocations = async (duckId) => {
+    const batch = writeBatch(db);
   
+    // Delete related locations
+    const locationsQuery = query(collection(db, 'locations'), where('duckId', '==', duckId));
+    const locationsSnapshot = await getDocs(locationsQuery);
+    locationsSnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+  
+    // Delete the duck
+    const duckRef = doc(db, 'ducks', duckId);
+    batch.delete(duckRef);
+  
+    // Commit the batch
+    await batch.commit();
+    console.log(`Deleted duck and ${locationsSnapshot.size} location(s).`);
+  };
+
 
 //Delete Logic below:
 
 const handleDeleteDuck = async () => {
   if (!deleteInput.trim()) return;
 
-  const storage = getStorage();
+  setIsLoading(true);
+  setError('');
 
   try {
     const ducksRef = collection(db, 'ducks');
@@ -135,38 +170,19 @@ const handleDeleteDuck = async () => {
 
     const docsToDelete = [...nameSnapshot.docs, ...codeSnapshot.docs];
 
-    for (const doc of docsToDelete) {
-      const duckData = doc.data();
-
-      if (duckData.imageUrl) {
-        // Decode the entire URL
-        const decodedUrl = decodeURIComponent(duckData.imageUrl);
-
-        // Extract the path part of the URL
-        const parts = decodedUrl.split('/o/');
-        const pathAndToken = parts[1].split('?');
-        const imagePath = pathAndToken[0]; // This is the path Firebase Storage needs
-
-        // Create a reference to the file to delete
-        const imageRef = ref(storage, imagePath);
-
-        // Delete the file
-        await deleteObject(imageRef);
-      }
-
-      // Delete the Firestore document
-      await deleteDoc(doc.ref);
+    for (const docToDelete of docsToDelete) {
+      await deleteDuckAndLocations(docToDelete.id);
     }
 
-    console.log(`${docsToDelete.length} duck(s) deleted.`);
+    console.log(`${docsToDelete.length} duck(s) and their locations deleted.`);
   } catch (error) {
-    console.error("Error deleting duck:", error);
-    setError(`Error deleting duck: ${error.message}`);
+    console.error("Error deleting ducks and locations:", error);
+    setError(`Error deleting ducks and locations: ${error.message}`);
   }
 
+  setIsLoading(false);
   setDeleteInput(''); // Clear the delete input field
 };
-
 const validateBioWordCount = (text) => {
   const words = text.trim().split(/\s+/); // Split based on one or more whitespace characters
   return words.length <= 100;
