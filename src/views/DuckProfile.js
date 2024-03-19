@@ -7,8 +7,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { collection, getDocs, getDoc, query, orderBy, doc, updateDoc, GeoPoint, limit, where } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import '../Profile.css';
-import Images from '../assets/images/IMG_0598.WEBP';
+// import Images from '../assets/images/IMG_0598.WEBP';
 import MapCard from '../components/MapCard';
+import UserImageCard from '../components/UserImageCard';
 
 const DuckProfile = () => {
   const { duckId } = useParams();
@@ -19,8 +20,25 @@ const DuckProfile = () => {
   const [code, setCode] = useState('');
   const [isCodeIncorrect, setIsCodeIncorrect] = useState(false);
   const [duckLocations, setDuckLocations] = useState([]);
+  const [userImages, setUserImages] = useState([]);
 
   useEffect(() => {
+
+    const fetchUserImages = async () => {
+      const imagesQuery = query(
+        collection(db, 'photos'),
+        where('duckId', '==', duckId),
+        where('approved', '==', true),
+        limit(5)
+      );
+      const querySnapshot = await getDocs(imagesQuery);
+      setUserImages(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    };
+
+    fetchUserImages();
+  
+
+
     const fetchDuckData = async () => {
       const duckRef = doc(db, 'ducks', duckId);
       const docSnap = await getDoc(duckRef);
@@ -171,16 +189,18 @@ const DuckProfile = () => {
 </div>
 
 
-          <Card style={{ marginBottom: '50px' }}>
-            <Header textAlign='center' style={{ paddingTop: '20px' }}>User Images</Header>
-            <div className="image-scroll-container">
-              {/* Images placeholder */}
-              <Image src={Images} />
-              <Image src={Images} />
-              <Image src={Images} />
-              {/* ... other images */}
-            </div>
-          </Card>
+        <div className="map-cards-container">
+          {duckLocations.map((location, index) => (
+            <MapCard key={location.id || index} location={location} />
+          ))}
+        </div>
+
+        {/* User images container */}
+        <div className="image-cards-container" style={{ display: 'flex', overflowX: 'auto', padding: '1rem 0' }}>
+          {userImages.map((image) => (
+            <UserImageCard key={image.id} imageUrl={image.photoURL} caption={image.caption} />
+          ))}
+        </div>
   
       </Grid>
 

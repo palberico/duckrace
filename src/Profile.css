@@ -66,6 +66,23 @@
   height: 250px;
 }
 
+
+/* Styles for the scrollable image cards container */
+.image-cards-container {
+  display: flex;
+  overflow-x: auto;
+  gap: .5rem;
+  padding: 1em 0;
+}
+
+.image-card {
+  flex: 0 0 auto;
+  width: 300px; /* Adjust as needed */
+}
+
+
+
+
 /* Styles for new ducks buttons */
 .new-duck-buttons {
   position: relative;

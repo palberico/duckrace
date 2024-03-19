@@ -86,6 +86,11 @@ const DuckForm = () => {
         setIsLoading(false);
         return;
       }
+      await addDoc(collection(db, 'photos'), {
+        duckId,
+        photoURL: uploadedImageUrl,
+        approved: false
+      });
       // End of new code for file upload
     }
   

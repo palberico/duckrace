@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Button, 
   Form, 
@@ -7,6 +7,9 @@ import {
   Segment, 
   Header, 
   Dropdown, 
+  Table,
+  Image,
+  Icon,
   Loader } from 'semantic-ui-react';
 import { 
   addDoc, 
@@ -16,8 +19,10 @@ import {
   where, 
   getDocs,  
   writeBatch, 
+  updateDoc,
+  deleteDoc,
   doc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; // Make sure axios is installed and imported
 import { db } from '../firebase/Config';
@@ -35,6 +40,44 @@ const DuckAdmin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
+  const [unapprovedPhotos, setUnapprovedPhotos] = useState([]);
+  const [photosLoading, setPhotosLoading] = useState(false);
+
+
+  useEffect(() => {
+    fetchUnapprovedPhotos();
+  }, []);
+
+  const fetchUnapprovedPhotos = async () => {
+    setPhotosLoading(true);
+    const photosRef = collection(db, 'photos');
+    const q = query(photosRef, where('approved', '==', false));
+    const querySnapshot = await getDocs(q);
+    const photos = [];
+    querySnapshot.forEach((doc) => {
+      photos.push({ id: doc.id, ...doc.data() });
+    });
+    setUnapprovedPhotos(photos);
+    setPhotosLoading(false);
+  };
+
+  const handleApprovePhoto = async (photoId) => {
+    const photoRef = doc(db, 'photos', photoId);
+    await updateDoc(photoRef, { approved: true });
+    fetchUnapprovedPhotos(); // Refresh the list
+  };
+
+  const handleDeletePhoto = async (photoId, photoURL) => {
+    const photoRef = doc(db, 'photos', photoId);
+    await deleteDoc(photoRef);
+
+    // Delete the file from storage
+    const storage = getStorage();
+    const fileRef = ref(storage, photoURL);
+    await deleteObject(fileRef);
+
+    fetchUnapprovedPhotos(); // Refresh the list
+  };
 
   const handleDeleteInputChange = (e) => {
     setDeleteInput(e.target.value);
@@ -284,6 +327,42 @@ const validateBioWordCount = (text) => {
     <Button type='submit' color='red'>Gone Foreves</Button>
   </Form>
 </Segment>
+
+{/* Photo approval section */}
+<Segment loading={photosLoading}>
+        <Header as='h3'>Approve Photos</Header>
+        <Table compact celled>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Photo</Table.HeaderCell>
+              <Table.HeaderCell>Approve</Table.HeaderCell>
+              <Table.HeaderCell>Delete</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
+
+          <Table.Body>
+            {unapprovedPhotos.map((photo) => (
+              <Table.Row key={photo.id}>
+                <Table.Cell><Image src={photo.photoURL} size='small' /></Table.Cell>
+                <Table.Cell>
+                  <Button icon color='green' onClick={() => handleApprovePhoto(photo.id)}>
+                    <Icon name='checkmark' />
+                  </Button>
+                </Table.Cell>
+                <Table.Cell>
+                  <Button icon color='red' onClick={() => handleDeletePhoto(photo.id, photo.photoURL)}>
+                    <Icon name='delete' />
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </Segment>
+
+
+
+
 
     </Segment>
     </>
