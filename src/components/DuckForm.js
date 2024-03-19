@@ -138,6 +138,15 @@ const DuckForm = () => {
           timestamp: new Date(),
         });
       }
+
+      const addedMiles = Math.round(getDistanceFromLatLonInKm(
+        startLocation.coordinates.latitude,
+        startLocation.coordinates.longitude,
+        newLocationCoordinates.latitude,
+        newLocationCoordinates.longitude
+      ) * 0.621371);
+
+    alert(`Thanks for logging miles for ${duckData.name}! You added ${addedMiles} miles to my journey.`);
   
       navigate(`/duck/${duckId}`);
     } catch (error) {
