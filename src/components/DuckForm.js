@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Image, Button, Form, ButtonOr, ButtonGroup, Segment, Dropdown, Loader } from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import axios from 'axios';
 
@@ -17,6 +18,7 @@ const DuckForm = () => {
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [setError] = useState('');
+  const [file, setFile] = useState(null);
 
 
   useEffect(() => {
@@ -63,11 +65,28 @@ const DuckForm = () => {
     setIsLoading(true);
   
     const newLocationCoordinates = await getCoordinates(city, state, country);
-    setIsLoading(false);
   
     if (!newLocationCoordinates) {
       alert('Failed to get geolocation data. Please check the city, state, and country values and try again.');
+      setIsLoading(false);
       return;
+    }
+  
+    let uploadedImageUrl = null;
+    if (file) {
+      // Start of new code for file upload
+      const storage = getStorage();
+      const fileRef = ref(storage, `unapproved_photos/${file.name}-${Date.now()}`);
+      try {
+        const snapshot = await uploadBytes(fileRef, file);
+        uploadedImageUrl = await getDownloadURL(snapshot.ref);
+      } catch (error) {
+        console.error("Error uploading file: ", error);
+        alert("An error occurred while uploading the photo. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+      // End of new code for file upload
     }
   
     try {
@@ -76,16 +95,13 @@ const DuckForm = () => {
   
       if (!duckSnap.exists()) {
         alert('Duck not found in the database.');
+        setIsLoading(false);
         return;
       }
   
-      // Extract the data from the snapshot
       const duckData = duckSnap.data();
-  
-      // Use the current lastLocation as the startLocation for the new leg, or use startLocation if lastLocation doesn't exist
       const startLocation = duckData.lastLocation ?? duckData.startLocation;
   
-      // Calculate the new distance only if startLocation exists
       let newDistance = duckData.distance || 0;
       if (startLocation && startLocation.coordinates) {
         const distanceToAdd = getDistanceFromLatLonInKm(
@@ -97,7 +113,6 @@ const DuckForm = () => {
         newDistance += Math.round(distanceToAdd * 0.621371); // Convert km to miles and round the result
       }
   
-      // Update the duck's lastLocation and total distance in the ducks collection
       await updateDoc(duckRef, {
         lastLocation: {
           city,
@@ -108,17 +123,17 @@ const DuckForm = () => {
         distance: newDistance
       });
   
-      // Add a new document to the locations collection only if startLocation is defined
       if (startLocation && startLocation.coordinates) {
         const locationsRef = collection(db, 'locations');
         await addDoc(locationsRef, {
           duckId,
-          startLocation: startLocation, // This will be the previous lastLocation or startLocation if lastLocation doesn't exist
+          startLocation: startLocation,
           newLocation: {
             city,
             state,
             country,
-            coordinates: newLocationCoordinates
+            coordinates: newLocationCoordinates,
+            imageUrl: uploadedImageUrl // Add the uploaded image URL here
           },
           timestamp: new Date(),
         });
@@ -128,9 +143,11 @@ const DuckForm = () => {
     } catch (error) {
       console.error("Error updating document: ", error);
       alert("An error occurred while updating the location. Please try again.");
-      setIsLoading(false); // Make sure to turn off the loading indicator in case of error
+    } finally {
+      setIsLoading(false); // Ensure loading is stopped in all cases
     }
   };
+  
   
  // Function to calculate the distance between two coordinates in kilometers
 
@@ -192,6 +209,12 @@ function deg2rad(deg) {
                   onChange={(e, { value }) => setCountry(value)}
                 />
               </Form.Field>
+              <Form.Field>
+        <label>Upload a photo (optional)</label>
+        <input type='file' onChange={(e) => setFile(e.target.files[0])} />
+      </Form.Field>
+      {/* Submit button and other parts of the form... */}
+    
               <ButtonGroup>
                 <Button color='orange' type='submit'>Submit</Button>
                 <ButtonOr />
