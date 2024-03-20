@@ -4,6 +4,7 @@ import './index.css';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import App from './App';
+
 // import 'semantic-ui-css/semantic.min.css';
 
 // Correct the marker image paths
