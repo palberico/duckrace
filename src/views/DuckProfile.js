@@ -8,6 +8,7 @@ import { collection, getDocs, getDoc, query, orderBy, doc, updateDoc, GeoPoint, 
 import { db } from '../firebase/Config';
 import '../Profile.css';
 import MapCard from '../components/MapCard';
+import DuckCodeModal from '../components/DuckCodeModal';
 
 
 const DuckProfile = () => {
@@ -168,23 +169,15 @@ const DuckProfile = () => {
 
       </Grid>
 
-      <Modal open={open} onClose={handleClose} size='small'>
-        <Header>Enter {duckData.name}'s Six Digit Code.</Header> 
-        <Modal.Content>
-          <p>To log distances for this duck, please enter its unique code:</p>
-          <Input value={code} onChange={(e) => setCode(e.target.value)} fluid />
-          {isCodeIncorrect && (
-            <Message negative>
-              <Message.Header>Incorrect Code</Message.Header>
-              <p>Please try again.</p>
-            </Message>
-          )}
-        </Modal.Content>
-        <Modal.Actions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button positive onClick={handleCodeSubmit}>Submit</Button>
-        </Modal.Actions>
-      </Modal>
+      <DuckCodeModal
+      open={open}
+      handleClose={handleClose}
+      code={code}
+      setCode={setCode}
+      isCodeIncorrect={isCodeIncorrect}
+      handleCodeSubmit={handleCodeSubmit}
+      duckName={duckData ? duckData.name : ''}
+    />
     </>
   );
 };
