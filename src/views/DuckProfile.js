@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message, Modal,
-  Header, Input, Segment, CardGroup, Card
+  Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message,
+  Header, Segment, CardGroup, Card
 } from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { collection, getDocs, getDoc, query, orderBy, doc, updateDoc, GeoPoint, limit, where } from 'firebase/firestore';
@@ -112,9 +112,7 @@ const DuckProfile = () => {
     return [city, state, country].filter(Boolean).join(', ');
   };
 
-  console.log('Duck Locations:', duckLocations);
-
-  
+  // console.log('Duck Locations:', duckLocations);
 
   return (
     <>
