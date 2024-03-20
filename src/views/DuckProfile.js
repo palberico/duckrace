@@ -19,25 +19,10 @@ const DuckProfile = () => {
   const [code, setCode] = useState('');
   const [isCodeIncorrect, setIsCodeIncorrect] = useState(false);
   const [duckLocations, setDuckLocations] = useState([]);
-  // const [userImages, setUserImages] = useState([]);
+
 
 
   useEffect(() => {
-
-    // const fetchUserImages = async () => {
-    //   const imagesQuery = query(
-    //     collection(db, 'photos'),
-    //     where('duckId', '==', duckId),
-    //     where('approved', '==', true),
-    //     limit(5)
-    //   );
-    //   const querySnapshot = await getDocs(imagesQuery);
-    //   setUserImages(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    // };
-
-    // fetchUserImages();
-  
-
 
     const fetchDuckData = async () => {
       const duckRef = doc(db, 'ducks', duckId);
@@ -66,12 +51,11 @@ const DuckProfile = () => {
       setLoading(false);
     });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duckId]);
 
   const geocodeAndSaveLocation = async (city, state, country) => {
     const address = `${city}, ${state}, ${country}`;
-    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; // Ensure you have defined this environment variable
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY; 
     const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
     try {
@@ -129,12 +113,6 @@ const DuckProfile = () => {
 
   console.log('Duck Locations:', duckLocations);
 
-  // const mapCards = duckLocations.map((location, index) => (
-  //   <div className="map-card-wrapper" key={location.id || index}>
-  //     <MapCard location={location} />
-  //   </div>
-  // ));
-
   
 
   return (
@@ -154,7 +132,6 @@ const DuckProfile = () => {
               <div className={`button-group-container`}>
               <ButtonGroup style={{marginBottom: '10px'}}>
                 <Button color='orange' onClick={handleOpen}>I Found {duckData.name}</Button>
-        {/* <Button className="orange-gray-gradient-button" onClick={handleOpen}>I Found {duckData.name}</Button> */}
                 <ButtonOr />
                 <Link to="/Home">
                 <Button color='grey'>Leaderboard</Button>
@@ -175,7 +152,6 @@ const DuckProfile = () => {
           </Card>
         </CardGroup>
 
-        {/* Horizontal scroll for maps and images */}
         
         <div className="map-cards-container">
   {duckLocations.map((location, index) => (
@@ -190,26 +166,6 @@ const DuckProfile = () => {
   ))}
 </div>
 
-
-        <div>
-          {duckLocations.map((location, index) => (
-            <MapCard key={location.id || index} location={location} />
-          ))}
-        </div>
-
-        {/* User images container */}
-       
-{/* <Slider {...settings}>
-  {userImages.map((image) => (
-    <div key={image.id}>
-      <img src={image.photoURL} alt="User uploaded" style={{ width: "100%", height: "auto" }} />
-    </div>
-  ))}
-</Slider> */}
-
-
-
-  
       </Grid>
 
       <Modal open={open} onClose={handleClose} size='small'>

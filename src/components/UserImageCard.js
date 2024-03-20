@@ -1,3 +1,6 @@
+//Save this file for future use. We may need to take another look
+//at it to get user images working. 
+
 // import React from 'react';
 // import { Card, Image } from 'semantic-ui-react';
 // import '../Profile.css';
