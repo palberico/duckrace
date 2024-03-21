@@ -17,7 +17,7 @@ const DuckForm = () => {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [setError] = useState('');
+  // const [error, setError] = useState('');
   const [file, setFile] = useState(null);
 
 
@@ -50,12 +50,12 @@ const DuckForm = () => {
         console.log(result); // Log the result to debug
         return result;
       } else {
-        setError(response.data.error_message || 'Failed to geocode address');
+        // setError(response.data.error_message || 'Failed to geocode address');
         return null; // Make sure to return null if geocoding fails
       }
 
     } catch (error) {
-      setError(error.message);
+      // setError(error.message);
       return null;
     }
   };
