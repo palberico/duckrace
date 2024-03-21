@@ -8,6 +8,8 @@ import axios from 'axios';
 
 import countryOptions from '../components/data/Countries';
 import stateOptions from '../components/data/States';
+import { getDistanceFromLatLonInKm } from '../components/data/geoUtils';
+
 
 const DuckForm = () => {
   const { duckId } = useParams();
@@ -105,18 +107,18 @@ const DuckForm = () => {
       }
   
       const duckData = duckSnap.data();
-      const startLocation = duckData.lastLocation ?? duckData.startLocation;
-  
-      let newDistance = duckData.distance || 0;
-      if (startLocation && startLocation.coordinates) {
-        const distanceToAdd = getDistanceFromLatLonInKm(
-          startLocation.coordinates.latitude,
-          startLocation.coordinates.longitude,
-          newLocationCoordinates.latitude,
-          newLocationCoordinates.longitude
-        );
-        newDistance += Math.round(distanceToAdd * 0.621371); // Convert km to miles and round the result
-      }
+    const startLocation = duckData.lastLocation ?? duckData.startLocation;
+
+    let newDistance = duckData.distance || 0;
+    if (startLocation && startLocation.coordinates) {
+      const distanceToAdd = getDistanceFromLatLonInKm(
+        startLocation.coordinates.latitude,
+        startLocation.coordinates.longitude,
+        newLocationCoordinates.latitude,
+        newLocationCoordinates.longitude
+      );
+      newDistance += Math.round(distanceToAdd * 0.621371); // Convert km to miles and round the result
+    }
   
       await updateDoc(duckRef, {
         lastLocation: {
@@ -150,37 +152,17 @@ const DuckForm = () => {
         newLocationCoordinates.latitude,
         newLocationCoordinates.longitude
       ) * 0.621371);
-
-    alert(`Thanks for logging miles for ${duckData.name}! You added ${addedMiles} miles to my journey.`);
+  
+      alert(`Thanks for logging miles for ${duckData.name}! You added ${addedMiles} miles to my journey.`);
   
       navigate(`/duck/${duckId}`);
     } catch (error) {
       console.error("Error updating document: ", error);
       alert("An error occurred while updating the location. Please try again.");
     } finally {
-      setIsLoading(false); // Ensure loading is stopped in all cases
+      setIsLoading(false);
     }
   };
-  
-  
- // Function to calculate the distance between two coordinates in kilometers
-
- function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of the earth in kilometers
-  const dLat = deg2rad(lat2 - lat1); // deg2rad below
-  const dLon = deg2rad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c; // Distance in kilometers
-  return distance;
-}
-
-function deg2rad(deg) {
-  return deg * (Math.PI / 180)
-}
 
   return (
     <div style={styles.homeContainer}>
