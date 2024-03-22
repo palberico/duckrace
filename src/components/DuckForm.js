@@ -179,8 +179,20 @@ const DuckForm = () => {
           <Card.Header as='h2'>{duckData.name}</Card.Header>
           <Image src={duckData.imageUrl} wrapped ui={false} />
           <Card.Content>
-            <Segment textAlign='center'>Enter the city, state, and country of where you found {duckData.name}.</Segment>
+            <Segment textAlign='center'>Enter the country, then the city/port, and then the state of where you found {duckData.name}. If this duck was found on a cruise ship, please enter each port your visited.</Segment>
             <Form onSubmit={handleSubmit}>
+            <Form.Field>
+                <label>Country</label>
+                <Dropdown
+                  placeholder='Select Country'
+                  fluid
+                  search
+                  selection
+                  options={countryOptions}
+                  value={country}
+                  onChange={(e, { value }) => setCountry(value)}
+                />
+              </Form.Field>
               <Form.Field>
                 <label>City</label>
                 <input
@@ -199,18 +211,6 @@ const DuckForm = () => {
                   options={stateOptions}
                   value={state}
                   onChange={(e, { value }) => setState(value)}
-                />
-              </Form.Field>
-              <Form.Field>
-                <label>Country</label>
-                <Dropdown
-                  placeholder='Select Country'
-                  fluid
-                  search
-                  selection
-                  options={countryOptions}
-                  value={country}
-                  onChange={(e, { value }) => setCountry(value)}
                 />
               </Form.Field>
               <Form.Field>
