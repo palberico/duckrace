@@ -6,41 +6,48 @@ const MapCard = ({ location }) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    // Initialize the map with options to disable zooming and dragging
+    if (!location.startLocation || !location.newLocation) return;
+
     const map = L.map(mapRef.current, {
-      scrollWheelZoom: false, // Disable zooming with the scroll wheel
-      dragging: false,        // Disable dragging to pan
-      zoomControl: false,     // Disable zoom control buttons
+      scrollWheelZoom: false,
+      dragging: false,
+      zoomControl: false,
     }).setView([0, 0], 1);
 
-    mapRef.current.leafletMap = map;
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+      attribution: '© OpenStreetMap contributors',
     }).addTo(map);
 
-    if (location.startLocation && location.newLocation && location.startLocation.coordinates && location.newLocation.coordinates) {
-      const startLatLng = [
-        location.startLocation.coordinates.latitude,
-        location.startLocation.coordinates.longitude,
-      ];
-      const endLatLng = [
-        location.newLocation.coordinates.latitude,
-        location.newLocation.coordinates.longitude,
-      ];
+    const startLatLng = [
+      location.startLocation.coordinates.latitude,
+      location.startLocation.coordinates.longitude,
+    ];
+    const endLatLng = [
+      location.newLocation.coordinates.latitude,
+      location.newLocation.coordinates.longitude,
+    ];
 
-      L.marker(startLatLng).addTo(map);
-      L.marker(endLatLng).addTo(map);
+    // Create start marker with popup
+    const startMarker = L.marker(startLatLng).addTo(map);
+    startMarker.bindPopup(
+      `<b>Start Location</b><br>${location.startLocation.city}, ${location.startLocation.state}`
+    );
 
-      const polyline = L.polyline([startLatLng, endLatLng], { color: 'red' }).addTo(map);
-      map.fitBounds(polyline.getBounds());
-    }
+    // Create end marker with popup
+    const endMarker = L.marker(endLatLng).addTo(map);
+    endMarker.bindPopup(
+      `<b>New Location</b><br>${location.newLocation.city}, ${location.newLocation.state}`
+    );
+
+    // Add a polyline between start and end markers
+    const polyline = L.polyline([startLatLng, endLatLng], { color: 'red' }).addTo(map);
+
+    // Fit the map to the polyline's bounds
+    map.fitBounds(polyline.getBounds());
 
     // Cleanup function to remove the map when the component unmounts
-    return () => {
-      map.remove();
-    };
-  }, [location]); // Effect runs when location changes
+    return () => map.remove();
+  }, [location]); // Run the effect when 'location' changes
 
   return <div ref={mapRef} style={{ height: '300px', width: '100%' }} />;
 };
