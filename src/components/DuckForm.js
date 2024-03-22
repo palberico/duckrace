@@ -22,6 +22,7 @@ const DuckForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   // const [error, setError] = useState('');
   const [file, setFile] = useState(null);
+  const [showStateDropdown, setShowStateDropdown] = useState(false);
 
 
   useEffect(() => {
@@ -165,6 +166,12 @@ const DuckForm = () => {
     }
   };
 
+  const handleCountryChange = (e, { value }) => {
+    setCountry(value);
+    // Show the state dropdown only if the country is the United States
+    setShowStateDropdown(value === 'USA');
+  };
+
   return (
 
     <div className="header">
@@ -181,7 +188,7 @@ const DuckForm = () => {
           <Card.Content>
             <Segment textAlign='center'>Enter the country, then the city/port, and then the state of where you found {duckData.name}. If this duck was found on a cruise ship, please enter each port your visited.</Segment>
             <Form onSubmit={handleSubmit}>
-            <Form.Field>
+              <Form.Field>
                 <label>Country</label>
                 <Dropdown
                   placeholder='Select Country'
@@ -190,7 +197,7 @@ const DuckForm = () => {
                   selection
                   options={countryOptions}
                   value={country}
-                  onChange={(e, { value }) => setCountry(value)}
+                  onChange={handleCountryChange}
                 />
               </Form.Field>
               <Form.Field>
@@ -199,20 +206,23 @@ const DuckForm = () => {
                   placeholder='City'
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                />
+                  disabled={!country} // Disable city input if no country is selected
+                  />
               </Form.Field>
-              <Form.Field>
-                <label>State</label>
-                <Dropdown
-                  placeholder='Select State'
-                  fluid
-                  search
-                  selection
-                  options={stateOptions}
-                  value={state}
-                  onChange={(e, { value }) => setState(value)}
-                />
-              </Form.Field>
+                  {showStateDropdown && (
+                    <Form.Field>
+                      <label>State</label>
+                      <Dropdown
+                        placeholder='Select State'
+                        fluid
+                        search
+                        selection
+                        options={stateOptions}
+                        value={state}
+                        onChange={(e, { value }) => setState(value)}
+                      />
+                    </Form.Field>
+                  )}
               <Form.Field>
         <label>Upload a photo (optional)</label>
         <input type='file' onChange={(e) => setFile(e.target.files[0])} />
