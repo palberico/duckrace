@@ -116,16 +116,22 @@ const DuckProfile = () => {
         </CardGroup>
 
         <div className="map-cards-container">
-          {duckLocations.map((location, index) => (
-            <div key={location.id || index} className="map-card">
-              <Card>
-                <Card.Content>
-                  <Card.Header>Maps</Card.Header>
-                </Card.Content>
-                <MapCard location={location} />
-              </Card>
-            </div>
-          ))}
+          {duckLocations.map((location, index) => {
+            const headerTitle = location.startLocation && location.newLocation
+              ? `${location.startLocation.city}, ${location.startLocation.state} - ${location.newLocation.city}, ${location.newLocation.state}`
+              : "Location Information Unavailable";
+
+            return (
+              <div key={location.id || index} className="map-card">
+                <Card>
+                  <Card.Content>
+                    <Card.Description>{headerTitle}</Card.Description>
+                  </Card.Content>
+                  <MapCard location={location} />
+                </Card>
+              </div>
+            );
+          })}
         </div>
       </Grid>
 
