@@ -201,7 +201,7 @@ const DuckForm = () => {
                 />
               </Form.Field>
               <Form.Field>
-                <label>City</label>
+                <label>City or Port</label>
                 <input
                   placeholder='City'
                   value={city}
