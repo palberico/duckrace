@@ -12,6 +12,8 @@ import DuckCodeModal from '../components/DuckCodeModal';
 import MapCard from '../components/MapCard';
 import { db } from '../firebase/Config';
 import '../Profile.css';
+import '../App.css';
+import logo from '../assets/images/Logo.png';
 
 const DuckProfile = () => {
   const { duckId } = useParams();
@@ -79,6 +81,12 @@ const DuckProfile = () => {
 
   return (
     <>
+     <div className="header">
+        <div className="headerLogo">
+          <Link to="/Home">
+           <Image src={logo} size='small' />
+          </Link>
+        </div>
       <Grid container stackable>
         <CardGroup centered>
           <Card className="main-duck-card" style={{ marginTop: '50px' }}>
@@ -130,6 +138,7 @@ const DuckProfile = () => {
         handleCodeSubmit={handleCodeSubmit}
         duckName={duckData ? duckData.name : ''}
       />
+      </div>
     </>
   );
 };
