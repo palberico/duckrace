@@ -5,6 +5,7 @@ import { db } from '../firebase/Config';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import axios from 'axios';
+import logo from '../assets/images/Logo.png'
 
 import countryOptions from '../components/data/Countries';
 import stateOptions from '../components/data/States';
@@ -165,6 +166,13 @@ const DuckForm = () => {
   };
 
   return (
+
+    <div className="header">
+        <div className="headerLogo">
+          <Link to="/Home">
+           <Image src={logo} size='small' />
+          </Link>
+        </div>
     <div style={styles.homeContainer}>
       {isLoading ? <Loader active inline='centered' /> : (
         <Card>
@@ -212,10 +220,10 @@ const DuckForm = () => {
       {/* Submit button and other parts of the form... */}
     
               <ButtonGroup>
-                <Button color='orange' type='submit'>Submit</Button>
+                <Button color='orange' type='submit'>Submit Location</Button>
                 <ButtonOr />
                 <Link to="/Home">
-                  <Button color='grey'>Back</Button>
+                  <Button color='grey'>Leaderboard</Button>
                 </Link>
               </ButtonGroup>
             </Form>
@@ -223,6 +231,7 @@ const DuckForm = () => {
           <div style={styles.checkerboardFooter}></div>
         </Card>
       )}
+    </div>
     </div>
   );
 };
