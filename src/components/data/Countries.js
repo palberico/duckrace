@@ -1,4 +1,4 @@
-// data/Countries.js
+// add new countries
 
 const countryOptions = [
     { key: 'us', value: 'USA', text: 'United States' },
