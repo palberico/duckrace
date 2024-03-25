@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Button, Form, ButtonOr, ButtonGroup, Segment, Dropdown, Loader } from 'semantic-ui-react';
+import {
+  Card,
+  Image,
+  Button,
+  Form,
+  ButtonOr,
+  ButtonGroup,
+  Segment,
+  Dropdown,
+  Loader,
+  Checkbox
+} from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import axios from 'axios';
-import logo from '../assets/images/Logo.png'
+import logo from '../assets/images/Logo.png';
+import StandardModal from '../components/StandardModal';
+import CruiseModal from '../components/CruiseModal';
 
 import countryOptions from '../components/data/Countries';
 import stateOptions from '../components/data/States';
 import { getDistanceFromLatLonInKm } from '../components/data/geoUtils';
-
 
 const DuckForm = () => {
   const { duckId } = useParams();
@@ -20,10 +32,12 @@ const DuckForm = () => {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState('');
   const [file, setFile] = useState(null);
   const [showStateDropdown, setShowStateDropdown] = useState(false);
-
+  const [isOnCruise, setIsOnCruise] = useState(false);
+  const [showStandardModal, setShowStandardModal] = useState(false);
+  const [showCruiseModal, setShowCruiseModal] = useState(false);
+  const [addedMiles, setAddedMiles] = useState(0);
 
   useEffect(() => {
     const fetchDuckData = async () => {
@@ -31,8 +45,6 @@ const DuckForm = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setDuckData(docSnap.data());
-      } else {
-        console.log('No such document!');
       }
     };
 
@@ -45,47 +57,44 @@ const DuckForm = () => {
 
     try {
       const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`);
-      console.log(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
-      setIsLoading(false); // Stop loading
-      
+      setIsLoading(false);
+
       if (response.data.status === 'OK' && response.data.results.length > 0) {
         const { lat, lng } = response.data.results[0].geometry.location;
-        const result = { latitude: lat, longitude: lng };
-        console.log(result); // Log the result to debug
-        return result;
+        return { latitude: lat, longitude: lng };
       } else {
-        // setError(response.data.error_message || 'Failed to geocode address');
-        return null; // Make sure to return null if geocoding fails
+        return null;
       }
-
     } catch (error) {
-      // setError(error.message);
       return null;
     }
+  };
+
+  const resetFormFields = () => {
+    setCity('');
+    setState('');
+    setCountry('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-  
     const newLocationCoordinates = await getCoordinates(city, state, country);
-  
+
     if (!newLocationCoordinates) {
       alert('Failed to get geolocation data. Please check the city, state, and country values and try again.');
       setIsLoading(false);
       return;
     }
-  
+
     let uploadedImageUrl = null;
     if (file) {
-      // Start of new code for file upload
       const storage = getStorage();
       const fileRef = ref(storage, `unapproved_photos/${file.name}-${Date.now()}`);
       try {
         const snapshot = await uploadBytes(fileRef, file);
         uploadedImageUrl = await getDownloadURL(snapshot.ref);
       } catch (error) {
-        console.error("Error uploading file: ", error);
         alert("An error occurred while uploading the photo. Please try again.");
         setIsLoading(false);
         return;
@@ -95,33 +104,34 @@ const DuckForm = () => {
         photoURL: uploadedImageUrl,
         approved: false
       });
-      // End of new code for file upload
     }
-  
+
     try {
       const duckRef = doc(db, 'ducks', duckId);
       const duckSnap = await getDoc(duckRef);
-  
+
       if (!duckSnap.exists()) {
         alert('Duck not found in the database.');
         setIsLoading(false);
         return;
       }
-  
-      const duckData = duckSnap.data();
-    const startLocation = duckData.lastLocation ?? duckData.startLocation;
 
-    let newDistance = duckData.distance || 0;
-    if (startLocation && startLocation.coordinates) {
-      const distanceToAdd = getDistanceFromLatLonInKm(
-        startLocation.coordinates.latitude,
-        startLocation.coordinates.longitude,
-        newLocationCoordinates.latitude,
-        newLocationCoordinates.longitude
-      );
-      newDistance += Math.round(distanceToAdd * 0.621371); // Convert km to miles and round the result
-    }
-  
+      const duckData = duckSnap.data();
+      const startLocation = duckData.lastLocation ?? duckData.startLocation;
+
+      let newDistance = duckData.distance || 0;
+      if (startLocation && startLocation.coordinates) {
+        const distanceToAdd = getDistanceFromLatLonInKm(
+          startLocation.coordinates.latitude,
+          startLocation.coordinates.longitude,
+          newLocationCoordinates.latitude,
+          newLocationCoordinates.longitude
+        );
+        newDistance += Math.round(distanceToAdd * 0.621371);
+        const addedMiles = Math.round(distanceToAdd * 0.621371);
+        setAddedMiles(addedMiles);
+      }
+
       await updateDoc(duckRef, {
         lastLocation: {
           city,
@@ -131,7 +141,7 @@ const DuckForm = () => {
         },
         distance: newDistance
       });
-  
+
       if (startLocation && startLocation.coordinates) {
         const locationsRef = collection(db, 'locations');
         await addDoc(locationsRef, {
@@ -142,106 +152,133 @@ const DuckForm = () => {
             state,
             country,
             coordinates: newLocationCoordinates,
-            imageUrl: uploadedImageUrl // Add the uploaded image URL here
+            imageUrl: uploadedImageUrl
           },
           timestamp: new Date(),
         });
       }
 
-      const addedMiles = Math.round(getDistanceFromLatLonInKm(
-        startLocation.coordinates.latitude,
-        startLocation.coordinates.longitude,
-        newLocationCoordinates.latitude,
-        newLocationCoordinates.longitude
-      ) * 0.621371);
-  
-      alert(`Thanks for logging miles for ${duckData.name}! You added ${addedMiles} miles to my journey.`);
-  
-      navigate(`/duck/${duckId}`);
+      if (isOnCruise) {
+        setShowCruiseModal(true);
+        setShowStandardModal(false);
+      } else {
+        setShowStandardModal(true);
+        setShowCruiseModal(false);
+      }
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error updating document: ", error);
       alert("An error occurred while updating the location. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleCountryChange = (e, { value }) => {
     setCountry(value);
-    // Show the state dropdown only if the country is the United States
     setShowStateDropdown(value === 'USA');
   };
 
   return (
-
     <div className="header">
-        <div className="headerLogo">
-          <Link to="/Home">
-           <Image src={logo} size='small' />
-          </Link>
-        </div>
-    <div style={styles.homeContainer}>
-      {isLoading ? <Loader active inline='centered' /> : (
-        <Card>
-          <Card.Header as='h2'>{duckData.name}</Card.Header>
-          <Image src={duckData.imageUrl} wrapped ui={false} />
-          <Card.Content>
-            <Segment textAlign='center'>Enter the country, then the city/port, and then the state of where you found {duckData.name}. If this duck was found on a cruise ship, please enter each port your visited.</Segment>
-            <Form onSubmit={handleSubmit}>
-              <Form.Field>
-                <label>Country</label>
-                <Dropdown
-                  placeholder='Select Country'
-                  fluid
-                  search
-                  selection
-                  options={countryOptions}
-                  value={country}
-                  onChange={handleCountryChange}
-                />
-              </Form.Field>
-              <Form.Field>
-                <label>City or Port</label>
-                <input
-                  placeholder='City'
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  disabled={!country} // Disable city input if no country is selected
+      <div className="headerLogo">
+        <Link to="/Home">
+          <Image src={logo} size='small' />
+        </Link>
+      </div>
+      <div style={styles.homeContainer}>
+        {isLoading ? (
+          <Loader active inline='centered' />
+        ) : (
+          <Card>
+            <Card.Header as='h2'>{duckData.name}</Card.Header>
+            <Image src={duckData.imageUrl} wrapped ui={false} />
+            <Card.Content>
+              <Segment textAlign='center'>
+                Enter the country, then the city/port, and then the state of where you found {duckData.name}.
+                If this duck was found on a cruise ship, please enter each port you visited.
+              </Segment>
+              <Form onSubmit={handleSubmit}>
+                <Form.Field>
+                  <Checkbox
+                    label="Found on a cruise ship?"
+                    checked={isOnCruise}
+                    onChange={(e, { checked }) => setIsOnCruise(checked)}
                   />
-              </Form.Field>
-                  {showStateDropdown && (
-                    <Form.Field>
-                      <label>State</label>
-                      <Dropdown
-                        placeholder='Select State'
-                        fluid
-                        search
-                        selection
-                        options={stateOptions}
-                        value={state}
-                        onChange={(e, { value }) => setState(value)}
-                      />
-                    </Form.Field>
-                  )}
-              <Form.Field>
-        <label>Upload a photo (optional)</label>
-        <input type='file' onChange={(e) => setFile(e.target.files[0])} />
-      </Form.Field>
-      {/* Submit button and other parts of the form... */}
-    
-              <ButtonGroup>
-                <Button color='orange' type='submit'>Submit Location</Button>
-                <ButtonOr />
-                <Link to="/Home">
-                  <Button color='grey'>Leaderboard</Button>
-                </Link>
-              </ButtonGroup>
-            </Form>
-          </Card.Content>
-          <div style={styles.checkerboardFooter}></div>
-        </Card>
-      )}
-    </div>
+                </Form.Field>
+                <Form.Field>
+                  <label>Country</label>
+                  <Dropdown
+                    placeholder="Select Country"
+                    fluid
+                    search
+                    selection
+                    options={countryOptions}
+                    value={country}
+                    onChange={handleCountryChange}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <label>City or Port</label>
+                  <input
+                    placeholder="City"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    disabled={!country}
+                  />
+                </Form.Field>
+                {showStateDropdown && (
+                  <Form.Field>
+                    <label>State</label>
+                    <Dropdown
+                      placeholder="Select State"
+                      fluid
+                      search
+                      selection
+                      options={stateOptions}
+                      value={state}
+                      onChange={(e, { value }) => setState(value)}
+                    />
+                  </Form.Field>
+                )}
+                <Form.Field>
+                  <label>Upload a photo (optional)</label>
+                  <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+                </Form.Field>
+                <ButtonGroup>
+                  <Button color="orange" type="submit">Submit Location</Button>
+                  <ButtonOr />
+                  <Link to="/Home">
+                    <Button color="grey">Leaderboard</Button>
+                  </Link>
+                </ButtonGroup>
+              </Form>
+            </Card.Content>
+            <div style={styles.checkerboardFooter}></div>
+          </Card>
+        )}
+      </div>
+      <StandardModal
+        open={showStandardModal}
+        onClose={() => {
+          setShowStandardModal(false);
+          navigate(`/duck/${duckId}`);
+        }}
+        duckName={duckData.name}
+        addedMiles={addedMiles}
+      />
+      <CruiseModal
+        open={showCruiseModal}
+        onClose={() => setShowCruiseModal(false)}
+        onAddAnotherPort={() => {
+          resetFormFields();
+          setShowCruiseModal(false);
+        }}
+        onFinish={() => {
+          setShowCruiseModal(false);
+          navigate(`/duck/${duckId}`);
+        }}
+        duckName={duckData.name}
+        addedMiles={addedMiles}
+      />
     </div>
   );
 };
@@ -256,13 +293,6 @@ const styles = {
     alignItems: 'center',
     marginTop: '50px',
     marginBottom: '50px',
-  },
-  lastLocation: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: '10px',
   },
   checkerboardFooter: {
     width: '100%',
