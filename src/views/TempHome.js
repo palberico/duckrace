@@ -45,31 +45,28 @@ const TempHome = () => {
 
     return (
         <div style={styles.homeContainer}>
-           
-                <Card>
-                <Button inverted onClick={handleAdminClick} style={styles.checkerboardFooter}></Button>
-                    <Image src={raceStartImage} wrapped ui={false} />
-                   
+            <Card>
+                <Button inverted onClick={handleAdminClick} style={styles.checkerboardButton} />
+                <Image src={raceStartImage} wrapped ui={false} />
+                <Card.Content>
+                    <Card.Header style={{ textAlign: 'center' }}>Welcome to raceducks.com!</Card.Header>
                     <Card.Content>
-                        <Card.Header style={{ textAlign: 'center' }}>Welcome to raceducks.com!</Card.Header>
-                        <Card.Content>
-                            <p>Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
-                            <p>Here's how it works: a duck is hidden at a secret location, and it's up to you to find it! Once you've discovered our feathered friend, log the location to share your part of the journey. But the fun doesn't stop there - it's then your turn to re-hide the duck for the next intrepid explorer.</p>
-                            <p>Join the race, track the ducks, and let's see how far they can go!</p>
-                        </Card.Content>
-                        <ButtonGroup style={{ marginTop: '20px' }}>
-                    <Link to="/Home">
-                    <Button color="orange" >Log My Duck</Button>
-                    </Link>
-                    <ButtonOr />
-                    <Link to="/Home">
-                      <Button color="grey">Leaderboard</Button>
-                    </Link>
-                  </ButtonGroup>
+                        <p>You found a racing duck! Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
+                        <p>Here's how it works: a duck is hidden at a secret location, and it's up to you to find it! Once you've discovered our feathered friend, log the location to share your part of the journey. But the fun doesn't stop there - it's then your turn to re-hide the duck for the next intrepid explorer.</p>
+                        <p>Join the race, track the ducks, and let's see how far they can go!</p>
                     </Card.Content>
-                   
-
-                    <div style={styles.checkerboardFooter}></div>
+                    <ButtonGroup style={{ marginTop: '20px' }}>
+                        <Link to="/Home">
+                            <Button color="orange">Log My Duck</Button>
+                        </Link>
+                        <ButtonOr />
+                        <Link to="/Home">
+                            <Button color="grey">Leaderboard</Button>
+                        </Link>
+                    </ButtonGroup>
+                </Card.Content>
+                <div style={styles.checkerboardFooter}></div>
+            </Card>
 
             <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <Modal.Header>Admin Login</Modal.Header>
@@ -88,9 +85,6 @@ const TempHome = () => {
                     </Form>
                 </Modal.Content>
             </Modal>
-
-                   
-                </Card>
         </div>
     );
 };
@@ -100,7 +94,7 @@ export default TempHome;
 const styles = {
     homeContainer: {
         display: 'flex',
-        flexDirection: 'column', // Stack children vertically
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
@@ -112,17 +106,28 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh', // Use full viewport height
+        height: '100vh',
     },
     checkerboardFooter: {
-        width: '100%', // Full width
-        height: '50px', // Footer height
-        backgroundSize: '20px 20px', // Size of each square
+        width: '100%',
+        height: '50px',
+        backgroundSize: '20px 20px',
         backgroundImage: 
             `linear-gradient(45deg, #000 25%, transparent 25%), 
-            linear-gradient(-45deg, #000 25%, transparent 25%), 
-            linear-gradient(45deg, transparent 75%, #000 75%), 
-            linear-gradient(-45deg, transparent 75%, #000 75%)`,
-        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px', // Positioning the gradients
+             linear-gradient(-45deg, #000 25%, transparent 25%), 
+             linear-gradient(45deg, transparent 75%, #000 75%), 
+             linear-gradient(-45deg, transparent 75%, #000 75%)`,
+        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+    },
+    checkerboardButton: {
+        width: '100%',
+        height: '50px',
+        backgroundSize: '20px 20px',
+        backgroundImage: 
+            `linear-gradient(45deg, #000 25%, transparent 25%), 
+             linear-gradient(-45deg, #000 25%, transparent 25%), 
+             linear-gradient(45deg, transparent 75%, #000 75%), 
+             linear-gradient(-45deg, transparent 75%, #000 75%)`,
+        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
     },
 };
