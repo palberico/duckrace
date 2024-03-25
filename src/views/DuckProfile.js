@@ -15,6 +15,8 @@ import '../Profile.css';
 import '../App.css';
 import logo from '../assets/images/Logo.png';
 
+import countryOptions from '../components/data/Countries';
+
 const DuckProfile = () => {
   const { duckId } = useParams();
   const navigate = useNavigate();
@@ -79,6 +81,11 @@ const DuckProfile = () => {
     return [lastLocation.city, lastLocation.state, lastLocation.country].filter(Boolean).join(', ');
   };
 
+  const getCountryFullName = (countryCode) => {
+    const country = countryOptions.find(option => option.key === countryCode.toLowerCase());
+    return country ? country.text : countryCode;
+  };
+
   return (
     <>
      <div className="header">
@@ -121,24 +128,28 @@ const DuckProfile = () => {
 
             return (
               <div key={location.id || index} className="map-card">
-                <Card>
+                <Card> 
                   <Card.Content>
-          
-                  {isLocationAvailable ? (
-                    <>
-                      <Card.Meta>
-                        Start Location: {location.startLocation.city}, {location.startLocation.state}
-                      </Card.Meta>
-                      <Card.Meta>
-                        End Location: {location.newLocation.city}, {location.newLocation.state}
-                      </Card.Meta>
-                    </>
-                  ) : (
-                    <Card.Description>
-                      Location Information Unavailable
-                    </Card.Description>
-                  )}
-                  </Card.Content>
+                    {isLocationAvailable ? (
+                <>
+                  <Card.Meta>
+                    <strong>Start:</strong> {location.startLocation.state 
+                      ? `${location.startLocation.city}, ${location.startLocation.state}`
+                      : `${location.startLocation.city}, ${getCountryFullName(location.startLocation.country)}`}
+                  </Card.Meta>
+                  <Card.Meta>
+                    <strong>End:</strong> {location.newLocation.state 
+                      ? `${location.newLocation.city}, ${location.newLocation.state}`
+                      : `${location.newLocation.city}, ${getCountryFullName(location.newLocation.country)}`}
+                  </Card.Meta>
+                </>
+              ) : (
+                <Card.Description>
+                  Location Information Unavailable
+                </Card.Description>
+              )}
+            </Card.Content>
+                  
                   <MapCard location={location} />
                 </Card>
               </div>
