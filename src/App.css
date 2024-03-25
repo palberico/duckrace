@@ -60,7 +60,50 @@
   color: green; /* Green text color */
 }
 
+/*Home Screen Hero and scroll */
+
+.homeContainer {
+  position: relative; /* This makes it a reference point for absolute positioning */
+}
+
+.heroSection {
+  position: relative; /* Needed for the filter overlay positioning */
+  height: 400px; /* Set the height of your hero section */
+  overflow: hidden; /* Ensures no overflow of content */
+  background: url('../src/assets/images/IMG_0598.WEBP') no-repeat center center;
+  background-size: cover;
+  background-attachment: fixed; /* This keeps the background image fixed */
+}
+
+.heroSection::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Overlay effect */
+  z-index: 1;
+}
+
+.heroText {
+  color: white; /* Set text color to white */
+  font-size: 2rem; /* Set the desired font size */
+  text-align: center; /* Center the text horizontally */
+  width: 100%; /* Ensure the div takes full width */
+  padding-top: 20px; /* Add some padding at the top to push it down slightly from the hero section */
+  padding-bottom: 20px; /* Add some padding at the bottom for spacing before the next content section */
+  background: rgba(0, 0, 0, 0.5); /* Optional: Add a semi-transparent background to ensure text readability */
+  /* Remove negative margins, absolute positioning, and z-index */
+}
+
+.scrollContent {
+  background: transparent;
+}
+
+
 /* Mobile friendly adjustments */
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column; /* Stack logo and search box vertically */
@@ -97,17 +140,16 @@
     margin-top: 5px; /* Space between position, distance, and name */
     /* text-align: center; Center the text */
   }
-  /* Text color styles for positions */
+  /* Text color
+styles for positions /
 .red-text {
-  color: #db2828 !important; /* Semantic UI red text color */
+color: #db2828 !important; / Semantic UI red text color */
 }
 
 .blue-text {
-  color: #2185d0 !important; /* Semantic UI blue text color */
+color: #2185d0 !important; /* Semantic UI blue text color */
 }
 
 .green-text {
-  color: #21ba45 !important; /* Semantic UI green text color */
-}
-
+color: #21ba45 !important; /* Semantic UI green text color */
 }

@@ -1,7 +1,7 @@
 // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes,} from 'react-router-dom';
-import TempHome from './views/TempHome'; 
+// import TempHome from './views/TempHome'; 
 import Home from './views/Home'; 
 import DuckProfile from './views/DuckProfile'; 
 import DuckForm from './components/DuckForm';
@@ -15,7 +15,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<TempHome />} />
+          <Route path="/" element={<Home />} />
           <Route path="/Home" element={<Home />} />
           <Route path="/Admin" element={<Admin />} />
           <Route path="/duck/:duckId" element={<DuckProfile />} /> 
