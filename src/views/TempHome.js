@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Loader, Button, Modal, Form, Input } from 'semantic-ui-react';
+import { Card, Image, Loader, Button, Modal, Form, Input, ButtonGroup, ButtonOr } from 'semantic-ui-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import raceStartImage from '../assets/images/IMG_0598.WEBP';
@@ -45,16 +45,31 @@ const TempHome = () => {
 
     return (
         <div style={styles.homeContainer}>
-            <Link to="/Home" style={{ textDecoration: 'none' }}>
+           
                 <Card>
+                <Button inverted onClick={handleAdminClick} style={styles.checkerboardFooter}></Button>
                     <Image src={raceStartImage} wrapped ui={false} />
+                   
                     <Card.Content>
-                        <Card.Header style={{ textAlign: 'center' }}>The Race Starts June 3, 2024</Card.Header>
+                        <Card.Header style={{ textAlign: 'center' }}>Welcome to raceducks.com!</Card.Header>
+                        <Card.Content>
+                            <p>Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
+                            <p>Here's how it works: a duck is hidden at a secret location, and it's up to you to find it! Once you've discovered our feathered friend, log the location to share your part of the journey. But the fun doesn't stop there - it's then your turn to re-hide the duck for the next intrepid explorer.</p>
+                            <p>Join the race, track the ducks, and let's see how far they can go!</p>
+                        </Card.Content>
+                        <ButtonGroup style={{ marginTop: '20px' }}>
+                    <Link to="/Home">
+                    <Button color="orange" >Log My Duck</Button>
+                    </Link>
+                    <ButtonOr />
+                    <Link to="/Home">
+                      <Button color="grey">Leaderboard</Button>
+                    </Link>
+                  </ButtonGroup>
                     </Card.Content>
+                   
+
                     <div style={styles.checkerboardFooter}></div>
-                </Card>
-            </Link>
-            <Button onClick={handleAdminClick}>Admin</Button>
 
             <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <Modal.Header>Admin Login</Modal.Header>
@@ -73,6 +88,9 @@ const TempHome = () => {
                     </Form>
                 </Modal.Content>
             </Modal>
+
+                   
+                </Card>
         </div>
     );
 };
