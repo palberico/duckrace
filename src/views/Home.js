@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Loader, Button, Modal, Form, Input, Segment } from 'semantic-ui-react';
+import { Loader, Button, Modal, Form, Input, Segment } from 'semantic-ui-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -99,14 +99,14 @@ const Home = () => {
 
     <div className="heroText">You Found A Racing Duck!</div>
 
-        <Card fluid>
+     
 
             <Segment size='big'>
                         <p>Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
                         <p>Here's how it works: a duck is hidden at a secret location, and it's up to you to find it! Once you've discovered our feathered friend, log the location to share your part of the journey. But the fun doesn't stop there - it's then your turn to re-hide the duck for the next intrepid explorer.</p>
                         <p>Join the race, track the ducks, and let's see how far they can go!</p>
                     </Segment>
-                    </Card>
+             
 
 
                     <img

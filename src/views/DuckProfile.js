@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button, ButtonOr, ButtonGroup, Grid, Image, Loader, Message,
-  Header, Segment, CardGroup, Card
+  Header, CardGroup, Card
 } from 'semantic-ui-react';
 import { 
   collection, getDocs, getDoc, query, orderBy, doc, 
@@ -140,7 +140,12 @@ const DuckProfile = () => {
             </Grid.Row>
           </Card>
        
-            <Segment as="h3" dangerouslySetInnerHTML={{ __html: duckData.bio }}></Segment>
+            <Card.Header 
+              as="h3" 
+              dangerouslySetInnerHTML={{ __html: duckData.bio }} 
+              style={{ marginBottom: '10px' }}>
+            </Card.Header>
+            
          
         </CardGroup>
 
@@ -174,6 +179,9 @@ const DuckProfile = () => {
                   
                   <MapCard location={location} />
                 </Card>
+
+
+                <div style={styles.checkerboardFooter}></div>
               </div>
             );
           })}
@@ -195,3 +203,19 @@ const DuckProfile = () => {
 };
 
 export default DuckProfile;
+
+const styles = {
+  checkerboardFooter: {
+      width: '100%',
+      height: '50px',
+      backgroundSize: '20px 20px',
+      backgroundImage: 
+          `linear-gradient(45deg, #000 25%, transparent 25%), 
+           linear-gradient(-45deg, #000 25%, transparent 25%), 
+           linear-gradient(45deg, transparent 75%, #000 75%), 
+           linear-gradient(-45deg, transparent 75%, #000 75%)`,
+      backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+      marginTop: '20px',
+  },
+};
+
