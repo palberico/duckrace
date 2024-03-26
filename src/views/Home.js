@@ -26,6 +26,12 @@ const Home = () => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  }, []);
+  
+  useEffect(() => {
     if (location.state?.focusLeaderboard && isImageLoaded && leaderboardRef.current) {
       leaderboardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
