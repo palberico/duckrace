@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Image, Loader, Button, Modal, Form, Input, Segment } from 'semantic-ui-react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, Loader, Button, Modal, Form, Input, Segment } from 'semantic-ui-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import LeaderBoardImage from '../assets/images/LeaderBoard.png';
 import DuckCard from '../components/DuckCard';
-// import raceStartImage from '../assets/images/IMG_0598.WEBP';
 import HomeHeader from '../components/HomeHeader';
 import '../App.css';
 
@@ -21,6 +20,16 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
+
+  const location = useLocation();
+  const leaderboardRef = useRef(null);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.focusLeaderboard && isImageLoaded && leaderboardRef.current) {
+      leaderboardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [location, isImageLoaded]); // Added isImageLoaded as a dependency
 
   useEffect(() => {
     setTimeout(() => {
@@ -92,14 +101,30 @@ const Home = () => {
     <div className="heroText">You Found A Racing Duck!</div>
 
         <Card fluid>
-            {/* <Header as='h2' textAlign='center'>Welcome to raceducks.com!</Header> */}
+
             <Segment size='big'>
                         <p>Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
                         <p>Here's how it works: a duck is hidden at a secret location, and it's up to you to find it! Once you've discovered our feathered friend, log the location to share your part of the journey. But the fun doesn't stop there - it's then your turn to re-hide the duck for the next intrepid explorer.</p>
                         <p>Join the race, track the ducks, and let's see how far they can go!</p>
                     </Segment>
                     </Card>
-      <Image src={LeaderBoardImage} centered size='large' />
+
+
+                    <img
+  ref={leaderboardRef}
+  src={LeaderBoardImage}
+  alt="Leaderboard"
+  onLoad={() => setIsImageLoaded(true)}
+  style={{
+    maxWidth: '70%', // Adjust the size as needed
+    display: 'block', // Use block display to center the image
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  }}
+/>
+
+
+
       <DuckCard />
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <Modal.Header>Admin Login</Modal.Header>

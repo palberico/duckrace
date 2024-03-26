@@ -28,6 +28,7 @@ const DuckProfile = () => {
   const [code, setCode] = useState('');
   const [isCodeIncorrect, setIsCodeIncorrect] = useState(false);
   const [duckLocations, setDuckLocations] = useState([]);
+ 
 
   useEffect(() => {
     const fetchDuckData = async () => {
@@ -103,6 +104,10 @@ const DuckProfile = () => {
     return country ? country.text : countryCode;
   };
 
+  const goToLeaderboard = () => {
+    navigate('/Home', { state: { focusLeaderboard: true, timestamp: new Date() } });
+  };
+
   return (
     <>
      <div className="header">
@@ -126,9 +131,9 @@ const DuckProfile = () => {
                   <ButtonGroup style={{ marginBottom: '10px' }}>
                     <Button color="orange" onClick={handleOpen}>I Found {duckData.name}</Button>
                     <ButtonOr />
-                    <Link to="/Home">
-                      <Button color="grey">Leaderboard</Button>
-                    </Link>
+                    
+                    <Button color="grey" onClick={goToLeaderboard}>Leaderboard</Button>
+                    
                   </ButtonGroup>
                 </div>
               </Grid.Column>

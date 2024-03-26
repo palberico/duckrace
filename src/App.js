@@ -16,7 +16,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/Home" element={<Home />} />
+          <Route path="/Home" element={<Home key={window.location.pathname} />} />
           <Route path="/Admin" element={<Admin />} />
           <Route path="/duck/:duckId" element={<DuckProfile />} /> 
           <Route path="/log-distance/:duckId" element={<DuckForm />} /> 
