@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Loader, Button, Modal, Form, Input,} from 'semantic-ui-react';
+import { Card, Image, Loader, Button, Modal, Form, Input, Segment } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -7,7 +7,7 @@ import { db } from '../firebase/Config';
 import LeaderBoardImage from '../assets/images/LeaderBoard.png';
 import DuckCard from '../components/DuckCard';
 // import raceStartImage from '../assets/images/IMG_0598.WEBP';
-import Header from '../components/Header';
+import HomeHeader from '../components/HomeHeader';
 import '../App.css';
 
 const Home = () => {
@@ -84,22 +84,20 @@ const Home = () => {
   
   return (
     <div className="homeContainer">
-  <Header code={code} setCode={setCode} error={error} setError={setError} loading={loading} handleSearch={handleSearch} />
+  <HomeHeader code={code} setCode={setCode} error={error} setError={setError} loading={loading} handleSearch={handleSearch} />
   <div className="heroSection"></div>
         <div className="heroFilter"></div>
   <div className="scrollContent">
 
     <div className="heroText">You Found A Racing Duck!</div>
 
-
-        {/* <Image src={raceStartImage} centered size='huge' /> */}
         <Card fluid>
-            <Card.Header textAlign='center'>Welcome to raceducks.com!</Card.Header>
-            <Card.Content>
-                        <p>You found a racing duck! Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
+            {/* <Header as='h2' textAlign='center'>Welcome to raceducks.com!</Header> */}
+            <Segment size='big'>
+                        <p>Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
                         <p>Here's how it works: a duck is hidden at a secret location, and it's up to you to find it! Once you've discovered our feathered friend, log the location to share your part of the journey. But the fun doesn't stop there - it's then your turn to re-hide the duck for the next intrepid explorer.</p>
                         <p>Join the race, track the ducks, and let's see how far they can go!</p>
-                    </Card.Content>
+                    </Segment>
                     </Card>
       <Image src={LeaderBoardImage} centered size='large' />
       <DuckCard />
@@ -121,8 +119,24 @@ const Home = () => {
                 </Modal.Content>
             </Modal>
     </div>
+    <div style={styles.checkerboardFooter}></div>
     </div>
   );
 };
 
 export default Home;
+
+const styles = {
+  checkerboardFooter: {
+      width: '100%',
+      height: '50px',
+      marginTop: '30px',
+      backgroundSize: '20px 20px',
+      backgroundImage: 
+          `linear-gradient(45deg, #000 25%, transparent 25%), 
+           linear-gradient(-45deg, #000 25%, transparent 25%), 
+           linear-gradient(45deg, transparent 75%, #000 75%), 
+           linear-gradient(-45deg, transparent 75%, #000 75%)`,
+      backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+  },
+};

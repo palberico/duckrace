@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Image, Input, Button, Message, Popup } from 'semantic-ui-react';
 import logo from '../assets/images/Logo.png';
+import '../App.css';
 
 const Header = ({ code, setCode, error, setError, loading, handleSearch }) => {
   const handleChange = (e) => {
