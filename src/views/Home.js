@@ -93,11 +93,11 @@ const Home = () => {
   return (
     <div className="homeContainer">
   <HomeHeader code={code} setCode={setCode} error={error} setError={setError} loading={loading} handleSearch={handleSearch} />
+    <div className="heroText">You Found A Racing Duck!</div>
   <div className="heroSection"></div>
         <div className="heroFilter"></div>
   <div className="scrollContent">
 
-    <div className="heroText">You Found A Racing Duck!</div>
 
      
 
