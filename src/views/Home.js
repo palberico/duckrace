@@ -7,6 +7,7 @@ import { db } from '../firebase/Config';
 import LeaderBoardImage from '../assets/images/LeaderBoard.png';
 import DuckCard from '../components/DuckCard';
 import HomeHeader from '../components/HomeHeader';
+import AdminModal from '../components/AdminModal';
 import '../App.css';
 
 const Home = () => {
@@ -20,10 +21,12 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const auth = getAuth();
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
   const location = useLocation();
   const leaderboardRef = useRef(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
+  
 
   useEffect(() => {
     setTimeout(() => {
@@ -35,19 +38,13 @@ const Home = () => {
     if (location.state?.focusLeaderboard && isImageLoaded && leaderboardRef.current) {
       leaderboardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, [location, isImageLoaded]); // Added isImageLoaded as a dependency
+  }, [location, isImageLoaded]);
 
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
   }, []);
-
-  //This will need to be added back in to create the admin button.
-
-  // const handleAdminClick = () => {
-  //   setIsModalOpen(true);
-  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -63,16 +60,15 @@ const Home = () => {
 
   const handleSearch = async () => {
     if (code.length === 6) {
-      setLoading(true); // Start loading
+      setLoading(true); 
       const ducksRef = collection(db, 'ducks');
       const q = query(ducksRef, where("code", "==", code));
       try {
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
-          setError(true); // Set error state if no document found
+          setError(true); 
         } else {
           querySnapshot.forEach((doc) => {
-            // Navigate to the route with the duck's document ID
             navigate(`/log-distance/${doc.id}`);
           });
         }
@@ -93,9 +89,6 @@ const Home = () => {
             </div>
     );
   }
-
-  //This should be in the Header.js screen, verify then delete
-  // const isButtonDisabled = loading || code.length !== 6;
   
   return (
     <div className="homeContainer">
@@ -149,8 +142,23 @@ const Home = () => {
                     </Form>
                 </Modal.Content>
             </Modal>
+
+            <Button inverted onClick={() => setIsAdminModalOpen(true)} style={styles.checkerboardFooter}></Button>
+
+<AdminModal
+  isOpen={isAdminModalOpen}
+  setIsOpen={setIsAdminModalOpen}
+  email={email}
+  setEmail={setEmail}
+  password={password}
+  setPassword={setPassword}
+  onSubmit={handleLogin}
+  authError={authError}
+/>
+
+
     </div>
-    <div style={styles.checkerboardFooter}></div>
+   
     </div>
   );
 };
@@ -175,5 +183,16 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
+},
+checkerboardButton: {
+  width: '100%',
+  height: '50px',
+  backgroundSize: '20px 20px',
+  backgroundImage: 
+      `linear-gradient(45deg, #000 25%, transparent 25%), 
+       linear-gradient(-45deg, #000 25%, transparent 25%), 
+       linear-gradient(45deg, transparent 75%, #000 75%), 
+       linear-gradient(-45deg, transparent 75%, #000 75%)`,
+  backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
 },
 };
