@@ -68,11 +68,11 @@
 
 .heroSection {
   position: relative; /* Needed for the filter overlay positioning */
-  height: 400px; /* Set the height of your hero section */
+  height: 450px; /* Set the height of your hero section */
   overflow: hidden; /* Ensures no overflow of content */
-  background: url('../src/assets/images/IMG_0598.WEBP') no-repeat center center;
+  /* background: url('../src/assets/images/HeroImageSmall.jpg') no-repeat center center; */
   background-size: cover;
-  background-attachment: fixed; /* This keeps the background image fixed */
+  background-attachment: fixed;
 }
 
 .heroSection::after {
@@ -102,9 +102,27 @@
 }
 
 
+@media (min-width: 768px) {
+  .heroSection {
+    background-image: url('../src/assets/images/HeroImage.jpg'); /* Path to your larger image */
+  }
+}
+  /* .heroSection {
+    background: url('../src/assets/images/HeroImage.jpg') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+} */
+
 /* Mobile friendly adjustments */
 
 @media (max-width: 768px) {
+
+  .heroSection {
+    background-image: url('../src/assets/images/HeroImageSmall.jpg'); /* Path to your smaller image */
+  }
+
+
   .header {
     flex-direction: column; /* Stack logo and search box vertically */
   }
