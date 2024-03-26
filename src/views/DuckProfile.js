@@ -14,6 +14,7 @@ import { db } from '../firebase/Config';
 import '../Profile.css';
 import '../App.css';
 import logo from '../assets/images/Logo.png';
+import PositionBadge from '../components/PositionBadge';
 
 
 import countryOptions from '../components/data/Countries';
@@ -117,8 +118,8 @@ const DuckProfile = () => {
             <Image src={duckData.imageUrl} size="large" wrapped ui={false} />
             <Grid.Row>
               <Grid.Column style={{ padding: '10px' }}>
-                <p className="large-text"><strong>Current Position:</strong> {duckData.position}</p>
-                <p className="large-text"><strong>Distance:</strong> {duckData.distance} Miles</p>
+                <p className="large-text"><strong>Current Position:</strong><PositionBadge position={duckData.position} /></p>
+                <p className="large-text"><strong>Distance Traveled:</strong> {duckData.distance} Miles</p>
                 <p className="large-text"><strong>Last Place Found:</strong> {formatLastLocation(duckData.lastLocation)}</p>
                 <p className="large-text"><strong>Hometown:</strong> {duckData.hometown}</p>
                 <div className="button-group-container">
