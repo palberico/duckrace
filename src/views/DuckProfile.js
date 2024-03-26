@@ -117,9 +117,9 @@ const DuckProfile = () => {
               </Grid.Column>
             </Grid.Row>
           </Card>
-          <Card>
+       
             <Segment as="h3" dangerouslySetInnerHTML={{ __html: duckData.bio }}></Segment>
-          </Card>
+         
         </CardGroup>
 
         <div className="map-cards-container">

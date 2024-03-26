@@ -21,7 +21,7 @@ const Header = ({ code, setCode, error, setError, loading, handleSearch }) => {
         </Link>
       </div>
       <div className="headerSearch">
-        <Input
+        <Input 
           icon={
             <Popup
               content="Please enter the 6-digit code found on your duck."

@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes,} from 'react-router-dom';
 // import TempHome from './views/TempHome'; 
 import Home from './views/Home'; 
 import DuckProfile from './views/DuckProfile'; 
-import DuckForm from './components/DuckForm';
+import DuckForm from './views/DuckForm';
 import Admin from './views/DuckAdmin';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';

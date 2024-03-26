@@ -45,19 +45,22 @@
 }
 
 /* Color styles for different positions */
-.red-card {
-  background-color: #ffe5e5; /* Light red background */
+.red-text {
   color: red; /* Red text color */
+  font-weight: bold; /* Makes the font bold */
+  font-size: larger; /* Increases the font size */
 }
 
-.blue-card {
-  background-color: #e5e5ff; /* Light blue background */
-  color: blue; /* Blue text color */
+.blue-text {
+  color: blue; /* Blue text color *font-weight: bold; /* Makes the font bold */
+  font-weight: bold; /* Makes the font bold */
+  font-size: larger; /* Increases the font size */
 }
 
-.green-card {
-  background-color: #e5ffe5; /* Light green background */
+.green-text {
   color: green; /* Green text color */
+  font-weight: bold; /* Makes the font bold */
+  font-size: larger; /* Increases the font size */
 }
 
 /*Home Screen Hero and scroll */
