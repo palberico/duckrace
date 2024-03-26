@@ -73,9 +73,9 @@ const Home = () => {
 
   if (isLoading) {
     return (
-      <div className="loaderContainer">
-        <Loader active inline='centered' size='massive'>Loading...</Loader>
-      </div>
+      <div style={styles.loaderContainer}>
+                <Loader active inline='centered' size='massive'>Box..Box...</Loader>
+            </div>
     );
   }
 
@@ -139,4 +139,10 @@ const styles = {
            linear-gradient(-45deg, transparent 75%, #000 75%)`,
       backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
   },
+  loaderContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+},
 };
