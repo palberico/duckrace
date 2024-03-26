@@ -8,6 +8,7 @@ import LeaderBoardImage from '../assets/images/LeaderBoard.png';
 import DuckCard from '../components/DuckCard';
 // import raceStartImage from '../assets/images/IMG_0598.WEBP';
 import Header from '../components/Header';
+import '../App.css';
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -87,6 +88,7 @@ const Home = () => {
   <div className="heroSection"></div>
         <div className="heroFilter"></div>
   <div className="scrollContent">
+
     <div className="heroText">You Found A Racing Duck!</div>
 
 

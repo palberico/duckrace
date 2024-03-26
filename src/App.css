@@ -101,8 +101,17 @@
   background: transparent;
 }
 
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers the area */
+  position: absolute; /* Aligns the image properly within the heroSection */
+  top: 0;
+  left: 0;
+}
 
-@media (min-width: 768px) {
+
+@media (min-width: 769px) {
   .heroSection {
     background-image: url('../src/assets/images/HeroImage.jpg'); /* Path to your larger image */
   }
@@ -119,9 +128,10 @@
 @media (max-width: 768px) {
 
   .heroSection {
-    background-image: url('../src/assets/images/HeroImageSmall.jpg'); /* Path to your smaller image */
+    background: url('../src/assets/images/HeroImageSmall.jpg') no-repeat center center; /* Path to your smaller image */
+    height: 321px;
+    overflow: hidden;
   }
-
 
   .header {
     flex-direction: column; /* Stack logo and search box vertically */
