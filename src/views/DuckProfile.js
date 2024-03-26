@@ -15,6 +15,7 @@ import '../Profile.css';
 import '../App.css';
 import logo from '../assets/images/Logo.png';
 
+
 import countryOptions from '../components/data/Countries';
 
 const DuckProfile = () => {
@@ -46,12 +47,27 @@ const DuckProfile = () => {
         orderBy('timestamp', 'desc'),
         limit(5)
       );
-      const querySnapshot = await getDocs(locationsQuery);
+
+    const querySnapshot = await getDocs(locationsQuery);
       setDuckLocations(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
 
+    const calculatePosition = async () => {
+      const allDucksQuery = query(collection(db, 'ducks'), orderBy('distance', 'desc'));
+      const allDucksSnapshot = await getDocs(allDucksQuery);
+      const ducks = allDucksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const duckIndex = ducks.findIndex(duck => duck.id === duckId);
+      const position = duckIndex !== -1 ? `P${duckIndex + 1}` : 'N/A';
+      return position;
+    };
+
     setLoading(true);
-    Promise.all([fetchDuckData(), fetchLocations()]).then(() => setLoading(false));
+    Promise.all([fetchDuckData(), fetchLocations()])
+      .then(async () => {
+        const position = await calculatePosition();
+        setDuckData(prevData => ({ ...prevData, position }));
+        setLoading(false);
+      });
   }, [duckId]);
 
   const handleCodeSubmit = async () => {

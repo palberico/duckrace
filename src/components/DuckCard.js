@@ -4,6 +4,7 @@ import { collection, query, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import { Link } from 'react-router-dom';
 import '../App.css';
+import PositionBadge from './PositionBadge';
 
 const DuckCard = () => {
   const [ducks, setDucks] = useState([]);
@@ -58,9 +59,11 @@ const DuckCard = () => {
           <Grid.Column key={duck.id}>
             <Link to={`/duck/${duck.id}`} className="duck-card-link">
               <Card className={`duck-card ${positionColor}`}>
-                  <Card.Header className="duck-card-header">
+              <PositionBadge position={duck.position} />
+
+                  {/* <Card.Header className="duck-card-header">
                     <span className={`position ${positionColor}-text`}>{duck.position}</span>
-                  </Card.Header>
+                  </Card.Header> */}
                 <Image src={duck.imageUrl} wrapped ui={false} alt={`Image of ${duck.name}`} />
                 <Card.Content>
                     <Header as='h3'>{duck.name}</Header>

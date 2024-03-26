@@ -47,20 +47,30 @@
 /* Color styles for different positions */
 .red-text {
   color: red; /* Red text color */
-  font-weight: bold; /* Makes the font bold */
-  font-size: larger; /* Increases the font size */
 }
 
 .blue-text {
-  color: blue; /* Blue text color *font-weight: bold; /* Makes the font bold */
-  font-weight: bold; /* Makes the font bold */
-  font-size: larger; /* Increases the font size */
+  color: blue; /* Blue text color */
 }
 
 .green-text {
   color: green; /* Green text color */
-  font-weight: bold; /* Makes the font bold */
-  font-size: larger; /* Increases the font size */
+}
+
+.position-badge {
+  display: inline-block;
+  padding: .5em;
+  font-size: larger; /* Adjust the font size as needed */
+  font-weight: bold; /* Makes the text bold */
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+}
+
+.default-position {
+  color: #333; /* Dark text for contrast */
 }
 
 /*Home Screen Hero and scroll */
