@@ -1,10 +1,24 @@
 import React from 'react';
-import { Modal, Form, Input, Button } from 'semantic-ui-react';
+import { Modal, Form, Input, Button, Icon } from 'semantic-ui-react';
 
-const AdminModal = ({ isOpen, setIsOpen, email, setEmail, password, setPassword, onSubmit, authError }) => {
+const AdminModal = ({ 
+    isOpen, 
+    setIsOpen, 
+    email, 
+    setEmail, 
+    password, 
+    setPassword, 
+    onSubmit, 
+    authError 
+}) => {
+
     return (
-        <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-            <Modal.Header>Admin Login</Modal.Header>
+        <Modal 
+          open={isOpen} 
+          onClose={() => setIsOpen(false)}
+          closeIcon={<Icon name="close" />}
+        >
+            <Modal.Header>Admin Login - This login is for administrators only. </Modal.Header>
             <Modal.Content>
                 <Form onSubmit={onSubmit}>
                     <Form.Field>
