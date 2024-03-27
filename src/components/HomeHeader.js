@@ -1,4 +1,3 @@
-// Header.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Image, Input, Button, Message, Popup } from 'semantic-ui-react';
