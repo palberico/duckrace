@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Image, Loader, Button, Modal, Form, Input, ButtonGroup, ButtonOr } from 'semantic-ui-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Card, Image, Loader, Button, Modal, Form, Input } from 'semantic-ui-react';
+import { useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import raceStartImage from '../assets/images/IMG_0598.WEBP';
+import raceStartImage from '../assets/images/HeroImage.jpg';
+import QR from '../assets/images/RaceDucksQR.PNG'
 
 const TempHome = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -49,21 +50,12 @@ const TempHome = () => {
                 <Button inverted onClick={handleAdminClick} style={styles.checkerboardButton} />
                 <Image src={raceStartImage} wrapped ui={false} />
                 <Card.Content>
-                    <Card.Header style={{ textAlign: 'center' }}>Welcome to raceducks.com!</Card.Header>
+                    <Card.Header style={{ textAlign: 'center' }}>Welcome to RaceDucks.com!</Card.Header>
                     <Card.Content>
-                        <p>You found a racing duck! Embark on a global adventure with our fleet of rubber ducks as they waddle their way around the world.</p>
-                        <p>Here's how it works: a duck is hidden at a secret location, and it's up to you to find it! Once you've discovered our feathered friend, log the location to share your part of the journey. But the fun doesn't stop there - it's then your turn to re-hide the duck for the next intrepid explorer.</p>
-                        <p>Join the race, track the ducks, and let's see how far they can go!</p>
+                        <p>RaceDucks.com is optimized for mobile devices. Please scan the QR code below from your phone. </p>
+                    <Image src={QR} />
                     </Card.Content>
-                    <ButtonGroup style={{ marginTop: '20px' }}>
-                        <Link to="/Home">
-                            <Button color="orange">Log My Duck</Button>
-                        </Link>
-                        <ButtonOr />
-                        <Link to="/Home">
-                            <Button color="grey">Leaderboard</Button>
-                        </Link>
-                    </ButtonGroup>
+
                 </Card.Content>
                 <div style={styles.checkerboardFooter}></div>
             </Card>
