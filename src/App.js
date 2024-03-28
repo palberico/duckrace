@@ -6,6 +6,7 @@ import Home from './views/Home';
 import DuckProfile from './views/DuckProfile';
 import DuckForm from './views/DuckForm';
 import Admin from './views/DuckAdmin';
+import NotFoundPage from './views/NotFoundPage';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 
@@ -14,12 +15,13 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<ScreenSizeRedirect />} />
+          <Route exact path="/" element={<ScreenSizeRedirect />} />
           <Route path="/Home" element={<Home />} />
           <Route path="/large-screen" element={<TempHome />} />
           <Route path="/Admin" element={<Admin />} />
           <Route path="/duck/:duckId" element={<DuckProfile />} />
           <Route path="/log-distance/:duckId" element={<DuckForm />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </Router>
