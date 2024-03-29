@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import duckImage from '../assets/images/DuckGame.png'; // Import the duck image
+import duckImage from '../assets/images/DuckGame.png';
+import redCarImage from '../assets/images/RedCar.png';
+import blueCarImage from '../assets/images/BlueCar.png';
+import greenCarImage from '../assets/images/GreenCar.png';
+import orangeCarImage from '../assets/images/OrangeCar.png';
 
 class DuckGame extends Component {
     constructor(props) {
         super(props);
-        this.canvasRef = React.createRef(); // Create a ref for the canvas
-
-        const roadWidth = 800 / 3; // Assuming canvas width is 800
-        const roadStart = (800 - roadWidth) / 2;
+        this.canvasRef = React.createRef();
 
         // Create an off-screen canvas for double buffering
         this.offscreenCanvas = document.createElement('canvas');
@@ -15,25 +16,35 @@ class DuckGame extends Component {
         this.offscreenCanvas.height = 600;
         this.offscreenCtx = this.offscreenCanvas.getContext('2d');
 
-        const curbHeight = 30; // Example curb height
-        const numCurbs = Math.ceil(600 / curbHeight); // Calculate the number of curbs needed based on the canvas height
+        const roadWidth = 800 / 3; // Assuming the full canvas width is 800
+        const roadStart = (800 - roadWidth) / 2;
+
+        // const curbHeight = 30; // Example curb height
+        // const numCurbs = Math.ceil(this.offscreenCanvas.height / curbHeight); // Calculate the number of curbs needed based on the canvas height
 
         // Initialize the curbs array with positions to create a scrolling effect
-        const curbs = Array.from({ length: numCurbs }, (_, i) => ({
-            y: -curbHeight + i * curbHeight * 2, // positioning the curbs with the correct spacing
-            height: curbHeight, // set the height for each curb
-        }));
+        // const curbs = Array.from({ length: numCurbs }, (_, i) => ({
+        //     y: -curbHeight + i * curbHeight * 2, // positioning the curbs with the correct spacing
+        //     height: curbHeight, // set the height for each curb
+        // }));
 
         this.state = {
-            duckX: roadStart + (roadWidth - 150) / 2, // Centering the duck
+            duckX: roadStart + (roadWidth - 150) / 2,
             rightPressed: false,
             leftPressed: false,
-            // ... other initial state ...
-            curbs, // Add the curb state here
+            obstacles: [], // will be populated after images have loaded
+            curbs: [], // Initialize curbs here if needed
+            curbOffset: 0,
+            carImages: { // Add car images to the state
+                redCar: null,
+                greenCar: null,
+                blueCar: null,
+                orangeCar: null,
+            },
         };
 
-        this.duck = new Image(); // Create a new Image object for the duck
-        this.duck.src = duckImage; // Set the source of the duck image
+        this.duck = new Image();
+        this.duck.src = duckImage;
     }
 
     componentDidMount() {
@@ -41,7 +52,59 @@ class DuckGame extends Component {
         document.addEventListener("keydown", this.keyDownHandler);
         document.addEventListener("keyup", this.keyUpHandler);
         this.gameInterval = setInterval(() => this.draw(), 10);
+
+        this.loadCarImages();
     }
+
+    loadCarImages = () => {
+        // Create image elements for cars
+        const carImages = {
+            redCar: new Image(),
+            greenCar: new Image(),
+            blueCar: new Image(),
+            orangeCar: new Image(),
+        };
+
+        let loadedImagesCount = 0;
+        const totalImages = Object.keys(carImages).length;
+
+        const checkAllImagesLoaded = () => {
+            loadedImagesCount++;
+            if (loadedImagesCount === totalImages) {
+                // All car images are loaded, now we can set the obstacles
+                this.setObstacles();
+            }
+        };
+
+        // Set the src for car images and check if they are all loaded
+        carImages.redCar.onload = checkAllImagesLoaded;
+        carImages.greenCar.onload = checkAllImagesLoaded;
+        carImages.blueCar.onload = checkAllImagesLoaded;
+        carImages.orangeCar.onload = checkAllImagesLoaded;
+
+        carImages.redCar.src = redCarImage;
+        carImages.greenCar.src = greenCarImage;
+        carImages.blueCar.src = blueCarImage;
+        carImages.orangeCar.src = orangeCarImage;
+
+        // Update the state with car images
+        this.setState({ carImages });
+    };
+
+    setObstacles = () => {
+        const roadWidth = 800 / 3;
+        const roadStart = (800 - roadWidth) / 2;
+
+        // Now that images are loaded, set the obstacles with image references
+        const obstacles = [
+            { image: this.state.carImages.redCar, x: roadStart + roadWidth / 3 - 25, y: -50, width: 50, height: 50 },
+            { image: this.state.carImages.blueCar, x: roadStart + roadWidth / 3 * 2 - 25, y: -150, width: 50, height: 50 },
+            { image: this.state.carImages.greenCar, x: roadStart, y: -250, width: 50, height: 50 },
+            { image: this.state.carImages.orangeCar, x: roadStart + roadWidth - 75, y: -350, width: 50, height: 50 },
+        ];
+
+        this.setState({ obstacles });
+    };
 
     componentWillUnmount() {
         document.removeEventListener("keydown", this.keyDownHandler);
@@ -68,14 +131,16 @@ class DuckGame extends Component {
     moveDuck = () => {
         const { duckX, rightPressed, leftPressed } = this.state;
         const canvas = this.canvasRef.current; // Access the canvas element through the ref
-        const roadWidth = canvas.width / 3;
+        const roadWidth = canvas.width / 2;
         const roadStart = (canvas.width - roadWidth) / 2;
-        const roadEnd = roadStart + roadWidth - 150; // Subtract the width of the duck
-        if (rightPressed && duckX < roadEnd) {
-            this.setState({ duckX: duckX + 7 });
-        } else if (leftPressed && duckX > roadStart) {
-            this.setState({ duckX: duckX - 7 });
-        }
+        const duckWidth = 54; // Set this to the new width of your duck image
+        const roadEnd = roadStart + roadWidth - duckWidth; 
+
+    if (rightPressed && duckX < roadEnd) {
+        this.setState({ duckX: duckX + 7 });
+    } else if (leftPressed && duckX > roadStart) {
+        this.setState({ duckX: duckX - 7 });
+    }
     };
 
     drawRoad = (ctx) => {
@@ -85,24 +150,12 @@ class DuckGame extends Component {
         ctx.fillRect(roadStart, 0, roadWidth, ctx.canvas.height);
     };
 
-    moveDuck = () => {
-        const { duckX, rightPressed, leftPressed } = this.state;
-        const canvas = this.canvasRef.current;
-        const roadWidth = canvas.width / 2;
-        const roadStart = (canvas.width - roadWidth) / 2;
-        const roadEnd = roadStart + roadWidth - 150; // Subtract the width of the duck
-        if (rightPressed && duckX < roadEnd) {
-            this.setState({ duckX: duckX + 7 });
-        } else if (leftPressed && duckX > roadStart) {
-            this.setState({ duckX: duckX - 7 });
-        }
-    };
-
     drawObstacles = (ctx) => {
         const { obstacles } = this.state;
         obstacles.forEach(obstacle => {
-            ctx.fillStyle = obstacle.color;
-            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            if (obstacle.image) {
+                ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            }
         });
     };
 
@@ -124,64 +177,89 @@ class DuckGame extends Component {
         this.setState({ obstacles: updatedObstacles });
     };
 
-    drawCurbs = (ctx, roadStart, roadWidth) => {
-        const { curbs } = this.state;
-        const curbWidth = 10; // Width of the curb stripe
-        curbs.forEach(curb => {
-          // Draw left curb stripe
-          ctx.fillStyle = (curb.y / curb.height) % 2 === 0 ? 'red' : 'white';
-          ctx.fillRect(roadStart - curbWidth, curb.y, curbWidth, curb.height);
-      
-          // Draw right curb stripe
-          ctx.fillStyle = (curb.y / curb.height) % 2 === 0 ? 'red' : 'white';
-          ctx.fillRect(roadStart + roadWidth, curb.y, curbWidth, curb.height);
-        });
-      };
+//Moving curb code: Save for future use
+    // drawCurbs = (ctx, roadStart, roadWidth) => {
+    //     const { curbs } = this.state;
+    //     const curbWidth = 10; // Width of the curb stripe
+    //     curbs.forEach(curb => {
+    //         // Draw left curb stripe
+    //         ctx.fillStyle = (curb.y / curb.height) % 2 === 0 ? 'red' : 'white';
+    //         ctx.fillRect(roadStart - curbWidth, curb.y, curbWidth, curb.height);
 
-      updateCurbs = () => {
-        const canvasHeight = this.canvasRef.current.height;
-        const speed = 2; // Speed of movement, match with the obstacle speed
+    //         // Draw right curb stripe
+    //         ctx.fillStyle = (curb.y / curb.height) % 2 === 0 ? 'red' : 'white';
+    //         ctx.fillRect(roadStart + roadWidth, curb.y, curbWidth, curb.height);
+    //     });
+    // };
+
+    updateCurbs = () => {
+        const speed = 2; // Speed should match the movement speed of the frame
         this.setState(prevState => ({
-          curbs: prevState.curbs.map(curb => {
-            let newY = curb.y + speed; // Use the same speed variable as obstacles
-            if (newY > canvasHeight) {
-              newY = -curb.height; // Reset to just above the canvas
-            }
-            return {
-              ...curb,
-              y: newY,
-            };
-          }),
+            curbOffset: (prevState.curbOffset + speed) % (30 * 2) // Assuming curbHeight is 30, as set in constructor
         }));
     };
 
+drawCurbs = (ctx, roadStart, roadWidth) => {
+    const { curbs, curbOffset } = this.state;
+    const curbWidth = 10; // Width of the curb stripe
+    curbs.forEach(curb => {
+      let yPosition = curb.y - curbOffset; // Adjust curb position based on the offset
+      // Draw left curb stripe
+      ctx.fillStyle = ((yPosition / curb.height) % 2 === 0) ? 'red' : 'white';
+      ctx.fillRect(roadStart - curbWidth, yPosition, curbWidth, curb.height);
+  
+      // Draw right curb stripe
+      ctx.fillStyle = ((yPosition / curb.height) % 2 === 0) ? 'red' : 'white';
+      ctx.fillRect(roadStart + roadWidth, yPosition, curbWidth, curb.height);
+    });
+  };
+
+    // drawCurbs = (ctx, roadStart, roadWidth) => {
+    //     const { curbs } = this.state;
+    //     const curbWidth = 10; // Width of the curb stripe
+    //     curbs.forEach(curb => {
+    //         // Draw left curb stripe
+    //         ctx.fillStyle = (curb.y / curb.height) % 2 === 0 ? 'red' : 'white';
+    //         ctx.fillRect(roadStart - curbWidth, curb.y, curbWidth, curb.height);
+    
+    //         // Draw right curb stripe
+    //         ctx.fillStyle = (curb.y / curb.height) % 2 === 0 ? 'red' : 'white';
+    //         ctx.fillRect(roadStart + roadWidth, curb.y, curbWidth, curb.height);
+    //     });
+    // };
 
 
     drawDuck = (ctx) => {
         const { duckX } = this.state;
-        ctx.drawImage(this.duck, duckX, ctx.canvas.height - 100, 100, 100); // Draw the duck image
+        const canvas = this.canvasRef.current;
+        const duckWidth = 50; // The width of your duck image
+        const duckHeight = 50; // The height of your duck image
+        const duckY = (canvas.height - duckHeight) / 1.25; // Calculate the vertical center using the canvas height
+    
+        ctx.drawImage(this.duck, duckX, duckY, duckWidth, duckHeight); // Draw the duck centered vertically
     };
 
     draw = () => {
-        const roadWidth = this.offscreenCanvas.width / 2;
-        const roadStart = (this.offscreenCanvas.width - roadWidth) / 2;
-
-        // Perform all drawing operations on the off-screen canvas
-        this.offscreenCtx.clearRect(0, 0, this.offscreenCanvas.width, this.offscreenCanvas.height);
-        this.drawRoad(this.offscreenCtx);
-        this.drawCurbs(this.offscreenCtx, roadStart, roadWidth);
-        this.drawObstacles(this.offscreenCtx);
-        this.drawDuck(this.offscreenCtx);
-
-        // Copy the off-screen canvas to the on-screen canvas
-        const ctx = this.canvasRef.current.getContext('2d');
-        ctx.drawImage(this.offscreenCanvas, 0, 0);
-
-        // Update the positions of obstacles and curbs
+        const canvas = this.canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const roadWidth = canvas.width / 2;
+        const roadStart = (canvas.width - roadWidth) / 2;
+        
+        // Clear the canvas before each frame
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw all game elements
+        this.drawRoad(ctx);
+        this.drawObstacles(ctx);
+        this.drawDuck(ctx);
+    
+        // Update game element positions for next frame
         this.moveDuck();
         this.updateObstacles();
-        this.updateCurbs(); // Update the curbs for scrolling
+        this.updateCurbs(); // Update the curb offset for scrolling
+        this.drawCurbs(ctx, roadStart, roadWidth); // Draw the curbs with updated positions
     };
+      
 
     updateCanvas = () => {
         const canvas = this.canvasRef.current; // Access the canvas element through the ref
