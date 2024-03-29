@@ -28,15 +28,15 @@ class DuckGame extends Component {
             gameOver: false,
             collidedObstacleIndex: null,
             explosionImage: null,
+            curbs: [], 
         };
         this.duck = new Image();
         this.duck.onload = () => {
             this.setState({ duckImage: this.duck });
         };
-        this.duck.src = duckImage; // Make sure this path is correct or passed as a prop
+        this.duck.src = duckImage; 
     }
     
-
     componentDidMount() {
         this.setupEventListeners();
         this.loadCarImages();
@@ -131,7 +131,7 @@ class DuckGame extends Component {
         const canvasHeight = ctx.canvas.height;
         const roadWidth = canvasWidth / 2;
         const roadStart = (canvasWidth - roadWidth) / 2;
-        const grassWidth = roadStart; // The grass area width on each side
+        const grassWidth = roadStart; 
     
         // Gradient for the road to simulate lighting and depth
         let roadGradient = ctx.createLinearGradient(roadStart, 0, roadStart + roadWidth, 0);
@@ -164,10 +164,35 @@ class DuckGame extends Component {
         ctx.fillStyle = grassGradientRight;
         ctx.fillRect(canvasWidth - grassWidth, 0, grassWidth, canvasHeight);
     };
-    
-    
-    
-    
+
+    drawCurbs = (ctx) => {
+        const { curbOffset } = this.state;
+        const roadWidth = this.offscreenCanvas.width / 2;
+        const roadStart = (this.offscreenCanvas.width - roadWidth) / 2;
+        const curbWidth = 10;
+        const curbHeight = 20;
+
+        for (let y = curbOffset - curbHeight; y < this.canvasRef.current.height; y += curbHeight * 2) {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(roadStart - curbWidth, y, curbWidth, curbHeight);
+            
+            ctx.fillStyle = 'white';
+            ctx.fillRect(roadStart - curbWidth, y + curbHeight, curbWidth, curbHeight);
+
+            ctx.fillStyle = 'red';
+            ctx.fillRect(roadStart + roadWidth, y, curbWidth, curbHeight);
+
+            ctx.fillStyle = 'white';
+            ctx.fillRect(roadStart + roadWidth, y + curbHeight, curbWidth, curbHeight);
+        }
+    };
+
+    updateCurbs = () => {
+        const { obstacleSpeed, curbOffset } = this.state;
+        const newCurbOffset = (curbOffset + obstacleSpeed) % (20 * 2); 
+
+        this.setState({ curbOffset: newCurbOffset });
+    };
 
     drawDuck = (ctx) => {
         const { duckX } = this.state;
@@ -211,12 +236,15 @@ class DuckGame extends Component {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         this.drawRoad(ctx);
         this.drawDuck(ctx);
-
+        this.drawCurbs(ctx);
+        
         if (!this.state.gameOver) {
-            this.checkCollisions(); // Check for collisions before drawing and updating
+            this.checkCollisions(); 
             this.drawObstacles(ctx);
             this.moveDuck();
             this.updateObstacles();
+            this.updateCurbs(); 
+
         } else {
             this.handleGameOver(ctx);
         }
@@ -231,13 +259,12 @@ class DuckGame extends Component {
     
         for (let i = 0; i < obstacles.length; i++) {
             const obstacle = obstacles[i];
-            // Assuming the height of the obstacles is also 100, adjust if necessary
-            // Check if the duck's and obstacle's bounding boxes overlap
+           
             if (duckX < obstacle.x + obstacle.width &&
                 duckX + duckWidth > obstacle.x &&
                 duckY < obstacle.y + obstacle.height &&
                 duckY + duckHeight > obstacle.y) {
-                // Collision detected
+               
                 this.setState({
                     gameOver: true,
                     collidedObstacleIndex: i
@@ -249,10 +276,11 @@ class DuckGame extends Component {
     };
     
     gameOver = () => {
-        cancelAnimationFrame(this.animationFrameId); // Stop the game loop
-        // Stop any other game interval like increasing difficulty
+        cancelAnimationFrame(this.animationFrameId); 
         clearInterval(this.increaseDifficultyInterval);
-        // Possibly trigger a "game over" screen or logic here
+
+        // Trigger a "game over" screen or logic here
+
     };
 
     handleGameOver = (ctx) => {
