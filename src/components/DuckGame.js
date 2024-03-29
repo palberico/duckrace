@@ -41,19 +41,35 @@ class DuckGame extends Component {
                 blueCar: null,
                 orangeCar: null,
             },
+            obstacleSpeed: 2, // Initial speed of obstacles
+            difficultyLevel: 1, // Initial difficulty level
         };
 
         this.duck = new Image();
         this.duck.src = duckImage;
     }
 
+    gameLoop = () => {
+        this.draw(); // Perform the game drawing and updates
+    
+        // Request the next frame
+        this.animationFrameId = requestAnimationFrame(this.gameLoop);
+    }
+
     componentDidMount() {
         this.updateCanvas();
         document.addEventListener("keydown", this.keyDownHandler);
         document.addEventListener("keyup", this.keyUpHandler);
-        this.gameInterval = setInterval(() => this.draw(), 10);
-
         this.loadCarImages();
+        this.gameLoop(); 
+        this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000); // Increase difficulty every 30 seconds
+    }
+
+    increaseDifficulty = () => {
+        this.setState(prevState => ({
+            difficultyLevel: prevState.difficultyLevel + 1,
+            obstacleSpeed: prevState.obstacleSpeed + 1, // Adjust this value as needed to control the speed increase rate
+        }));
     }
 
     loadCarImages = () => {
@@ -109,8 +125,12 @@ class DuckGame extends Component {
     componentWillUnmount() {
         document.removeEventListener("keydown", this.keyDownHandler);
         document.removeEventListener("keyup", this.keyUpHandler);
-        clearInterval(this.gameInterval);
+    
+        // Cancel the animation frame request
+        cancelAnimationFrame(this.animationFrameId);
+        clearInterval(this.increaseDifficultyInterval);
     }
+    
 
     keyDownHandler = (e) => {
         if (e.key === "Right" || e.key === "ArrowRight") {
@@ -160,22 +180,30 @@ class DuckGame extends Component {
     };
 
     updateObstacles = () => {
-        const { obstacles } = this.state;
+        const { obstacles, obstacleSpeed } = this.state; // Destructure obstacleSpeed from the state
         const roadWidth = this.canvasRef.current.width / 2; // Road takes up half the canvas width
         const roadStart = (this.canvasRef.current.width - roadWidth) / 2;
+    
         const updatedObstacles = obstacles.map(obstacle => {
-            let newY = obstacle.y + 2; // Move the obstacle down
+            let newY = obstacle.y + obstacleSpeed; // Use obstacleSpeed to determine how much each obstacle moves down
+    
+            // Reset the obstacle to the top once it moves off the screen
             if (newY > this.canvasRef.current.height) {
                 newY = -obstacle.height; // Reset to just above the canvas with the obstacle's height
+    
                 // Randomize the x position within the road for the obstacle to reappear
                 // Ensure the entire width of the obstacle is within the road boundaries
                 const obstaclePosition = roadStart + (Math.random() * (roadWidth - obstacle.width));
+    
                 return { ...obstacle, y: newY, x: obstaclePosition };
             }
+    
             return { ...obstacle, y: newY };
         });
+    
         this.setState({ obstacles: updatedObstacles });
     };
+    
 
 //Moving curb code: Save for future use
     // drawCurbs = (ctx, roadStart, roadWidth) => {
