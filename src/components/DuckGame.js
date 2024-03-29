@@ -43,6 +43,8 @@ class DuckGame extends Component {
             },
             obstacleSpeed: 2, // Initial speed of obstacles
             difficultyLevel: 1, // Initial difficulty level
+            gameOver: false,
+            collidedObstacleIndex: null, // Index of the obstacle that was collided with
         };
 
         this.duck = new Image();
@@ -276,17 +278,32 @@ drawCurbs = (ctx, roadStart, roadWidth) => {
         // Clear the canvas before each frame
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Draw all game elements
+        // Always draw the road and the duck
         this.drawRoad(ctx);
-        this.drawObstacles(ctx);
         this.drawDuck(ctx);
     
-        // Update game element positions for next frame
+        // Draw obstacles. If the game is over, draw the collision indication
+        if (!this.state.gameOver) {
+            this.drawObstacles(ctx);
+            this.checkCollisions(); // Check for collisions only if the game is not over
+        } else {
+            // If a collision has occurred, draw the red box on the collided obstacle and skip updating positions
+            const collidedObstacle = this.state.obstacles[this.state.collidedObstacleIndex];
+            if (collidedObstacle) {
+                ctx.fillStyle = 'red'; // Use red color for the collision indication
+                ctx.fillRect(collidedObstacle.x, collidedObstacle.y, collidedObstacle.width, collidedObstacle.height); // Draw a red rectangle over the collided obstacle
+            }
+            return; // Skip updating positions and other game elements since the game is over
+        }
+    
+        // Update game element positions for next frame (only if the game is not over)
         this.moveDuck();
         this.updateObstacles();
         this.updateCurbs(); // Update the curb offset for scrolling
         this.drawCurbs(ctx, roadStart, roadWidth); // Draw the curbs with updated positions
     };
+    
+    
       
 
     updateCanvas = () => {
@@ -295,6 +312,34 @@ drawCurbs = (ctx, roadStart, roadWidth) => {
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
+
+    checkCollisions = () => {
+        const { duckX, obstacles } = this.state;
+        const duckWidth = 50; // The width of your duck image
+        const duckHeight = 50; // The height of your duck image
+        const canvas = this.canvasRef.current;
+        
+        // Calculate the Y position from the top edge instead of the vertical center
+        const duckY = (canvas.height - duckHeight) / 1.25; 
+    
+        for (let i = 0; i < obstacles.length; i++) {
+            const obstacle = obstacles[i];
+            const horizontalOverlap = duckX < obstacle.x + obstacle.width && duckX + duckWidth > obstacle.x;
+            const verticalOverlap = duckY < obstacle.y + obstacle.height && duckY + duckHeight > obstacle.y;
+    
+            if (horizontalOverlap && verticalOverlap) {
+                // Collision detected
+                this.setState({
+                    gameOver: true,
+                    collidedObstacleIndex: i
+                });
+                break; // Exit the loop after the first collision is detected
+            }
+        }
+    };
+    
+    
+    
 
     render() {
         return (
