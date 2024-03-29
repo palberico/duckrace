@@ -73,10 +73,10 @@ class DuckGame extends Component {
         const roadWidth = 800 / 3;
         const roadStart = (800 - roadWidth) / 2;
         const obstacles = [
-            { image: 'redCar', x: roadStart + roadWidth / 3 - 25, y: -50, width: 50, height: 100 },
-            { image: 'blueCar', x: roadStart + roadWidth / 3, y: -250, width: 50, height: 100 },
-            { image: 'greenCar', x: roadStart + roadWidth / 3 * 2, y: -450, width: 50, height: 100 },
-            { image: 'orangeCar', x: roadStart + roadWidth - 50, y: -650, width: 50, height: 100 },
+            { image: 'redCar', x: roadStart + roadWidth / 3 - 25, y: -50, width: 50, height: 50 },
+            { image: 'blueCar', x: roadStart + roadWidth / 3, y: -250, width: 50, height: 50 },
+            { image: 'greenCar', x: roadStart + roadWidth / 3 * 2, y: -450, width: 50, height: 50 },
+            { image: 'orangeCar', x: roadStart + roadWidth - 50, y: -650, width: 50, height: 50 },
         ];
         this.setState({ obstacles });
     };
@@ -141,7 +141,7 @@ class DuckGame extends Component {
         const { duckX } = this.state;
         const canvas = this.canvasRef.current;
         const duckWidth = 50;
-        const duckHeight = 100;
+        const duckHeight = 50;
         const duckY = (canvas.height - duckHeight) / 1.25;
         ctx.drawImage(this.duck, duckX, duckY, duckWidth, duckHeight);
     };
@@ -193,7 +193,7 @@ class DuckGame extends Component {
     checkCollisions = () => {
         const { duckX, obstacles } = this.state;
         const duckWidth = 50; // Width of the duck image
-        const duckHeight = 100; // Height of the duck image
+        const duckHeight = 50; // Height of the duck image
         const canvas = this.canvasRef.current;
         const duckY = (canvas.height - duckHeight) / 1.25; // Vertical center position as used in drawDuck
     
