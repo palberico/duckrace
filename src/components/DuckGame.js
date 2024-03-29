@@ -10,18 +10,10 @@ class DuckGame extends Component {
     constructor(props) {
         super(props);
         this.canvasRef = React.createRef();
-        this.initializeCanvas();
-        this.initializeState();
-    }
-
-    initializeCanvas() {
         this.offscreenCanvas = document.createElement('canvas');
         this.offscreenCanvas.width = 800;
         this.offscreenCanvas.height = 600;
         this.offscreenCtx = this.offscreenCanvas.getContext('2d');
-    }
-
-    initializeState() {
         const roadWidth = 800 / 3;
         const roadStart = (800 - roadWidth) / 2;
         this.state = {
@@ -38,8 +30,12 @@ class DuckGame extends Component {
             explosionImage: null,
         };
         this.duck = new Image();
-        this.duck.src = duckImage;
+        this.duck.onload = () => {
+            this.setState({ duckImage: this.duck });
+        };
+        this.duck.src = duckImage; // Make sure this path is correct or passed as a prop
     }
+    
 
     componentDidMount() {
         this.setupEventListeners();
@@ -117,7 +113,7 @@ class DuckGame extends Component {
     };
 
     moveDuck = () => {
-        const { duckX, rightPressed, leftPressed, carImages } = this.state;
+        const { duckX, rightPressed, leftPressed } = this.state;
         const canvas = this.canvasRef.current;
         const roadWidth = canvas.width / 2;
         const roadStart = (canvas.width - roadWidth) / 2;
@@ -131,11 +127,47 @@ class DuckGame extends Component {
     };
 
     drawRoad = (ctx) => {
-        const roadWidth = ctx.canvas.width / 2;
-        const roadStart = (ctx.canvas.width - roadWidth) / 2;
-        ctx.fillStyle = 'darkgray';
-        ctx.fillRect(roadStart, 0, roadWidth, ctx.canvas.height);
+        const canvasWidth = ctx.canvas.width;
+        const canvasHeight = ctx.canvas.height;
+        const roadWidth = canvasWidth / 2;
+        const roadStart = (canvasWidth - roadWidth) / 2;
+        const grassWidth = roadStart; // The grass area width on each side
+    
+        // Gradient for the road to simulate lighting and depth
+        let roadGradient = ctx.createLinearGradient(roadStart, 0, roadStart + roadWidth, 0);
+        roadGradient.addColorStop(0, '#505050'); // Darker at the edges
+        roadGradient.addColorStop(0.5, '#585858'); // Lighter in the center
+        roadGradient.addColorStop(1, '#505050'); // Darker at the edges again
+    
+        ctx.fillStyle = roadGradient;
+        ctx.fillRect(roadStart, 0, roadWidth, canvasHeight);
+    
+        // Define the hex codes for your gradients
+        const darkGreenHex = '#006400'; // Darker green
+        const lighterGreenHex = '#138c13'; // Lighter but not too light green
+    
+        // Create gradient for the grass on the left
+        let grassGradientLeft = ctx.createLinearGradient(0, 0, grassWidth, 0);
+        grassGradientLeft.addColorStop(0, lighterGreenHex);
+        grassGradientLeft.addColorStop(1, darkGreenHex);
+    
+        // Draw the left grass area with the gradient
+        ctx.fillStyle = grassGradientLeft;
+        ctx.fillRect(0, 0, grassWidth, canvasHeight);
+    
+        // Create gradient for the grass on the right
+        let grassGradientRight = ctx.createLinearGradient(canvasWidth - grassWidth, 0, canvasWidth, 0);
+        grassGradientRight.addColorStop(0, darkGreenHex);
+        grassGradientRight.addColorStop(1, lighterGreenHex);
+    
+        // Draw the right grass area with the gradient
+        ctx.fillStyle = grassGradientRight;
+        ctx.fillRect(canvasWidth - grassWidth, 0, grassWidth, canvasHeight);
     };
+    
+    
+    
+    
 
     drawDuck = (ctx) => {
         const { duckX } = this.state;
