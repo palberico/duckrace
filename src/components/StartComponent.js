@@ -12,7 +12,7 @@ class StartComponent extends Component {
         'start/Start3.png',
         'start/Start4.png',
         'start/Start5.png',
-        'start/Start.png',
+        'start/Start.png'
       ],
     };
   }
@@ -21,23 +21,31 @@ class StartComponent extends Component {
     this.startSequence();
   }
 
+  componentWillUnmount() {
+    clearInterval(this.interval); // Clear the interval when the component unmounts
+  }
+
   startSequence = () => {
     this.interval = setInterval(() => {
       this.setState(prevState => {
-        if (prevState.currentGraphicIndex < prevState.startGraphics.length - 1) {
-          return { currentGraphicIndex: prevState.currentGraphicIndex + 1 };
-        } else {
-          clearInterval(this.interval);
-          // Notify parent component (DuckGame) to start the game
-          this.props.onSequenceEnd();
-          return {};
+        const nextIndex = prevState.currentGraphicIndex + 1;
+
+        // If we've reached the end of the array
+        if (nextIndex === prevState.startGraphics.length) {
+          clearInterval(this.interval); // Stop the interval
+          this.props.onSequenceEnd(); // Notify parent to start the game
+          return { currentGraphicIndex: 0 }; // Optionally reset to first image, or handle differently
         }
+
+        // Move to the next image
+        return { currentGraphicIndex: nextIndex };
       });
-    }, 1000);
+    }, 1000); // Change the image every 1 second
   };
 
   render() {
     const { startGraphics, currentGraphicIndex } = this.state;
+    // Dynamically import image based on the current index
     const graphicToDisplay = require(`../assets/images/${startGraphics[currentGraphicIndex]}`);
 
     return (
