@@ -1,0 +1,22 @@
+.game-container {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    margin: 0 auto; /* Center the container horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center the content vertically */
+}
+
+.start-component-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.9); /* Optional: to obscure the game until start */
+    z-index: 10; /* Ensures it lays on top of the canvas */
+}

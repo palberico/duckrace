@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import duckImage from '../assets/images/DuckGame.png';
-import redCarImage from '../assets/images/RedCar.png';
-import blueCarImage from '../assets/images/BlueCar.png';
-import greenCarImage from '../assets/images/GreenCar.png';
-import orangeCarImage from '../assets/images/OrangeCar.png';
+import StartComponent from './StartComponent';
+import duckImage from '../assets/images/cars/DuckGame.png';
+import redCarImage from '../assets/images/cars/RedCar.png';
 import explosionImage from '../assets/images/Explosion.png';
+import blueCarImage from '../assets/images/cars/BlueCar.png';
+import greenCarImage from '../assets/images/cars/GreenCar.png';
+import orangeCarImage from '../assets/images/cars/OrangeCar.png';
+import '../DuckGame.css';
 
 class DuckGame extends Component {
     constructor(props) {
@@ -24,11 +26,19 @@ class DuckGame extends Component {
 
     // Optional: Use onload to confirm the image has loaded
     this.explosionImg.onload = () => {
-        console.log('Explosion image loaded');
-        // Ensure the image is assigned to state only after it has loaded
-        this.setState({ explosionImage: this.explosionImg });
+        if (this.isComponentMounted) {
+            this.setState({ explosionImage: this.explosionImg });
+        }
     };
     }
+
+    startGame = () => {
+        // Hide the start button and begin the start sequence
+        this.setState({ startSequenceFinished: true });
+        this.setState({ showStartComponent: true });
+      };
+      
+    
 
     getInitialState = () => ({
         duckX: 275, // Example initial X, assuming roadWidth and roadStart calculations
@@ -44,16 +54,19 @@ class DuckGame extends Component {
         explosionImage: null,
         curbs: [],
         showGameOverScreen: false,
+        startSequenceFinished: false,
+        showStartComponent: false,
     });
 
     componentDidMount() {
+        this.isComponentMounted = true;
         this.setupEventListeners();
         this.loadCarImages();
-        this.gameLoop();
         this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
     
-        // Add click event listener for the canvas
-        this.canvasRef.current.addEventListener('click', this.handleCanvasClick);
+        if (this.canvasRef.current) {
+            this.canvasRef.current.addEventListener('click', this.handleCanvasClick);
+        }
     }
     
     handleCanvasClick = (event) => {
@@ -61,13 +74,12 @@ class DuckGame extends Component {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
     
-        // Check if click is within the restart button bounds
-        if (
+        // Adjusted coordinates for the "Play Again" button
+        if (this.state.gameOver &&
             x > this.canvasRef.current.width / 2 - 75 &&
             x < this.canvasRef.current.width / 2 + 75 &&
-            y > this.canvasRef.current.height / 2 &&
-            y < this.canvasRef.current.height / 2 + 40
-        ) {
+            y > this.canvasRef.current.height / 2 - 20 && // Adjusted for vertical alignment
+            y < this.canvasRef.current.height / 2 + 20) { // Adjusted for vertical alignment
             this.restartGame();
         }
     };
@@ -81,14 +93,14 @@ class DuckGame extends Component {
         const carImages = {
             redCar: new Image(),
             greenCar: new Image(),
-            blueCar: new Image(),
             orangeCar: new Image(),
+            blueCar: new Image(),
         };
         // Set sources for car images
         carImages.redCar.src = redCarImage;
         carImages.greenCar.src = greenCarImage;
-        carImages.blueCar.src = blueCarImage;
         carImages.orangeCar.src = orangeCarImage;
+        carImages.blueCar.src = blueCarImage;
 
         const explosionImg = new Image();
         explosionImg.src = explosionImage;
@@ -102,24 +114,26 @@ class DuckGame extends Component {
         const obstacles = [
             { image: 'redCar', x: roadStart + roadWidth / 3 - 25, y: -50, width: 50, height: 50 },
             { image: 'blueCar', x: roadStart + roadWidth / 3, y: -250, width: 50, height: 50 },
-            { image: 'greenCar', x: roadStart + roadWidth / 3 * 2, y: -450, width: 50, height: 50 },
             { image: 'orangeCar', x: roadStart + roadWidth - 50, y: -650, width: 50, height: 50 },
+            { image: 'greenCar', x: roadStart + roadWidth / 3 * 2, y: -450, width: 50, height: 50 },
         ];
         this.setState({ obstacles });
     };
 
     componentWillUnmount() {
+        this.isComponentMounted = false;
         document.removeEventListener("keydown", this.keyDownHandler);
         document.removeEventListener("keyup", this.keyUpHandler);
         cancelAnimationFrame(this.animationFrameId);
         clearInterval(this.increaseDifficultyInterval);
     
-        // Remove click event listener
-        this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
+        if (this.canvasRef.current) {
+            this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
+        }
     }
 
     gameLoop = () => {
-        if (!this.state.gameOver) {
+        if (!this.state.gameOver && this.isComponentMounted) {
             this.draw();
             this.animationFrameId = requestAnimationFrame(this.gameLoop);
         }
@@ -249,6 +263,8 @@ class DuckGame extends Component {
 
     draw = () => {
         const canvas = this.canvasRef.current;
+        if (!canvas) return;  // Early return if canvas is not available
+    
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -264,7 +280,6 @@ class DuckGame extends Component {
             this.updateCurbs();
         } else {
             this.handleGameOver(ctx);
-    
             // Draw the "Game Over" text
             ctx.font = '48px serif';
             ctx.fillStyle = 'white';
@@ -371,20 +386,71 @@ handleGameOver = (ctx) => {
 };
 
 restartGame = () => {
-    this.setState(this.getInitialState(), () => {
+    // Reset the state to its initial values and restart the game loop
+    this.setState({
+        ...this.getInitialState(),
+        startSequenceFinished: true, // Ensure the start sequence is marked as finished
+        showStartComponent: false, // Ensure the start component is hidden
+        gameOver: false, // Reset the game over state
+    }, () => {
+        this.setupEventListeners();
         this.loadCarImages();
         this.gameLoop();
-        this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
     });
 };
 
 render() {
+    const { startSequenceFinished, gameOver, showStartComponent } = this.state;
+
+    const startButtonStyle = {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      zIndex: 20 // Ensure button is above everything else
+    };
+  
+    const startComponentStyle = {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 10 // Ensure it's above the canvas but below the start button
+    };
+  
     return (
-        <div className="game-container">
-            <canvas ref={this.canvasRef} width="800" height="600" style={{ border: '1px solid black' }} />
+        <div className="game-container" style={{ position: 'relative', width: '800px', height: '600px', margin: '0 auto' }}>
+          <canvas ref={this.canvasRef} width="800" height="600" style={{ border: '1px solid black' }} />
+          
+          {/* Button should show when game hasn't started or has ended */}
+          {!startSequenceFinished && !gameOver && (
+            <button onClick={this.startGame} style={startButtonStyle}>
+              Start Game
+            </button>
+          )}
+          
+          {/* StartComponent should show only during the start sequence */}
+          {showStartComponent && (
+            <div style={startComponentStyle}>
+              <StartComponent onSequenceEnd={this.handleSequenceEnd} />
+            </div>
+          )}
         </div>
     );
 }
+  
+  handleSequenceEnd = () => {
+    // Hide the start component and start the game loop
+    this.setState({ startSequenceFinished: true, showStartComponent: false }, () => {
+      this.setupEventListeners();
+      this.loadCarImages();
+      this.gameLoop();
+    });
+  };
 }
 
 export default DuckGame;
