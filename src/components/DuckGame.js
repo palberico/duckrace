@@ -51,7 +51,26 @@ class DuckGame extends Component {
         this.loadCarImages();
         this.gameLoop();
         this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
+    
+        // Add click event listener for the canvas
+        this.canvasRef.current.addEventListener('click', this.handleCanvasClick);
     }
+    
+    handleCanvasClick = (event) => {
+        const rect = this.canvasRef.current.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+    
+        // Check if click is within the restart button bounds
+        if (
+            x > this.canvasRef.current.width / 2 - 75 &&
+            x < this.canvasRef.current.width / 2 + 75 &&
+            y > this.canvasRef.current.height / 2 &&
+            y < this.canvasRef.current.height / 2 + 40
+        ) {
+            this.restartGame();
+        }
+    };
 
     setupEventListeners = () => {
         document.addEventListener("keydown", this.keyDownHandler);
@@ -94,6 +113,9 @@ class DuckGame extends Component {
         document.removeEventListener("keyup", this.keyUpHandler);
         cancelAnimationFrame(this.animationFrameId);
         clearInterval(this.increaseDifficultyInterval);
+    
+        // Remove click event listener
+        this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
     }
 
     gameLoop = () => {
@@ -326,6 +348,24 @@ handleGameOver = (ctx) => {
             collidedObstacle.height
         );
     }
+
+    // Draw restart button
+    const buttonWidth = 150;
+    const buttonHeight = 40;
+    const buttonX = this.canvasRef.current.width / 2 - buttonWidth / 2;
+    const buttonY = this.canvasRef.current.height / 2 + 20;
+    ctx.fillStyle = '#00FF00'; // Green color for the button
+    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+    
+    // Draw the text "Restart" centered in the button
+    ctx.font = '20px serif';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center'; // This ensures the text is centered
+    ctx.textBaseline = 'middle'; // This aligns the text vertically in the middle
+    // Calculate the center of the button
+    const textX = buttonX + buttonWidth / 2;
+    const textY = buttonY + buttonHeight / 2;
+    ctx.fillText('Restart', textX, textY);
 };
 
 restartGame = () => {
