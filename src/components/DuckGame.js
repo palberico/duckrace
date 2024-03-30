@@ -367,7 +367,7 @@ handleGameOver = (ctx) => {
     // Calculate the center of the button
     const textX = buttonX + buttonWidth / 2;
     const textY = buttonY + buttonHeight / 2;
-    ctx.fillText('Restart', textX, textY);
+    ctx.fillText('Play Again', textX, textY);
 };
 
 restartGame = () => {
