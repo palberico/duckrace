@@ -203,9 +203,11 @@ class DuckGame extends Component {
 
 
     updateCurbs = () => {
-        const { obstacleSpeed, curbOffset } = this.state;
-        const newCurbOffset = (curbOffset + obstacleSpeed) % (20 * 2); 
-
+        // Half the obstacle speed for the curb scrolling speed
+        const curbSpeed = this.state.obstacleSpeed * 2;
+        const { curbOffset } = this.state;
+        const newCurbOffset = (curbOffset + curbSpeed) % (20 * 2); // 20 is the height of a curb segment, multiplied by 2 for the space
+    
         this.setState({ curbOffset: newCurbOffset });
     };
 
