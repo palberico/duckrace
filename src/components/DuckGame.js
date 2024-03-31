@@ -8,6 +8,8 @@ import greenCarImage from '../assets/images/cars/GreenCar.png';
 import orangeCarImage from '../assets/images/cars/OrangeCar.png';
 import '../DuckGame.css';
 
+const SCORE_POSITION = { x: 20, y: 30 };
+
 class DuckGame extends Component {
     constructor(props) {
         super(props);
@@ -56,6 +58,7 @@ class DuckGame extends Component {
         showGameOverScreen: false,
         startSequenceFinished: false,
         showStartComponent: false,
+        score: 0,
     });
 
     componentDidMount() {
@@ -109,8 +112,9 @@ class DuckGame extends Component {
     };
 
     setObstacles = () => {
-        const roadWidth = 800 / 3;
+        const roadWidth = 800 / 2; // Assuming the road takes up half the canvas width
         const roadStart = (800 - roadWidth) / 2;
+      
         const obstacles = [
             { image: 'redCar', x: roadStart + roadWidth / 3 - 25, y: -50, width: 50, height: 50 },
             { image: 'blueCar', x: roadStart + roadWidth / 3, y: -250, width: 50, height: 50 },
@@ -245,32 +249,53 @@ class DuckGame extends Component {
     };
 
     updateObstacles = () => {
-        const { obstacles, obstacleSpeed } = this.state;
+        const { obstacles, obstacleSpeed, score } = this.state;
         const canvas = this.canvasRef.current;
         const roadWidth = canvas.width / 2;
         const roadStart = (canvas.width - roadWidth) / 2;
+        const roadEnd = roadStart + roadWidth;
+        const obstacleWidth = 50; // The width of your obstacles
+        
+        let scoreIncrement = 0;
         const updatedObstacles = obstacles.map(obstacle => {
-            let newY = obstacle.y + obstacleSpeed;
-            if (newY > canvas.height) {
-                newY = -obstacle.height;
-                const obstaclePosition = roadStart + (Math.random() * (roadWidth - obstacle.width));
-                return { ...obstacle, y: newY, x: obstaclePosition };
-            }
-            return { ...obstacle, y: newY };
+          let newY = obstacle.y + obstacleSpeed;
+          if (newY > canvas.height) {
+            newY = -obstacle.height;
+            const newPosX = roadStart + Math.random() * (roadEnd - roadStart - obstacleWidth);
+            scoreIncrement++; // Increment score for dodging the obstacle
+            return { ...obstacle, y: newY, x: newPosX };
+          }
+          return { ...obstacle, y: newY };
         });
-        this.setState({ obstacles: updatedObstacles });
-    };
+      
+        this.setState({
+          obstacles: updatedObstacles,
+          score: score + scoreIncrement // Update the score state
+        });
+      };
 
-    draw = () => {
+      draw = () => {
         const canvas = this.canvasRef.current;
-        if (!canvas) return;  // Early return if canvas is not available
+        if (!canvas) return; // Early return if canvas is not available
     
         const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+        ctx.save(); // Save the current context state
+    
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset the transform matrix to the identity matrix
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas
     
         this.drawRoad(ctx);
         this.drawDuck(ctx);
         this.drawCurbs(ctx);
+    
+        console.log(`Drawing score at x: ${SCORE_POSITION.x}, y: ${SCORE_POSITION.y}`);
+        console.log(`Canvas size is width: ${canvas.width}, height: ${canvas.height}`);
+    
+        // Draw Score
+        ctx.font = '24px Arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText(`Score: ${this.state.score}`, SCORE_POSITION.x, SCORE_POSITION.y);
     
         if (!this.state.gameOver) {
             this.checkCollisions();
@@ -286,6 +311,8 @@ class DuckGame extends Component {
             ctx.textAlign = 'center';
             ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
         }
+    
+        ctx.restore(); // Restore the context state to what it was before the save()
     };
     
     drawCurbs = (ctx) => {
@@ -391,6 +418,7 @@ restartGame = () => {
         ...this.getInitialState(),
         startSequenceFinished: true, // Ensure the start sequence is marked as finished
         showStartComponent: false, // Ensure the start component is hidden
+        score: 0, // Reset score
         gameOver: false, // Reset the game over state
     }, () => {
         this.setupEventListeners();
