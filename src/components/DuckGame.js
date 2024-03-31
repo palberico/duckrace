@@ -36,9 +36,11 @@ class DuckGame extends Component {
 
     startGame = () => {
         // Hide the start button and begin the start sequence
-        this.setState({ startSequenceFinished: true });
-        this.setState({ showStartComponent: true });
-      };
+        this.setState({
+            startSequenceFinished: true,
+            showStartComponent: true
+        });
+    };
       
     
 
@@ -94,21 +96,34 @@ class DuckGame extends Component {
 
     loadCarImages = () => {
         const carImages = {
-            redCar: new Image(),
-            greenCar: new Image(),
-            orangeCar: new Image(),
-            blueCar: new Image(),
+            redCar: redCarImage,
+            greenCar: greenCarImage,
+            orangeCar: orangeCarImage,
+            blueCar: blueCarImage,
         };
-        // Set sources for car images
-        carImages.redCar.src = redCarImage;
-        carImages.greenCar.src = greenCarImage;
-        carImages.orangeCar.src = orangeCarImage;
-        carImages.blueCar.src = blueCarImage;
-
-        const explosionImg = new Image();
-        explosionImg.src = explosionImage;
-
-        this.setState({ carImages, explosionImage: explosionImg }, this.setObstacles);
+    
+        const imagePromises = Object.entries(carImages).map(([key, src]) => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve({ key, img });
+                img.onerror = reject;
+                img.src = src;
+            });
+        });
+    
+        Promise.all(imagePromises)
+            .then(results => {
+                const loadedCarImages = results.reduce((acc, { key, img }) => {
+                    acc[key] = img;
+                    return acc;
+                }, {});
+    
+                this.setState({ carImages: loadedCarImages }, this.setObstacles);
+            })
+            .catch(error => {
+                console.error('Error loading images:', error);
+                // Handle image loading error (e.g., show an error message or retry loading)
+            });
     };
 
     setObstacles = () => {
