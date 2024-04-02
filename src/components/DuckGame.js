@@ -208,7 +208,7 @@ class DuckGame extends Component {
         });
       };
 
-      draw = () => {
+    draw = () => {
         const canvas = this.canvasRef.current;
         if (!canvas || !this.state.startImageLoaded) return; // Check if canvas exists and image is loaded
       
@@ -370,15 +370,7 @@ class DuckGame extends Component {
         ctx.fillText('Play Again', textX, textY);
     };
 
-
-
-
-
-
-     
-      
-
-
+//Clean up this code later - Move to make more sense
 
     setObstacles = () => {
         const roadWidth = 800 / 2; // Assuming the road takes up half the canvas width
@@ -421,7 +413,6 @@ class DuckGame extends Component {
             this.setState({ duckX: duckX - 7 });
         }
     };
-
 
     updateCurbs = () => {
         // Half the obstacle speed for the curb scrolling speed
@@ -485,49 +476,46 @@ class DuckGame extends Component {
 
 
 
-
-render() {
-    const { startSequenceFinished, gameOver, showStartComponent } = this.state;
-
-    const startButtonStyle = {
-        position: 'absolute',
-        bottom: '10px',
-        left: '10px',
-        zIndex: 20 // Ensure button is above everything else
-      };
-  
-    const startComponentStyle = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 10 // Ensure it's above the canvas but below the start button
-    };
-  
-    return (
-        <div className="game-container" style={{ position: 'relative', width: '800px', height: '600px', margin: '0 auto' }}>
-          <canvas ref={this.canvasRef} width="800" height="600" style={{ border: '1px solid black' }} />
-          
-          {/* Button should show when game hasn't started or has ended */}
-          {!startSequenceFinished && !gameOver && (
+    render() {
+        const { gameOver } = this.state;
+      
+        const startButtonStyle = {
+          position: 'absolute',
+          bottom: '10px',
+          left: '10px',
+          zIndex: 20 // Ensure button is above everything else
+        };
+      
+        const startComponentStyle = {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 10 // Ensure it's above the canvas but below the start button
+        };
+      
+        return (
+          <div className="game-container" style={{ position: 'relative', width: '800px', height: '600px', margin: '0 auto' }}>
+            <canvas ref={this.canvasRef} width="800" height="600" style={{ border: '1px solid black' }} />
+            
+            {/* This button will always show and change text depending on gameOver state */}
             <Button onClick={this.startGame} style={startButtonStyle} primary>
-                {gameOver ? 'Try Again' : 'Start Game'}
+              {gameOver ? 'Try Again' : 'Start Game'}
             </Button>
-)}
-          
-          {/* StartComponent should show only during the start sequence */}
-          {showStartComponent && (
-            <div style={startComponentStyle}>
-              <StartComponent onSequenceEnd={this.handleSequenceEnd} />
-            </div>
-          )}
-        </div>
-    );
-}
+      
+            {/* StartComponent should show only during the start sequence */}
+            {this.state.showStartComponent && (
+              <div style={startComponentStyle}>
+                <StartComponent onSequenceEnd={this.handleSequenceEnd} />
+              </div>
+            )}
+          </div>
+        );
+      }
 }
 
 export default DuckGame;
