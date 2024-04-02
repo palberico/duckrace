@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { Button } from 'semantic-ui-react';
+
 import StartComponent from './StartComponent';
 import duckImage from '../assets/images/cars/DuckGame.png';
 import redCarImage from '../assets/images/cars/RedCar.png';
@@ -6,6 +8,8 @@ import explosionImage from '../assets/images/Explosion.png';
 import blueCarImage from '../assets/images/cars/BlueCar.png';
 import greenCarImage from '../assets/images/cars/GreenCar.png';
 import orangeCarImage from '../assets/images/cars/OrangeCar.png';
+
+
 import '../DuckGame.css';
 
 const SCORE_POSITION = { x: 20, y: 30 };
@@ -35,12 +39,12 @@ class DuckGame extends Component {
     }
 
     startGame = () => {
-        // Hide the start button and begin the start sequence
         this.setState({
-            startSequenceFinished: true,
-            showStartComponent: true
+          startSequenceFinished: true,
+          showStartComponent: true,
+          gameOver: false // Ensure the game is not marked as over when starting
         });
-    };
+      };
       
     
 
@@ -446,12 +450,11 @@ render() {
     const { startSequenceFinished, gameOver, showStartComponent } = this.state;
 
     const startButtonStyle = {
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      zIndex: 20 // Ensure button is above everything else
-    };
+        position: 'absolute',
+        bottom: '10px',
+        left: '10px',
+        zIndex: 20 // Ensure button is above everything else
+      };
   
     const startComponentStyle = {
       position: 'absolute',
@@ -471,10 +474,10 @@ render() {
           
           {/* Button should show when game hasn't started or has ended */}
           {!startSequenceFinished && !gameOver && (
-            <button onClick={this.startGame} style={startButtonStyle}>
-              Start Game
-            </button>
-          )}
+            <Button onClick={this.startGame} style={startButtonStyle} primary>
+                {gameOver ? 'Try Again' : 'Start Game'}
+            </Button>
+)}
           
           {/* StartComponent should show only during the start sequence */}
           {showStartComponent && (
