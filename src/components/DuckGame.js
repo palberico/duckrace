@@ -178,22 +178,19 @@ class DuckGame extends Component {
       };
 
       restartGame = () => {
-        this.isComponentMounted = true; // Ensure the component is marked as mounted
-      
         // Reset the state to its initial values
         this.setState({
           ...this.getInitialState(),
           startSequenceFinished: true, // Ensure the start sequence is marked as finished
-          showStartComponent: false, // Ensure the start component is hidden
-          score: 0, // Reset score
+          showStartComponent: true, // Ensure the start component is shown
           gameOver: false, // Reset the game over state
         }, () => {
           this.setupEventListeners();
           this.loadCarImages();
-          this.animationFrameId = null; // Reset the animation frame ID
+          this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
           this.gameLoop(); // Start the game loop
         });
-      };
+    };
     
     gameOver = () => {
         cancelAnimationFrame(this.animationFrameId);
