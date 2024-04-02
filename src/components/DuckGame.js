@@ -165,27 +165,35 @@ class DuckGame extends Component {
     };
 
     startGame = () => {
-        this.setState({
-          startSequenceFinished: true,
-          showStartComponent: true,
-          gameOver: false // Ensure the game is not marked as over when starting
-        });
+        // Always restart the game if the "Try Again" button is clicked
+        if (this.state.gameOver) {
+          this.restartGame();
+        } else {
+          this.setState({
+            startSequenceFinished: true,
+            showStartComponent: true,
+            gameOver: false // Ensure the game is not marked as over when starting
+          });
+        }
       };
 
-    restartGame = () => {
-    // Reset the state to its initial values and restart the game loop
+      restartGame = () => {
+        this.isComponentMounted = true; // Ensure the component is marked as mounted
+      
+        // Reset the state to its initial values
         this.setState({
-            ...this.getInitialState(),
-            startSequenceFinished: true, // Ensure the start sequence is marked as finished
-            showStartComponent: false, // Ensure the start component is hidden
-            score: 0, // Reset score
-            gameOver: false, // Reset the game over state
+          ...this.getInitialState(),
+          startSequenceFinished: true, // Ensure the start sequence is marked as finished
+          showStartComponent: false, // Ensure the start component is hidden
+          score: 0, // Reset score
+          gameOver: false, // Reset the game over state
         }, () => {
-            this.setupEventListeners();
-            this.loadCarImages();
-            this.gameLoop();
+          this.setupEventListeners();
+          this.loadCarImages();
+          this.animationFrameId = null; // Reset the animation frame ID
+          this.gameLoop(); // Start the game loop
         });
-    };
+      };
     
     gameOver = () => {
         cancelAnimationFrame(this.animationFrameId);
@@ -208,16 +216,16 @@ class DuckGame extends Component {
         });
       };
 
-    draw = () => {
+      draw = () => {
         const canvas = this.canvasRef.current;
         if (!canvas || !this.state.startImageLoaded) return; // Check if canvas exists and image is loaded
       
         const ctx = canvas.getContext('2d');
-      
         ctx.save();
       
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
       
         if (!this.state.startSequenceFinished) {
           // Draw the Start.png image centered in the canvas
@@ -338,36 +346,24 @@ class DuckGame extends Component {
     handleGameOver = (ctx) => {
         // Draw explosion if there was a collision
         const collidedObstacle = this.state.collidedObstacleIndex !== null 
-            ? this.state.obstacles[this.state.collidedObstacleIndex] 
-            : null;
-    
+          ? this.state.obstacles[this.state.collidedObstacleIndex] 
+          : null;
+      
         if (collidedObstacle && this.state.explosionImage) {
-            ctx.drawImage(
-                this.state.explosionImage,
-                collidedObstacle.x,
-                collidedObstacle.y,
-                collidedObstacle.width,
-                collidedObstacle.height
-            );
+          ctx.drawImage(
+            this.state.explosionImage,
+            collidedObstacle.x,
+            collidedObstacle.y,
+            collidedObstacle.width,
+            collidedObstacle.height
+          );
         }
-    
-        // Draw restart button
-        const buttonWidth = 150;
-        const buttonHeight = 40;
-        const buttonX = this.canvasRef.current.width / 2 - buttonWidth / 2;
-        const buttonY = this.canvasRef.current.height / 2 + 20;
-        ctx.fillStyle = '#00FF00'; // Green color for the button
-        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-        
-        // Draw the text "Restart" centered in the button
-        ctx.font = '20px serif';
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'center'; // This ensures the text is centered
-        ctx.textBaseline = 'middle'; // This aligns the text vertically in the middle
-        // Calculate the center of the button
-        const textX = buttonX + buttonWidth / 2;
-        const textY = buttonY + buttonHeight / 2;
-        ctx.fillText('Play Again', textX, textY);
+      
+        // Draw the "Game Over" text
+        ctx.font = '48px serif';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText('Game Over', this.canvasRef.current.width / 2, this.canvasRef.current.height / 2);
     };
 
 //Clean up this code later - Move to make more sense
