@@ -11,7 +11,6 @@ import blueCarImage from '../assets/images/cars/BlueCar.png';
 import greenCarImage from '../assets/images/cars/GreenCar.png';
 import orangeCarImage from '../assets/images/cars/OrangeCar.png';
 
-
 import '../DuckGame.css';
 
 const SCORE_POSITION = { x: 20, y: 30 };
@@ -43,7 +42,7 @@ class DuckGame extends Component {
         if (this.isComponentMounted) {
           this.setState({ explosionImage: this.explosionImg });
         }
-      };
+      };  
 
     // Optional: Use onload to confirm the image has loaded
     this.explosionImg.onload = () => {
@@ -51,8 +50,8 @@ class DuckGame extends Component {
             this.setState({ explosionImage: this.explosionImg });
         }
     };
-    }
-      
+}  
+    
     getInitialState = () => ({
         duckX: 275, // Example initial X, assuming roadWidth and roadStart calculations
         rightPressed: false,
@@ -73,14 +72,6 @@ class DuckGame extends Component {
         startImageLoaded: false,
     
     });
-
-    startGame = () => {
-        this.setState({
-          startSequenceFinished: true,
-          showStartComponent: true,
-          gameOver: false // Ensure the game is not marked as over when starting
-        });
-      };
 
     componentDidMount() {
         this.isComponentMounted = true;
@@ -104,7 +95,44 @@ class DuckGame extends Component {
             this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
         }
     }
-    
+
+    loadCarImages = () => {
+        const carImages = {
+          redCar: redCarImage,
+          greenCar: greenCarImage,
+          orangeCar: orangeCarImage,
+          blueCar: blueCarImage,
+        };
+      
+        const imagePromises = Object.entries(carImages).map(([key, src]) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve({ key, img });
+            img.onerror = reject;
+            img.src = src;
+          });
+        });
+      
+        Promise.all(imagePromises)
+          .then(results => {
+            const loadedCarImages = results.reduce((acc, { key, img }) => {
+              acc[key] = img;
+              return acc;
+            }, {});
+      
+            this.setState({ carImages: loadedCarImages }, this.setObstacles);
+          })
+          .catch(error => {
+            console.error('Error loading images:', error);
+            // Handle image loading error (e.g., show an error message or retry loading)
+          });
+      };
+      
+      setupEventListeners = () => {
+        document.addEventListener("keydown", this.keyDownHandler);
+        document.addEventListener("keyup", this.keyUpHandler);
+      };
+
     handleCanvasClick = (event) => {
         const rect = this.canvasRef.current.getBoundingClientRect();
         const x = event.clientX - rect.left;
@@ -118,70 +146,6 @@ class DuckGame extends Component {
             y < this.canvasRef.current.height / 2 + 20) { // Adjusted for vertical alignment
             this.restartGame();
         }
-    };
-
-    setupEventListeners = () => {
-        document.addEventListener("keydown", this.keyDownHandler);
-        document.addEventListener("keyup", this.keyUpHandler);
-    };
-
-    loadCarImages = () => {
-        const carImages = {
-            redCar: redCarImage,
-            greenCar: greenCarImage,
-            orangeCar: orangeCarImage,
-            blueCar: blueCarImage,
-        };
-    
-        const imagePromises = Object.entries(carImages).map(([key, src]) => {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => resolve({ key, img });
-                img.onerror = reject;
-                img.src = src;
-            });
-        });
-    
-        Promise.all(imagePromises)
-            .then(results => {
-                const loadedCarImages = results.reduce((acc, { key, img }) => {
-                    acc[key] = img;
-                    return acc;
-                }, {});
-    
-                this.setState({ carImages: loadedCarImages }, this.setObstacles);
-            })
-            .catch(error => {
-                console.error('Error loading images:', error);
-                // Handle image loading error (e.g., show an error message or retry loading)
-            });
-    };
-
-    setObstacles = () => {
-        const roadWidth = 800 / 2; // Assuming the road takes up half the canvas width
-        const roadStart = (800 - roadWidth) / 2;
-      
-        const obstacles = [
-            { image: 'redCar', x: roadStart + roadWidth / 3 - 25, y: -50, width: 50, height: 50 },
-            { image: 'blueCar', x: roadStart + roadWidth / 3, y: -250, width: 50, height: 50 },
-            { image: 'orangeCar', x: roadStart + roadWidth - 50, y: -650, width: 50, height: 50 },
-            { image: 'greenCar', x: roadStart + roadWidth / 3 * 2, y: -450, width: 50, height: 50 },
-        ];
-        this.setState({ obstacles });
-    };
-
-    gameLoop = () => {
-        if (!this.state.gameOver && this.isComponentMounted) {
-            this.draw();
-            this.animationFrameId = requestAnimationFrame(this.gameLoop);
-        }
-    };
-
-    increaseDifficulty = () => {
-        this.setState(prevState => ({
-            difficultyLevel: prevState.difficultyLevel + 1,
-            obstacleSpeed: prevState.obstacleSpeed + 1,
-        }));
     };
 
     keyDownHandler = (e) => {
@@ -200,111 +164,47 @@ class DuckGame extends Component {
         }
     };
 
-    moveDuck = () => {
-        const { duckX, rightPressed, leftPressed } = this.state;
-        const canvas = this.canvasRef.current;
-        const roadWidth = canvas.width / 2;
-        const roadStart = (canvas.width - roadWidth) / 2;
-        const duckWidth = 54;
-        const roadEnd = roadStart + roadWidth - duckWidth;
-        if (rightPressed && duckX < roadEnd) {
-            this.setState({ duckX: duckX + 7 });
-        } else if (leftPressed && duckX > roadStart) {
-            this.setState({ duckX: duckX - 7 });
-        }
-    };
-
-    drawRoad = (ctx) => {
-        const canvasWidth = ctx.canvas.width;
-        const canvasHeight = ctx.canvas.height;
-        const roadWidth = canvasWidth / 2;
-        const roadStart = (canvasWidth - roadWidth) / 2;
-        const grassWidth = roadStart; 
-    
-        // Gradient for the road to simulate lighting and depth
-        let roadGradient = ctx.createLinearGradient(roadStart, 0, roadStart + roadWidth, 0);
-        roadGradient.addColorStop(0, '#505050'); // Darker at the edges
-        roadGradient.addColorStop(0.5, '#585858'); // Lighter in the center
-        roadGradient.addColorStop(1, '#505050'); // Darker at the edges again
-    
-        ctx.fillStyle = roadGradient;
-        ctx.fillRect(roadStart, 0, roadWidth, canvasHeight);
-    
-        // Define the hex codes for your gradients
-        const darkGreenHex = '#006400'; // Darker green
-        const lighterGreenHex = '#138c13'; // Lighter but not too light green
-    
-        // Create gradient for the grass on the left
-        let grassGradientLeft = ctx.createLinearGradient(0, 0, grassWidth, 0);
-        grassGradientLeft.addColorStop(0, lighterGreenHex);
-        grassGradientLeft.addColorStop(1, darkGreenHex);
-    
-        // Draw the left grass area with the gradient
-        ctx.fillStyle = grassGradientLeft;
-        ctx.fillRect(0, 0, grassWidth, canvasHeight);
-    
-        // Create gradient for the grass on the right
-        let grassGradientRight = ctx.createLinearGradient(canvasWidth - grassWidth, 0, canvasWidth, 0);
-        grassGradientRight.addColorStop(0, darkGreenHex);
-        grassGradientRight.addColorStop(1, lighterGreenHex);
-    
-        // Draw the right grass area with the gradient
-        ctx.fillStyle = grassGradientRight;
-        ctx.fillRect(canvasWidth - grassWidth, 0, grassWidth, canvasHeight);
-    };
-
-
-    updateCurbs = () => {
-        // Half the obstacle speed for the curb scrolling speed
-        const curbSpeed = this.state.obstacleSpeed * 2;
-        const { curbOffset } = this.state;
-        const newCurbOffset = (curbOffset + curbSpeed) % (20 * 2); // 20 is the height of a curb segment, multiplied by 2 for the space
-    
-        this.setState({ curbOffset: newCurbOffset });
-    };
-
-    drawDuck = (ctx) => {
-        const { duckX } = this.state;
-        const canvas = this.canvasRef.current;
-        const duckWidth = 50;
-        const duckHeight = 50;
-        const duckY = (canvas.height - duckHeight) / 1.25;
-        ctx.drawImage(this.duck, duckX, duckY, duckWidth, duckHeight);
-    };
-
-    drawObstacles = (ctx) => {
-        const { obstacles, carImages } = this.state;
-        obstacles.forEach(obstacle => {
-            const img = carImages[obstacle.image];
-            if (img) {
-                ctx.drawImage(img, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-            }
-        });
-    };
-
-    updateObstacles = () => {
-        const { obstacles, obstacleSpeed, score } = this.state;
-        const canvas = this.canvasRef.current;
-        const roadWidth = canvas.width / 2;
-        const roadStart = (canvas.width - roadWidth) / 2;
-        const roadEnd = roadStart + roadWidth;
-        const obstacleWidth = 50; // The width of your obstacles
-        
-        let scoreIncrement = 0;
-        const updatedObstacles = obstacles.map(obstacle => {
-          let newY = obstacle.y + obstacleSpeed;
-          if (newY > canvas.height) {
-            newY = -obstacle.height;
-            const newPosX = roadStart + Math.random() * (roadEnd - roadStart - obstacleWidth);
-            scoreIncrement++; // Increment score for dodging the obstacle
-            return { ...obstacle, y: newY, x: newPosX };
-          }
-          return { ...obstacle, y: newY };
-        });
-      
+    startGame = () => {
         this.setState({
-          obstacles: updatedObstacles,
-          score: score + scoreIncrement // Update the score state
+          startSequenceFinished: true,
+          showStartComponent: true,
+          gameOver: false // Ensure the game is not marked as over when starting
+        });
+      };
+
+    restartGame = () => {
+    // Reset the state to its initial values and restart the game loop
+        this.setState({
+            ...this.getInitialState(),
+            startSequenceFinished: true, // Ensure the start sequence is marked as finished
+            showStartComponent: false, // Ensure the start component is hidden
+            score: 0, // Reset score
+            gameOver: false, // Reset the game over state
+        }, () => {
+            this.setupEventListeners();
+            this.loadCarImages();
+            this.gameLoop();
+        });
+    };
+    
+    gameOver = () => {
+        cancelAnimationFrame(this.animationFrameId);
+        clearInterval(this.increaseDifficultyInterval);
+    
+        this.setState({
+            gameOver: true,
+        }, () => {
+            // Redraw the canvas to show the game over state immediately
+            this.draw();
+        });
+    };
+
+    handleSequenceEnd = () => {
+        // Hide the start component and start the game loop
+        this.setState({ startSequenceFinished: true, showStartComponent: false }, () => {
+          this.setupEventListeners();
+          this.loadCarImages();
+          this.gameLoop();
         });
       };
 
@@ -353,7 +253,65 @@ class DuckGame extends Component {
     
         ctx.restore(); // Restore the context state to what it was before the save()
     };
+
+    drawRoad = (ctx) => {
+        const canvasWidth = ctx.canvas.width;
+        const canvasHeight = ctx.canvas.height;
+        const roadWidth = canvasWidth / 2;
+        const roadStart = (canvasWidth - roadWidth) / 2;
+        const grassWidth = roadStart; 
     
+        // Gradient for the road to simulate lighting and depth
+        let roadGradient = ctx.createLinearGradient(roadStart, 0, roadStart + roadWidth, 0);
+        roadGradient.addColorStop(0, '#505050'); // Darker at the edges
+        roadGradient.addColorStop(0.5, '#585858'); // Lighter in the center
+        roadGradient.addColorStop(1, '#505050'); // Darker at the edges again
+    
+        ctx.fillStyle = roadGradient;
+        ctx.fillRect(roadStart, 0, roadWidth, canvasHeight);
+    
+        // Define the hex codes for your gradients
+        const darkGreenHex = '#006400'; // Darker green
+        const lighterGreenHex = '#138c13'; // Lighter but not too light green
+    
+        // Create gradient for the grass on the left
+        let grassGradientLeft = ctx.createLinearGradient(0, 0, grassWidth, 0);
+        grassGradientLeft.addColorStop(0, lighterGreenHex);
+        grassGradientLeft.addColorStop(1, darkGreenHex);
+    
+        // Draw the left grass area with the gradient
+        ctx.fillStyle = grassGradientLeft;
+        ctx.fillRect(0, 0, grassWidth, canvasHeight);
+    
+        // Create gradient for the grass on the right
+        let grassGradientRight = ctx.createLinearGradient(canvasWidth - grassWidth, 0, canvasWidth, 0);
+        grassGradientRight.addColorStop(0, darkGreenHex);
+        grassGradientRight.addColorStop(1, lighterGreenHex);
+    
+        // Draw the right grass area with the gradient
+        ctx.fillStyle = grassGradientRight;
+        ctx.fillRect(canvasWidth - grassWidth, 0, grassWidth, canvasHeight);
+    };
+
+    drawDuck = (ctx) => {
+        const { duckX } = this.state;
+        const canvas = this.canvasRef.current;
+        const duckWidth = 50;
+        const duckHeight = 50;
+        const duckY = (canvas.height - duckHeight) / 1.25;
+        ctx.drawImage(this.duck, duckX, duckY, duckWidth, duckHeight);
+    };
+
+    drawObstacles = (ctx) => {
+        const { obstacles, carImages } = this.state;
+        obstacles.forEach(obstacle => {
+            const img = carImages[obstacle.image];
+            if (img) {
+                ctx.drawImage(img, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            }
+        });
+    };
+
     drawCurbs = (ctx) => {
         // Use ctx to draw curbs
         const { curbOffset } = this.state;
@@ -376,6 +334,129 @@ class DuckGame extends Component {
             ctx.fillRect(roadStart + roadWidth, y + curbHeight, curbWidth, curbHeight);
         }
     };
+
+    handleGameOver = (ctx) => {
+        // Draw explosion if there was a collision
+        const collidedObstacle = this.state.collidedObstacleIndex !== null 
+            ? this.state.obstacles[this.state.collidedObstacleIndex] 
+            : null;
+    
+        if (collidedObstacle && this.state.explosionImage) {
+            ctx.drawImage(
+                this.state.explosionImage,
+                collidedObstacle.x,
+                collidedObstacle.y,
+                collidedObstacle.width,
+                collidedObstacle.height
+            );
+        }
+    
+        // Draw restart button
+        const buttonWidth = 150;
+        const buttonHeight = 40;
+        const buttonX = this.canvasRef.current.width / 2 - buttonWidth / 2;
+        const buttonY = this.canvasRef.current.height / 2 + 20;
+        ctx.fillStyle = '#00FF00'; // Green color for the button
+        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+        
+        // Draw the text "Restart" centered in the button
+        ctx.font = '20px serif';
+        ctx.fillStyle = 'black';
+        ctx.textAlign = 'center'; // This ensures the text is centered
+        ctx.textBaseline = 'middle'; // This aligns the text vertically in the middle
+        // Calculate the center of the button
+        const textX = buttonX + buttonWidth / 2;
+        const textY = buttonY + buttonHeight / 2;
+        ctx.fillText('Play Again', textX, textY);
+    };
+
+
+
+
+
+
+     
+      
+
+
+
+    setObstacles = () => {
+        const roadWidth = 800 / 2; // Assuming the road takes up half the canvas width
+        const roadStart = (800 - roadWidth) / 2;
+      
+        const obstacles = [
+            { image: 'redCar', x: roadStart + roadWidth / 3 - 25, y: -50, width: 50, height: 50 },
+            { image: 'blueCar', x: roadStart + roadWidth / 3, y: -250, width: 50, height: 50 },
+            { image: 'orangeCar', x: roadStart + roadWidth - 50, y: -650, width: 50, height: 50 },
+            { image: 'greenCar', x: roadStart + roadWidth / 3 * 2, y: -450, width: 50, height: 50 },
+        ];
+        this.setState({ obstacles });
+    };
+
+    gameLoop = () => {
+        if (!this.state.gameOver && this.isComponentMounted) {
+            this.draw();
+            this.animationFrameId = requestAnimationFrame(this.gameLoop);
+        }
+    };
+
+    increaseDifficulty = () => {
+        this.setState(prevState => ({
+            difficultyLevel: prevState.difficultyLevel + 1,
+            obstacleSpeed: prevState.obstacleSpeed + 1,
+        }));
+    };
+
+
+    moveDuck = () => {
+        const { duckX, rightPressed, leftPressed } = this.state;
+        const canvas = this.canvasRef.current;
+        const roadWidth = canvas.width / 2;
+        const roadStart = (canvas.width - roadWidth) / 2;
+        const duckWidth = 54;
+        const roadEnd = roadStart + roadWidth - duckWidth;
+        if (rightPressed && duckX < roadEnd) {
+            this.setState({ duckX: duckX + 7 });
+        } else if (leftPressed && duckX > roadStart) {
+            this.setState({ duckX: duckX - 7 });
+        }
+    };
+
+
+    updateCurbs = () => {
+        // Half the obstacle speed for the curb scrolling speed
+        const curbSpeed = this.state.obstacleSpeed * 2;
+        const { curbOffset } = this.state;
+        const newCurbOffset = (curbOffset + curbSpeed) % (20 * 2); // 20 is the height of a curb segment, multiplied by 2 for the space
+    
+        this.setState({ curbOffset: newCurbOffset });
+    };
+
+    updateObstacles = () => {
+        const { obstacles, obstacleSpeed, score } = this.state;
+        const canvas = this.canvasRef.current;
+        const roadWidth = canvas.width / 2;
+        const roadStart = (canvas.width - roadWidth) / 2;
+        const roadEnd = roadStart + roadWidth;
+        const obstacleWidth = 50; // The width of your obstacles
+        
+        let scoreIncrement = 0;
+        const updatedObstacles = obstacles.map(obstacle => {
+          let newY = obstacle.y + obstacleSpeed;
+          if (newY > canvas.height) {
+            newY = -obstacle.height;
+            const newPosX = roadStart + Math.random() * (roadEnd - roadStart - obstacleWidth);
+            scoreIncrement++; // Increment score for dodging the obstacle
+            return { ...obstacle, y: newY, x: newPosX };
+          }
+          return { ...obstacle, y: newY };
+        });
+      
+        this.setState({
+          obstacles: updatedObstacles,
+          score: score + scoreIncrement // Update the score state
+        });
+      };
 
     checkCollisions = () => {
         const { duckX, obstacles } = this.state;
@@ -401,70 +482,9 @@ class DuckGame extends Component {
             }
         }
     };
-    
-//Game Over code follows
 
-gameOver = () => {
-    cancelAnimationFrame(this.animationFrameId);
-    clearInterval(this.increaseDifficultyInterval);
 
-    this.setState({
-        gameOver: true,
-    }, () => {
-        // Redraw the canvas to show the game over state immediately
-        this.draw();
-    });
-};
 
-handleGameOver = (ctx) => {
-    // Draw explosion if there was a collision
-    const collidedObstacle = this.state.collidedObstacleIndex !== null 
-        ? this.state.obstacles[this.state.collidedObstacleIndex] 
-        : null;
-
-    if (collidedObstacle && this.state.explosionImage) {
-        ctx.drawImage(
-            this.state.explosionImage,
-            collidedObstacle.x,
-            collidedObstacle.y,
-            collidedObstacle.width,
-            collidedObstacle.height
-        );
-    }
-
-    // Draw restart button
-    const buttonWidth = 150;
-    const buttonHeight = 40;
-    const buttonX = this.canvasRef.current.width / 2 - buttonWidth / 2;
-    const buttonY = this.canvasRef.current.height / 2 + 20;
-    ctx.fillStyle = '#00FF00'; // Green color for the button
-    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-    
-    // Draw the text "Restart" centered in the button
-    ctx.font = '20px serif';
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'center'; // This ensures the text is centered
-    ctx.textBaseline = 'middle'; // This aligns the text vertically in the middle
-    // Calculate the center of the button
-    const textX = buttonX + buttonWidth / 2;
-    const textY = buttonY + buttonHeight / 2;
-    ctx.fillText('Play Again', textX, textY);
-};
-
-restartGame = () => {
-    // Reset the state to its initial values and restart the game loop
-    this.setState({
-        ...this.getInitialState(),
-        startSequenceFinished: true, // Ensure the start sequence is marked as finished
-        showStartComponent: false, // Ensure the start component is hidden
-        score: 0, // Reset score
-        gameOver: false, // Reset the game over state
-    }, () => {
-        this.setupEventListeners();
-        this.loadCarImages();
-        this.gameLoop();
-    });
-};
 
 render() {
     const { startSequenceFinished, gameOver, showStartComponent } = this.state;
@@ -508,15 +528,6 @@ render() {
         </div>
     );
 }
-  
-  handleSequenceEnd = () => {
-    // Hide the start component and start the game loop
-    this.setState({ startSequenceFinished: true, showStartComponent: false }, () => {
-      this.setupEventListeners();
-      this.loadCarImages();
-      this.gameLoop();
-    });
-  };
 }
 
 export default DuckGame;
