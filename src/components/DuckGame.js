@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
 
 import StartComponent from './StartComponent';
+import startImage from '../assets/images/start/Start.png';
+
 import duckImage from '../assets/images/cars/DuckGame.png';
 import redCarImage from '../assets/images/cars/RedCar.png';
 import explosionImage from '../assets/images/Explosion.png';
@@ -16,19 +18,32 @@ const SCORE_POSITION = { x: 20, y: 30 };
 
 class DuckGame extends Component {
     constructor(props) {
-        super(props);
-    this.canvasRef = React.createRef();
-
-    // Initialize the state
-    this.state = this.getInitialState();
-
-    // Load the duck image
-    this.duck = new Image();
-    this.duck.src = duckImage;
-
-    // Load the explosion image
-    this.explosionImg = new Image();
-    this.explosionImg.src = explosionImage;
+      super(props);
+      this.canvasRef = React.createRef();
+  
+      // Initialize the state
+      this.state = this.getInitialState();
+  
+      // Load the start image
+      this.startImg = new Image();
+      this.startImg.onload = () => {
+        // Set the flag to true and call draw to ensure the image is drawn
+        this.setState({ startImageLoaded: true }, this.draw);
+      };
+      this.startImg.src = startImage; // This should be after defining onload
+  
+      // Load the duck image
+      this.duck = new Image();
+      this.duck.src = duckImage;
+  
+      // Load the explosion image
+      this.explosionImg = new Image();
+      this.explosionImg.src = explosionImage;
+      this.explosionImg.onload = () => {
+        if (this.isComponentMounted) {
+          this.setState({ explosionImage: this.explosionImg });
+        }
+      };
 
     // Optional: Use onload to confirm the image has loaded
     this.explosionImg.onload = () => {
@@ -37,17 +52,7 @@ class DuckGame extends Component {
         }
     };
     }
-
-    startGame = () => {
-        this.setState({
-          startSequenceFinished: true,
-          showStartComponent: true,
-          gameOver: false // Ensure the game is not marked as over when starting
-        });
-      };
       
-    
-
     getInitialState = () => ({
         duckX: 275, // Example initial X, assuming roadWidth and roadStart calculations
         rightPressed: false,
@@ -64,8 +69,18 @@ class DuckGame extends Component {
         showGameOverScreen: false,
         startSequenceFinished: false,
         showStartComponent: false,
-        score: 0,
+        score: 0, 
+        startImageLoaded: false,
+    
     });
+
+    startGame = () => {
+        this.setState({
+          startSequenceFinished: true,
+          showStartComponent: true,
+          gameOver: false // Ensure the game is not marked as over when starting
+        });
+      };
 
     componentDidMount() {
         this.isComponentMounted = true;
@@ -75,6 +90,18 @@ class DuckGame extends Component {
     
         if (this.canvasRef.current) {
             this.canvasRef.current.addEventListener('click', this.handleCanvasClick);
+        }
+    }
+
+    componentWillUnmount() {
+        this.isComponentMounted = false;
+        document.removeEventListener("keydown", this.keyDownHandler);
+        document.removeEventListener("keyup", this.keyUpHandler);
+        cancelAnimationFrame(this.animationFrameId);
+        clearInterval(this.increaseDifficultyInterval);
+    
+        if (this.canvasRef.current) {
+            this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
         }
     }
     
@@ -142,18 +169,6 @@ class DuckGame extends Component {
         ];
         this.setState({ obstacles });
     };
-
-    componentWillUnmount() {
-        this.isComponentMounted = false;
-        document.removeEventListener("keydown", this.keyDownHandler);
-        document.removeEventListener("keyup", this.keyUpHandler);
-        cancelAnimationFrame(this.animationFrameId);
-        clearInterval(this.increaseDifficultyInterval);
-    
-        if (this.canvasRef.current) {
-            this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
-        }
-    }
 
     gameLoop = () => {
         if (!this.state.gameOver && this.isComponentMounted) {
@@ -295,21 +310,26 @@ class DuckGame extends Component {
 
       draw = () => {
         const canvas = this.canvasRef.current;
-        if (!canvas) return; // Early return if canvas is not available
-    
+        if (!canvas || !this.state.startImageLoaded) return; // Check if canvas exists and image is loaded
+      
         const ctx = canvas.getContext('2d');
-    
-        ctx.save(); // Save the current context state
-    
-        ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset the transform matrix to the identity matrix
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the entire canvas
-    
-        this.drawRoad(ctx);
-        this.drawDuck(ctx);
-        this.drawCurbs(ctx);
-    
-        console.log(`Drawing score at x: ${SCORE_POSITION.x}, y: ${SCORE_POSITION.y}`);
-        console.log(`Canvas size is width: ${canvas.width}, height: ${canvas.height}`);
+      
+        ctx.save();
+      
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+        if (!this.state.startSequenceFinished) {
+          // Draw the Start.png image centered in the canvas
+          const x = (canvas.width - this.startImg.width) / 2;
+          const y = (canvas.height - this.startImg.height) / 2;
+          ctx.drawImage(this.startImg, x, y, this.startImg.width, this.startImg.height);
+        } else {
+          this.drawRoad(ctx);
+          this.drawDuck(ctx);
+          this.drawCurbs(ctx);
+        }
+      
     
         // Draw Score
         ctx.font = '24px Arial';
