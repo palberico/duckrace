@@ -1,3 +1,5 @@
+//Need to fix restart. Perhaps make game modular.
+
 import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
 
