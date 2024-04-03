@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button } from 'semantic-ui-react';
 
 import StartComponent from './StartComponent';
-import startImage from '../assets/images/start/Start.png';
+import startImage from '../assets/images/crashDuck.png';
 
 import duckImage from '../assets/images/cars/DuckGame.png';
 import redCarImage from '../assets/images/cars/RedCar.png';
@@ -208,30 +208,40 @@ class DuckGame extends Component {
     draw = () => {
         const canvas = this.canvasRef.current;
         if (!canvas || !this.state.startImageLoaded) return; // Check if canvas exists and image is loaded
-
+    
         const ctx = canvas.getContext('2d');
         ctx.save();
-
+    
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-
+    
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-
+    
         if (!this.state.startSequenceFinished) {
-            // Draw the Start.png image centered in the canvas
-            const x = (canvas.width - this.startImg.width) / 2;
-            const y = (canvas.height - this.startImg.height) / 2;
-            ctx.drawImage(this.startImg, x, y, this.startImg.width, this.startImg.height);
+            // Calculate the aspect ratio of the image
+            const imageAspectRatio = this.startImg.width / this.startImg.height;
+            // Calculate the dimensions to fit the canvas while maintaining aspect ratio
+            let drawWidth = canvas.width;
+            let drawHeight = drawWidth / imageAspectRatio;
+            if (drawHeight > canvas.height) {
+                drawHeight = canvas.height;
+                drawWidth = drawHeight * imageAspectRatio;
+            }
+            // Calculate the position to center the image
+            const x = (canvas.width - drawWidth) / 2;
+            const y = (canvas.height - drawHeight) / 2;
+            // Draw the resized and centered image
+            ctx.drawImage(this.startImg, x, y, drawWidth, drawHeight);
         } else {
             this.drawRoad(ctx);
             this.drawDuck(ctx);
             this.drawCurbs(ctx);
+    
+            // Draw Score
+            ctx.font = '24px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText(`Score: ${this.state.score}`, SCORE_POSITION.x, SCORE_POSITION.y);
         }
-
-        // Draw Score
-        ctx.font = '24px Arial';
-        ctx.fillStyle = 'black';
-        ctx.fillText(`Score: ${this.state.score}`, SCORE_POSITION.x, SCORE_POSITION.y);
-
+    
         if (!this.state.gameOver) {
             this.checkCollisions();
             this.drawObstacles(ctx);
@@ -241,10 +251,10 @@ class DuckGame extends Component {
         } else {
             this.handleGameOver(ctx);
         }
-
+    
         ctx.restore(); // Restore the context state to what it was before the save()
     };
-
+    
     drawRoad = (ctx) => {
         const canvasWidth = ctx.canvas.width;
         const canvasHeight = ctx.canvas.height;
