@@ -479,7 +479,17 @@ class DuckGame extends Component {
                 <canvas ref={this.canvasRef} width="800" height="600" style={{ border: '1px solid black' }} />
 
                 {/* This button will always show and change text depending on gameOver state */}
-                <Button onClick={this.startGame} style={startButtonStyle} primary>
+                <Button
+                    onClick={() => {
+                        if (gameOver) {
+                            window.location.reload();
+                        } else {
+                            this.startGame();
+                        }
+                    }}
+                    style={startButtonStyle}
+                    primary
+                >
                     {gameOver ? 'Try Again' : 'Start Game'}
                 </Button>
 
