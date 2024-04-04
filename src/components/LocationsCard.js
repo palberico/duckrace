@@ -99,7 +99,7 @@ const LocationsCard = ({ duckId }) => {
 
   return (  
     <div style={{ marginTop: '30px' }}>
-        <Header textAlign='centered'>All Locations Found</Header>
+        <Header>All Locations Found</Header>
         <List divided>
           {locations.map((location) => (
             <ListItem key={location.id} as={Link} to={`/map/${location.id}`} style={{ cursor: 'pointer' }}> {/* Make list items clickable */}
