@@ -91,10 +91,10 @@ const LocationsCard = ({ duckId }) => {
   };
 
   return (
-    <Card>
+    <Card centered>
       <Card.Content>
-        <Card.Header>All Locations</Card.Header>
-        <List>
+        <Card.Header>All Locations Found</Card.Header>
+        <List divided size='large'>
           {locations.map((location) => (
             <List.Item key={location.id}>
               <Icon name='marker' />
