@@ -110,17 +110,17 @@ const LocationsCard = ({ duckId }) => {
                   <strong>Date: </strong> {formatDate(location.timestamp)} {/* Display the formatted date */}
                 </ListDescription>
                 <ListDescription>
-                  <strong>Start: </strong>
+                  <strong>Found: </strong>
                   {location.startLocation.state
                     ? `${location.startLocation.city}, ${location.startLocation.state}`
                     : `${location.startLocation.city}, ${getCountryFullName(location.startLocation.country)}`}
                 </ListDescription>
-                <ListDescription>
+                {/* <ListDescription>
                   <strong>End: </strong>
                   {location.newLocation.state
                     ? `${location.newLocation.city}, ${location.newLocation.state}`
                     : `${location.newLocation.city}, ${getCountryFullName(location.newLocation.country)}`}
-                </ListDescription>
+                </ListDescription> */}
               </ListContent>
             </ListItem>
           ))}
