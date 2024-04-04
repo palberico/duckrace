@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, List, Icon } from 'semantic-ui-react';
+import { Card, List, Icon, ListItem, ListContent, ListDescription } from 'semantic-ui-react';
 import { collection, query, where, getDocs, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db } from '../firebase/Config';
+
+import countryOptions from '../components/data/Countries';
 
 const LocationsCard = ({ duckId }) => {
   const [locations, setLocations] = useState([]);
@@ -86,22 +88,40 @@ const LocationsCard = ({ duckId }) => {
     fetchInitialLocations();
   }, [duckId]); // Only runs once when the component mounts, as duckId should not change
 
-  const formatLocation = ({ city, state, country }) => {
-    return state ? `${city}, ${state}` : `${city}, ${country}`;
+  const getCountryFullName = (countryCode) => {
+    const country = countryOptions.find(option => option.key === countryCode.toLowerCase());
+    return country ? country.text : countryCode;
   };
 
   return (
     <Card centered>
       <Card.Content>
         <Card.Header>All Locations Found</Card.Header>
-        <List divided size='large'>
+        <List animated relaxed divided >
           {locations.map((location) => (
-            <List.Item key={location.id}>
-              <Icon name='marker' />
-              <List.Content>
-                {formatLocation(location.startLocation)} - {formatLocation(location.newLocation)}
-              </List.Content>
-            </List.Item>
+            <ListItem key={location.id}>
+              
+                <Icon name='map marker alternate' size='large' verticalAlign='middle' color='red' />
+
+                  <ListContent>
+                  <ListDescription>
+                    <strong>Date: </strong> 
+                    </ListDescription>
+                    <ListDescription>
+                    <strong>Start: </strong> 
+                      {location.startLocation.state 
+                      ? `${location.startLocation.city}, ${location.startLocation.state}`
+                      : `${location.startLocation.city}, ${getCountryFullName(location.startLocation.country)}`}
+                    </ListDescription>
+                    <ListDescription>
+                    <strong>End: </strong> 
+                    {location.newLocation.state 
+                      ? `${location.newLocation.city}, ${location.newLocation.state}`
+                      : `${location.newLocation.city}, ${getCountryFullName(location.newLocation.country)}`}
+                    </ListDescription>
+                  </ListContent>
+
+            </ListItem>
           ))}
         </List>
         {loading && <p>Loading more locations...</p>}
