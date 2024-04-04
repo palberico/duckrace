@@ -217,6 +217,10 @@ class DuckGame extends Component {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
     
         if (!this.state.startSequenceFinished) {
+            // Fill the canvas with a black background
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
             // Calculate the aspect ratio of the image
             const imageAspectRatio = this.startImg.width / this.startImg.height;
             // Calculate the dimensions to fit the canvas while maintaining aspect ratio
@@ -238,7 +242,7 @@ class DuckGame extends Component {
     
             // Draw Score
             ctx.font = '24px Arial';
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = 'white';
             ctx.fillText(`Score: ${this.state.score}`, SCORE_POSITION.x, SCORE_POSITION.y);
         }
     
@@ -488,8 +492,7 @@ class DuckGame extends Component {
             <div className="game-container" style={{ position: 'relative', width: '800px', height: '600px', margin: '0 auto' }}>
                 <canvas ref={this.canvasRef} width="800" height="600" style={{ border: '1px solid black' }} />
 
-                {/* This button will always show and change text depending on gameOver state */}
-                <Button
+                <Button color='red'
                     onClick={() => {
                         if (gameOver) {
                             window.location.reload();
@@ -498,11 +501,10 @@ class DuckGame extends Component {
                         }
                     }}
                     style={startButtonStyle}
-                    primary
                 >
                     {gameOver ? 'Try Again' : 'Start Game'}
                 </Button>
-
+        
                 {/* StartComponent should show only during the start sequence */}
                 {this.state.showStartComponent && (
                     <div style={startComponentStyle}>
