@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ScreenSizeRedirect from './components/ScreenSizeRedirect'; 
+import MapScreen from './components/MapScreen';
 import TempHome from './views/TempHome';
 import Home from './views/Home';
 import DuckProfile from './views/DuckProfile';
@@ -21,6 +22,7 @@ function App() {
           <Route path="/Admin" element={<Admin />} />
           <Route path="/duck/:duckId" element={<DuckProfile />} />
           <Route path="/log-distance/:duckId" element={<DuckForm />} />
+          <Route path="/map/:locationId" element={<MapScreen />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
