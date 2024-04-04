@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom'; // Import Link from React Router for navigation
-import { Card, List, Icon, ListItem, ListContent, ListDescription } from 'semantic-ui-react';
+import { Button, Header, List, Icon, ListItem, ListContent, ListDescription } from 'semantic-ui-react';
 import { collection, query, where, getDocs, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import countryOptions from '../components/data/Countries';
@@ -97,11 +97,10 @@ const LocationsCard = ({ duckId }) => {
     return date.toLocaleDateString("en-US"); // Format the date as you prefer
   };
 
-  return (
-    <Card centered>
-      <Card.Content>
-        <Card.Header>All Locations Found</Card.Header>
-        <List relaxed divided>
+  return (  
+    <div style={{ marginTop: '30px' }}>
+        <Header textAlign='centered'>All Locations Found</Header>
+        <List divided>
           {locations.map((location) => (
             <ListItem key={location.id} as={Link} to={`/map/${location.id}`} style={{ cursor: 'pointer' }}> {/* Make list items clickable */}
               <Icon name='map marker alternate' size='large' color='red' />
@@ -127,10 +126,9 @@ const LocationsCard = ({ duckId }) => {
         </List>
         {loading && <p>Loading more locations...</p>}
         {!loading && hasMore && (
-          <button onClick={fetchMoreLocations}>Load More</button>
+          <Button onClick={fetchMoreLocations}>Load More</Button>
         )}
-      </Card.Content>
-    </Card>
+      </div>
   );
 };
 
