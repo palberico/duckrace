@@ -1,5 +1,10 @@
 .not-found-page {
+    height: 100vh;
+    overflow: hidden;
     text-align: center;
+}
+
+.content {
     margin-top: 50px;
 }
 

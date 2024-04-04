@@ -502,7 +502,7 @@ class DuckGame extends Component {
                     }}
                     style={startButtonStyle}
                 >
-                    {gameOver ? 'Try Again' : 'Start Game'}
+                    {gameOver ? 'Race Again' : 'Start Race'}
                 </Button>
         
                 {/* StartComponent should show only during the start sequence */}
