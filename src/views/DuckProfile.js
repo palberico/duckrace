@@ -15,6 +15,7 @@ import '../Profile.css';
 import '../App.css';
 import logo from '../assets/images/Logo.png';
 import PositionBadge from '../components/PositionBadge';
+import LocationsCard from '../components/LocationsCard';
 
 
 import countryOptions from '../components/data/Countries';
@@ -176,16 +177,14 @@ const DuckProfile = () => {
                 </Card.Description>
               )}
             </Card.Content>
-                  
                   <MapCard location={location} />
                 </Card>
-
-
-                <div style={styles.checkerboardFooter}></div>
               </div>
             );
           })}
         </div>
+          <LocationsCard duckId={duckId} /> 
+          <div style={styles.checkerboardFooter}></div>
       </Grid>
 
       <DuckCodeModal
