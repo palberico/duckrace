@@ -160,6 +160,7 @@ const DuckProfile = () => {
 
             return (
               <div key={location.id || index} className="map-card">
+                <Header>Recent Locations</Header>
                 <Card> 
                   <Card.Content>
                     {isLocationAvailable ? (

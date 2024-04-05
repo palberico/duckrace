@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useEffect, useRef, useState, useCallback } from 'react'; // Import useCallback
+import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase/Config'; // Ensure this path is correct
+import { db } from '../firebase/Config';
 
 const MapScreen = () => {
   const mapRef = useRef(null);
   const [locations, setLocations] = useState([]);
-  const navigate = useNavigate(); // Initialize the useNavigate hook
+  const navigate = useNavigate();
 
-  // Function to handle the back button click
-  const handleBack = () => {
-    navigate(-1); // Use navigate to go back to the previous page
-  };
+  // Now we use useCallback to memoize the handleBack function
+  const handleBack = useCallback(() => {
+    navigate(-1);
+  }, [navigate]); 
 
   useEffect(() => {
     const fetchLocations = async () => {
@@ -83,7 +83,7 @@ const MapScreen = () => {
       };
       customControl.addTo(map);
     }
-  }, [locations, navigate]); // Include navigate in the dependencies array
+  }, [locations, handleBack]); // Include navigate in the dependencies array
 
   return <div ref={mapRef} style={{ height: '100vh', width: '100%' }} />;
 };
