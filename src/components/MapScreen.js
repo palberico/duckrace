@@ -48,7 +48,7 @@ const MapScreen = () => {
                   Visited on: ${docSnap.data().timestamp.toDate().toLocaleDateString()}`
                 );
 
-              map.current.setView([latitude, longitude], 10); // Center map on the new marker
+              map.current.setView([latitude, longitude], 5); // Center map on the new marker
             }
           } else {
             console.log('No location found with the given ID.');
