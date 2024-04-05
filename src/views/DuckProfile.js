@@ -86,7 +86,11 @@ const DuckProfile = () => {
   const handleClose = () => setOpen(false);
 
   if (loading) {
-    return <Loader active inline="centered" size="massive">Loading...</Loader>;
+    return (
+      <div style={styles.loaderContainer}>
+                <Loader active inline='centered' size='massive'>Box..Box...</Loader>
+            </div>
+    );
   }
 
   if (!duckData) {
@@ -215,6 +219,12 @@ const styles = {
            linear-gradient(-45deg, transparent 75%, #000 75%)`,
       backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
       marginTop: '20px',
+  },
+  loaderContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
   },
 };
 
