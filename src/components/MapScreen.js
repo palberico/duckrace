@@ -1,13 +1,16 @@
 import React, { useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/Config';
+import { Icon, Button, Segment } from 'semantic-ui-react';
 
 const MapScreen = () => {
   const mapRef = useRef(null);
   const { locationId } = useParams();
+  const navigate = useNavigate();
+
   const map = useRef(null); // Hold map instance in ref
 
   useEffect(() => {
@@ -61,8 +64,25 @@ const MapScreen = () => {
 
     fetchLocation();
   }, [locationId]); // Re-run when locationId changes
+  const goBack = () => navigate(-1);
 
-  return <div ref={mapRef} style={{ height: '100vh', width: '100%' }} />;
+  return (
+    <>
+      <div ref={mapRef} style={{ height: 'calc(100vh - 65px)', width: '100%' }} />
+      
+      {/* Footer segment with buttons */}
+      <Segment inverted style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex' }}>
+        <Button icon labelPosition='left' onClick={goBack} fluid>
+          <Icon name='arrow left' />
+          Back
+        </Button>
+        <Button icon fluid>
+          <Icon name='placeholder' />
+          Next Feature
+        </Button>
+      </Segment>
+    </>
+  );
 };
 
 export default MapScreen;
