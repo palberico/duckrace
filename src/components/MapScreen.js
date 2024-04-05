@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { doc, getDoc, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
@@ -11,7 +11,7 @@ const MapScreen = () => {
   const locationState = useLocation().state;
   const { locationId } = useParams();
   const duckId = locationState?.duckId; // Get duckId from the state passed in the Link
-  const navigate = useNavigate();
+  // const navigate = useNavigate(); //This is for the back button which is not needed for mobile. Import useNavigate react-router-dom
   const [showAllLocations, setShowAllLocations] = useState(false);
   const map = useRef(null); // Hold map instance in ref
 
@@ -84,7 +84,8 @@ const MapScreen = () => {
     fetchLocations();
   }, [locationId, showAllLocations, duckId]);
 
-  const goBack = () => navigate(-1);
+  //This is for the back button which is not needed for mobile
+  // const goBack = () => navigate(-1);
 
   const handleShowAllLocations = () => {
     setShowAllLocations((prevState) => !prevState);
@@ -94,10 +95,10 @@ const MapScreen = () => {
     <>
       <div ref={mapRef} style={{ height: 'calc(100vh - 65px)', width: '100%' }} />
       <Segment inverted style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex' }}>
-        <Button icon labelPosition='left' onClick={goBack} fluid>
+        {/* <Button icon labelPosition='left' onClick={goBack} fluid>
           <Icon name='arrow left' />
           Back
-        </Button>
+        </Button> */}
         <Button icon fluid onClick={handleShowAllLocations}>
           <Icon name='world' />
           All Locations
