@@ -20,9 +20,11 @@ function App() {
           <Route path="/Home" element={<Home />} />
           <Route path="/large-screen" element={<TempHome />} />
           <Route path="/Admin" element={<Admin />} />
-          <Route path="/duck/:duckId" element={<DuckProfile />} />
+
           <Route path="/log-distance/:duckId" element={<DuckForm />} />
+          <Route path="/duck/:duckId" element={<DuckProfile />} />
           <Route path="/map/:locationId" element={<MapScreen />} />
+
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

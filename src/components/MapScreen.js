@@ -1,92 +1,68 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'; // Import useCallback
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 
 const MapScreen = () => {
   const mapRef = useRef(null);
-  const [locations, setLocations] = useState([]);
-  const navigate = useNavigate();
-
-  // Now we use useCallback to memoize the handleBack function
-  const handleBack = useCallback(() => {
-    navigate(-1);
-  }, [navigate]); 
+  const { locationId } = useParams();
+  const map = useRef(null); // Hold map instance in ref
 
   useEffect(() => {
-    const fetchLocations = async () => {
-      const locationsQuery = query(collection(db, "locations"), orderBy("timestamp", "desc"));
-      const querySnapshot = await getDocs(locationsQuery);
-      let locationsArray = [];
+    if (!mapRef.current) return; // Ensure the ref is linked to an element
 
-      querySnapshot.forEach((doc) => {
-        const locationData = doc.data().startLocation;
-        const coordinatesKey = `${locationData.city}-${locationData.state}`;
-        const dateString = new Date(doc.data().timestamp.seconds * 1000).toLocaleDateString();
-        
-        if (!locationsArray.some(loc => loc.coordinatesKey === coordinatesKey)) {
-          locationsArray.push({
-            coordinatesKey,
-            coordinates: [locationData.coordinates.latitude, locationData.coordinates.longitude],
-            dates: [dateString],
-            city: locationData.city,
-            state: locationData.state,
-          });
-        } else {
-          const loc = locationsArray.find(loc => loc.coordinatesKey === coordinatesKey);
-          loc.dates.push(dateString);
-        }
-      });
+    map.current = L.map(mapRef.current).setView([0, 0], 1); // Instantiate the map only once
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(map.current);
 
-      setLocations(locationsArray);
+    return () => {
+      if (map.current) {
+        map.current.remove(); // Clean up the map instance on unmount
+        map.current = null; // Ensure to clear out the ref
+      }
     };
-
-    fetchLocations();
   }, []);
 
   useEffect(() => {
-    if (locations.length > 0 && mapRef.current) {
-      const defaultCoordinates = locations[0].coordinates;
+    const fetchLocation = async () => {
+      if (locationId && map.current) {
+        try {
+          const locationRef = doc(db, 'locations', locationId);
+          const docSnap = await getDoc(locationRef);
 
-      const map = L.map(mapRef.current, {
-        zoomControl: false // Disable the default zoom control
-      }).setView(defaultCoordinates, 6); // Change the zoom level here
-      
-      // Add a new zoom control in the top left corner
-      L.control.zoom({
-         position: 'topleft'
-      }).addTo(map);
+          if (docSnap.exists()) {
+            const locationData = docSnap.data().startLocation;
+            if (locationData?.coordinates) {
+              const { latitude, longitude } = locationData.coordinates;
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(map);
+              L.marker([latitude, longitude], { alt: "Duck Location" })
+                .addTo(map.current)
+                .bindPopup(
+                  `<b>Found Location</b><br>
+                  ${locationData.city}, 
+                  ${locationData.state}, 
+                  ${locationData.country}<br>
+                  Visited on: ${docSnap.data().timestamp.toDate().toLocaleDateString()}`
+                );
 
-      // Create markers for each group
-      locations.forEach(group => {
-        L.marker(group.coordinates)
-          .addTo(map)
-          .bindPopup(`Location: ${group.city}, ${group.state}<br>Visited on: ${group.dates.join(', ')}`);
-      });
+              map.current.setView([latitude, longitude], 10); // Center map on the new marker
+            }
+          } else {
+            console.log('No location found with the given ID.');
+          }
+        } catch (error) {
+          console.error("Error fetching location: ", error);
+        }
+      }
+    };
 
-      // Create a custom button below the zoom controls
-      const customControl = L.control({ position: 'topleft' });
-      customControl.onAdd = function (map) {
-        const btn = L.DomUtil.create('button');
-        btn.innerText = 'Back';
-        btn.style.margin = '5px 10px 0 10px'; // Adjust margins as needed
-        btn.style.padding = '0 10px';
-        btn.onclick = handleBack;
-
-        return btn;
-      };
-      customControl.addTo(map);
-    }
-  }, [locations, handleBack]); // Include navigate in the dependencies array
+    fetchLocation();
+  }, [locationId]); // Re-run when locationId changes
 
   return <div ref={mapRef} style={{ height: '100vh', width: '100%' }} />;
 };
 
 export default MapScreen;
-

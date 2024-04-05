@@ -113,6 +113,10 @@ const DuckProfile = () => {
     navigate('/Home', { state: { focusLeaderboard: true, timestamp: new Date() } });
   };
 
+  const handleLocationClick = (location) => {
+    navigate('/map', { state: { duckId, ...location } });
+  };
+
   return (
     <>
      <div className="header">
@@ -159,7 +163,7 @@ const DuckProfile = () => {
             const isLocationAvailable = location.startLocation && location.newLocation;
 
             return (
-              <div key={location.id || index} className="map-card">
+              <div key={location.id || index} className="map-card" onClick={() => handleLocationClick(location)}>
                 <Header>Recent Locations</Header>
                 <Card> 
                   <Card.Content>
