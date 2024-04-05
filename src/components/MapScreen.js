@@ -8,17 +8,25 @@ import { Icon, Button, Segment } from 'semantic-ui-react';
 
 //Things to change. We need to group similar locations into the same marker. 
 //Add multiple dates.
+//Pop up should show full country name and not the abbreviation
 
 const MapScreen = () => {
   const mapRef = useRef(null);
   const locationState = useLocation().state;
   const { locationId } = useParams();
   const duckId = locationState?.duckId; // Get duckId from the state passed in the Link
-  // const navigate = useNavigate(); //This is for the back button which is not needed for mobile. Import useNavigate react-router-dom
+  // const navigate = useNavigate(); //This is for the back button. Add useNavigate to the react-router-dom if you want to add it back.
   const [showAllLocations, setShowAllLocations] = useState(false);
   const map = useRef(null); // Hold map instance in ref
+  const [mapHeight, setMapHeight] = useState(window.innerHeight - 65); // Set initial map height
 
   useEffect(() => {
+    // Update map height on window resize
+    const handleResize = () => {
+      setMapHeight(window.innerHeight - 65);
+    };
+    window.addEventListener('resize', handleResize);
+
     if (!mapRef.current) return; // Ensure the ref is linked to an element
 
     map.current = L.map(mapRef.current).setView([0, 0], 1); // Instantiate the map only once
@@ -27,6 +35,7 @@ const MapScreen = () => {
     }).addTo(map.current);
 
     return () => {
+      window.removeEventListener('resize', handleResize); // Clean up the event listener
       if (map.current) {
         map.current.remove(); // Clean up the map instance on unmount
         map.current = null; // Ensure to clear out the ref
@@ -50,7 +59,7 @@ const MapScreen = () => {
           const docSnap = await getDoc(locationRef);
           querySnapshot = docSnap.exists() ? { docs: [docSnap] } : { docs: [] };
         }
-  
+
         querySnapshot.docs.forEach((doc) => {
           const locationData = doc.data().startLocation;
           if (locationData?.coordinates) {
@@ -66,7 +75,7 @@ const MapScreen = () => {
               );
           }
         });
-  
+
         // After adding all markers, adjust the map view
         if (showAllLocations && querySnapshot.docs.length > 0) {
           const group = L.featureGroup(querySnapshot.docs.map((doc) => {
@@ -78,25 +87,20 @@ const MapScreen = () => {
           const coords = querySnapshot.docs[0].data().startLocation.coordinates;
           map.current.setView([coords.latitude, coords.longitude], 5);
         }
-  
       } catch (error) {
         console.error("Error fetching locations: ", error);
       }
     };
-  
+
     fetchLocations();
   }, [locationId, showAllLocations, duckId]);
 
-  //This is for the back button which is not needed for mobile
   // const goBack = () => navigate(-1);
-
-  const handleShowAllLocations = () => {
-    setShowAllLocations((prevState) => !prevState);
-  };
+  const handleShowAllLocations = () => setShowAllLocations((prevState) => !prevState);
 
   return (
     <>
-      <div ref={mapRef} style={{ height: 'calc(100vh - 65px)', width: '100%' }} />
+      <div ref={mapRef} style={{ height: mapHeight, width: '100%' }} />
       <Segment inverted style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex' }}>
         {/* <Button icon labelPosition='left' onClick={goBack} fluid>
           <Icon name='arrow left' />
