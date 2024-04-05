@@ -1,16 +1,18 @@
-import React, { useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import { Icon, Button, Segment } from 'semantic-ui-react';
 
 const MapScreen = () => {
   const mapRef = useRef(null);
+  const locationState = useLocation().state;
   const { locationId } = useParams();
+  const duckId = locationState?.duckId; // Get duckId from the state passed in the Link
   const navigate = useNavigate();
-
+  const [showAllLocations, setShowAllLocations] = useState(false);
   const map = useRef(null); // Hold map instance in ref
 
   useEffect(() => {
@@ -30,55 +32,75 @@ const MapScreen = () => {
   }, []);
 
   useEffect(() => {
-    const fetchLocation = async () => {
-      if (locationId && map.current) {
-        try {
+    const fetchLocations = async () => {
+      try {
+        let querySnapshot;
+        if (showAllLocations && duckId) {
+          const locationsQuery = query(
+            collection(db, 'locations'),
+            where('duckId', '==', duckId),
+            orderBy('timestamp', 'desc')
+          );
+          querySnapshot = await getDocs(locationsQuery);
+        } else if (locationId) {
           const locationRef = doc(db, 'locations', locationId);
           const docSnap = await getDoc(locationRef);
-
-          if (docSnap.exists()) {
-            const locationData = docSnap.data().startLocation;
-            if (locationData?.coordinates) {
-              const { latitude, longitude } = locationData.coordinates;
-
-              L.marker([latitude, longitude], { alt: "Duck Location" })
-                .addTo(map.current)
-                .bindPopup(
-                  `<b>Found Location</b><br>
-                  ${locationData.city}, 
-                  ${locationData.state}, 
-                  ${locationData.country}<br>
-                  Visited on: ${docSnap.data().timestamp.toDate().toLocaleDateString()}`
-                );
-
-              map.current.setView([latitude, longitude], 5); // Center map on the new marker
-            }
-          } else {
-            console.log('No location found with the given ID.');
-          }
-        } catch (error) {
-          console.error("Error fetching location: ", error);
+          querySnapshot = docSnap.exists() ? { docs: [docSnap] } : { docs: [] };
         }
+  
+        querySnapshot.docs.forEach((doc) => {
+          const locationData = doc.data().startLocation;
+          if (locationData?.coordinates) {
+            const { latitude, longitude } = locationData.coordinates;
+            L.marker([latitude, longitude], { alt: "Duck Location" })
+              .addTo(map.current)
+              .bindPopup(
+                `<b>Found Location</b><br>
+                ${locationData.city}, 
+                ${locationData.state}, 
+                ${locationData.country}<br>
+                Visited on: ${doc.data().timestamp.toDate().toLocaleDateString()}`
+              );
+          }
+        });
+  
+        // After adding all markers, adjust the map view
+        if (showAllLocations && querySnapshot.docs.length > 0) {
+          const group = L.featureGroup(querySnapshot.docs.map((doc) => {
+            const coords = doc.data().startLocation.coordinates;
+            return L.marker([coords.latitude, coords.longitude]);
+          }));
+          map.current.fitBounds(group.getBounds(), { padding: [50, 50] });
+        } else if (!showAllLocations && querySnapshot.docs.length > 0) {
+          const coords = querySnapshot.docs[0].data().startLocation.coordinates;
+          map.current.setView([coords.latitude, coords.longitude], 5);
+        }
+  
+      } catch (error) {
+        console.error("Error fetching locations: ", error);
       }
     };
+  
+    fetchLocations();
+  }, [locationId, showAllLocations, duckId]);
 
-    fetchLocation();
-  }, [locationId]); // Re-run when locationId changes
   const goBack = () => navigate(-1);
+
+  const handleShowAllLocations = () => {
+    setShowAllLocations((prevState) => !prevState);
+  };
 
   return (
     <>
       <div ref={mapRef} style={{ height: 'calc(100vh - 65px)', width: '100%' }} />
-      
-      {/* Footer segment with buttons */}
       <Segment inverted style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex' }}>
         <Button icon labelPosition='left' onClick={goBack} fluid>
           <Icon name='arrow left' />
           Back
         </Button>
-        <Button icon fluid>
-          <Icon name='placeholder' />
-          Next Feature
+        <Button icon fluid onClick={handleShowAllLocations}>
+          <Icon name='world' />
+          All Locations
         </Button>
       </Segment>
     </>

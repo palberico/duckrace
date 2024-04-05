@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom'; // Import Link from React Router for navigation
+import { useNavigate } from 'react-router-dom'; // Import Link from React Router for navigation
 import { Button, Header, List, Icon, ListItem, ListContent, ListDescription } from 'semantic-ui-react';
 import { collection, query, where, getDocs, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db } from '../firebase/Config';
@@ -10,6 +10,7 @@ const LocationsCard = ({ duckId }) => {
   const [lastVisible, setLastVisible] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const navigate = useNavigate();
 
   const fetchMoreLocations = useCallback(async () => {
     if (!duckId || !lastVisible) {
@@ -97,38 +98,37 @@ const LocationsCard = ({ duckId }) => {
     return date.toLocaleDateString("en-US"); // Format the date as you prefer
   };
 
-  return (  
+  const handleLocationClick = (location) => {
+    navigate('/map/' + location.id, { state: { duckId: duckId } });
+  };
+  
+
+  return (
     <div style={{ marginTop: '30px' }}>
-        <Header>All Locations Found</Header>
-        <List divided>
-          {locations.map((location) => (
-            <ListItem key={location.id} as={Link} to={`/map/${location.id}`} style={{ cursor: 'pointer' }}> {/* Make list items clickable */}
-              <Icon name='map marker alternate' size='large' color='red' />
-              <ListContent>
-                <ListDescription>
-                  <strong>Date: </strong> {formatDate(location.timestamp)} {/* Display the formatted date */}
-                </ListDescription>
-                <ListDescription>
-                  <strong>Found: </strong>
-                  {location.startLocation.state
-                    ? `${location.startLocation.city}, ${location.startLocation.state}`
-                    : `${location.startLocation.city}, ${getCountryFullName(location.startLocation.country)}`}
-                </ListDescription>
-                {/* <ListDescription>
-                  <strong>End: </strong>
-                  {location.newLocation.state
-                    ? `${location.newLocation.city}, ${location.newLocation.state}`
-                    : `${location.newLocation.city}, ${getCountryFullName(location.newLocation.country)}`}
-                </ListDescription> */}
-              </ListContent>
-            </ListItem>
-          ))}
-        </List>
-        {loading && <p>Loading more locations...</p>}
-        {!loading && hasMore && (
-          <Button onClick={fetchMoreLocations}>Load More</Button>
-        )}
-      </div>
+      <Header>All Locations Found</Header>
+      <List divided>
+        {locations.map((location) => (
+          <ListItem key={location.id} onClick={() => handleLocationClick(location)} style={{ cursor: 'pointer' }}>
+            <Icon name='map marker alternate' size='large' color='red' />
+            <ListContent>
+              <ListDescription>
+                <strong>Date: </strong> {formatDate(location.timestamp)}
+              </ListDescription>
+              <ListDescription>
+                <strong>Found: </strong>
+                {location.startLocation.state
+                  ? `${location.startLocation.city}, ${location.startLocation.state}`
+                  : `${location.startLocation.city}, ${getCountryFullName(location.startLocation.country)}`}
+              </ListDescription>
+            </ListContent>
+          </ListItem>
+        ))}
+      </List>
+      {loading && <p>Loading more locations...</p>}
+      {!loading && hasMore && (
+        <Button onClick={fetchMoreLocations}>Load More</Button>
+      )}
+    </div>
   );
 };
 
