@@ -6,6 +6,9 @@ import { doc, getDoc, collection, query, where, orderBy, getDocs } from 'firebas
 import { db } from '../firebase/Config';
 import { Icon, Button, Segment } from 'semantic-ui-react';
 
+//Things to change. We need to group similar locations into the same marker. 
+//Add multiple dates.
+
 const MapScreen = () => {
   const mapRef = useRef(null);
   const locationState = useLocation().state;
