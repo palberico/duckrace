@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { doc, getDoc, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
-import { Icon, Button, Segment } from 'semantic-ui-react';
+import { Icon, Button, Segment, ButtonGroup, ButtonOr } from 'semantic-ui-react';
 
 //Things to change. We need to group similar locations into the same marker. 
 //Add multiple dates.
@@ -15,7 +15,7 @@ const MapScreen = () => {
   const locationState = useLocation().state;
   const { locationId } = useParams();
   const duckId = locationState?.duckId; // Get duckId from the state passed in the Link
-  // const navigate = useNavigate(); //This is for the back button. Add useNavigate to the react-router-dom if you want to add it back.
+  const navigate = useNavigate(); //This is for the back button. Add useNavigate to the react-router-dom if you want to add it back.
   const [showAllLocations, setShowAllLocations] = useState(false);
   const map = useRef(null); // Hold map instance in ref
   const [mapHeight, setMapHeight] = useState(window.innerHeight - 65); // Set initial map height
@@ -95,21 +95,25 @@ const MapScreen = () => {
     fetchLocations();
   }, [locationId, showAllLocations, duckId]);
 
-  // const goBack = () => navigate(-1);
+  const goBack = () => navigate(-1);
+
   const handleShowAllLocations = () => setShowAllLocations((prevState) => !prevState);
 
   return (
     <>
       <div ref={mapRef} style={{ height: mapHeight, width: '100%' }} />
       <Segment inverted style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex' }}>
-        {/* <Button icon labelPosition='left' onClick={goBack} fluid>
-          <Icon name='arrow left' />
-          Back
-        </Button> */}
-        <Button icon fluid onClick={handleShowAllLocations}>
-          <Icon name='world' />
-          All Locations
-        </Button>
+        <ButtonGroup>
+          <Button icon labelPosition='left' onClick={goBack} fluid>
+            <Icon name='arrow left' />
+            Back
+          </Button>
+          <ButtonOr />
+          <Button icon fluid labelPosition='right' onClick={handleShowAllLocations}>
+            <Icon name='world' />
+            All Locations
+          </Button>
+        </ButtonGroup>
       </Segment>
     </>
   );
