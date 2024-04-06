@@ -18,7 +18,7 @@ const MapScreen = () => {
   const navigate = useNavigate(); //This is for the back button. Add useNavigate to the react-router-dom if you want to add it back.
   const [showAllLocations, setShowAllLocations] = useState(false);
   const map = useRef(null); // Hold map instance in ref
-  const [mapHeight, setMapHeight] = useState(window.innerHeight - 65); // Set initial map height
+  const [mapHeight, setMapHeight] = useState(window.innerHeight - 64); // Set initial map height
 
   useEffect(() => {
     // Update map height on window resize
