@@ -4,7 +4,11 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { doc, getDoc, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
-import { Icon, Button, Segment, ButtonGroup, ButtonOr } from 'semantic-ui-react';
+import { 
+  Icon, 
+  Button, 
+  Segment,
+} from 'semantic-ui-react';
 
 //Things to change. We need to group similar locations into the same marker. 
 //Add multiple dates.
@@ -103,17 +107,17 @@ const MapScreen = () => {
     <>
       <div ref={mapRef} style={{ height: mapHeight, width: '100%' }} />
       <Segment inverted style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex' }}>
-        <ButtonGroup>
-          <Button icon labelPosition='left' onClick={goBack} fluid>
+      
+          <Button icon labelPosition='left' onClick={goBack} fluid >
             <Icon name='arrow left' />
             Back
           </Button>
-          <ButtonOr />
-          <Button icon fluid labelPosition='right' onClick={handleShowAllLocations}>
+      
+          <Button icon labelPosition='right' onClick={handleShowAllLocations} fluid >
             <Icon name='world' />
             All Locations
           </Button>
-        </ButtonGroup>
+    
       </Segment>
     </>
   );
