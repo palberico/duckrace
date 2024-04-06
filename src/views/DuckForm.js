@@ -293,7 +293,10 @@ const styles = {
     alignItems: 'center',
     marginTop: '50px',
     marginBottom: '50px',
+    maxWidth: '100vw', // Ensure the container does not exceed the viewport width
+    padding: '0 20px', // Add some padding to prevent content from touching the screen edges
   },
+  
   checkerboardFooter: {
     width: '100%',
     height: '50px',
