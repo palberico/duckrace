@@ -19,6 +19,7 @@ import axios from 'axios';
 import logo from '../assets/images/Logo.png';
 import StandardModal from '../components/StandardModal';
 import CruiseModal from '../components/CruiseModal';
+import JeepModal from '../components/JeepModal';
 
 import countryOptions from '../components/data/Countries';
 import stateOptions from '../components/data/States';
@@ -34,10 +35,12 @@ const DuckForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   // const [file, setFile] = useState(null); // Commented out for photo upload
   const [showStateDropdown, setShowStateDropdown] = useState(false);
+  const [addedMiles, setAddedMiles] = useState(0);
   const [isOnCruise, setIsOnCruise] = useState(false);
   const [showStandardModal, setShowStandardModal] = useState(false);
   const [showCruiseModal, setShowCruiseModal] = useState(false);
-  const [addedMiles, setAddedMiles] = useState(0);
+  const [isOnJeep, setIsOnJeep] = useState(false);
+  const [showJeepModal, setShowJeepModal] = useState(false);
 
   useEffect(() => {
     const fetchDuckData = async () => {
@@ -158,7 +161,12 @@ const DuckForm = () => {
         });
       }
 
-      if (isOnCruise) {
+      // Check if the duck was found on a Jeep
+      if (isOnJeep) {
+        setShowJeepModal(true);
+        setShowStandardModal(false);
+        setShowCruiseModal(false);
+      } else if (isOnCruise) {
         setShowCruiseModal(true);
         setShowStandardModal(false);
       } else {
@@ -171,6 +179,7 @@ const DuckForm = () => {
       setIsLoading(false);
     }
   };
+
 
   const handleCountryChange = (e, { value }) => {
     setCountry(value);
@@ -202,6 +211,11 @@ const DuckForm = () => {
                     label="Found on a cruise ship?"
                     checked={isOnCruise}
                     onChange={(e, { checked }) => setIsOnCruise(checked)}
+                  />
+                   <Checkbox
+                    label="Found on a Jeep?"
+                    checked={isOnJeep}
+                    onChange={(e, { checked }) => setIsOnJeep(checked)}
                   />
                 </Form.Field>
                 <Form.Field>
@@ -260,6 +274,15 @@ const DuckForm = () => {
         open={showStandardModal}
         onClose={() => {
           setShowStandardModal(false);
+          navigate(`/duck/${duckId}`);
+        }}
+        duckName={duckData.name}
+        addedMiles={addedMiles}
+      />
+      <JeepModal
+        open={showJeepModal}
+        onClose={() => {
+          setShowJeepModal(false);
           navigate(`/duck/${duckId}`);
         }}
         duckName={duckData.name}
