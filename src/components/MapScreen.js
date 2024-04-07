@@ -18,10 +18,10 @@ const MapScreen = () => {
   const locationState = useLocation().state;
   const { locationId } = useParams();
   const duckId = locationState?.duckId; // Get duckId from the state passed in the Link
-  // const navigate = useNavigate(); //This is for the back button. Add useNavigate to the react-router-dom if you want to add it back.
+  const navigate = useNavigate(); //This is for the back button. Add useNavigate to the react-router-dom if you want to add it back.
   const [showAllLocations, setShowAllLocations] = useState(false);
   const map = useRef(null); // Hold map instance in ref
-  const [mapHeight, setMapHeight] = useState(window.innerHeight - 65); // Set initial map height
+  // const [mapHeight, setMapHeight] = useState(window.innerHeight - 65); // Set initial map height
 
   useEffect(() => {
     if (!mapRef.current) return; // Ensure the ref is linked to an element
@@ -92,7 +92,7 @@ const MapScreen = () => {
     fetchLocations();
   }, [locationId, showAllLocations, duckId]);
 
-  // const goBack = () => navigate(-1);
+  const goBack = () => navigate(-1);
   const handleShowAllLocations = () => setShowAllLocations((prevState) => !prevState);
 
   return (

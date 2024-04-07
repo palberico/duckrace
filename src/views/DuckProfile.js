@@ -164,7 +164,7 @@ const DuckProfile = () => {
 
             return (
               <div key={location.id || index} className="map-card" onClick={() => handleLocationClick(location)}>
-                <Header>Recent Locations</Header>
+                <Header>Recent Location</Header>
                 <Card> 
                   <Card.Content>
                     {isLocationAvailable ? (

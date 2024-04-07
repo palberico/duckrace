@@ -13,7 +13,7 @@ import {
 } from 'semantic-ui-react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { db } from '../firebase/Config';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+// import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Commented out for photo upload
 import { doc, getDoc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import axios from 'axios';
 import logo from '../assets/images/Logo.png';
@@ -32,7 +32,7 @@ const DuckForm = () => {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [file, setFile] = useState(null);
+  // const [file, setFile] = useState(null); // Commented out for photo upload
   const [showStateDropdown, setShowStateDropdown] = useState(false);
   const [isOnCruise, setIsOnCruise] = useState(false);
   const [showStandardModal, setShowStandardModal] = useState(false);
@@ -87,24 +87,24 @@ const DuckForm = () => {
       return;
     }
 
-    let uploadedImageUrl = null;
-    if (file) {
-      const storage = getStorage();
-      const fileRef = ref(storage, `unapproved_photos/${file.name}-${Date.now()}`);
-      try {
-        const snapshot = await uploadBytes(fileRef, file);
-        uploadedImageUrl = await getDownloadURL(snapshot.ref);
-      } catch (error) {
-        alert("An error occurred while uploading the photo. Please try again.");
-        setIsLoading(false);
-        return;
-      }
-      await addDoc(collection(db, 'photos'), {
-        duckId,
-        photoURL: uploadedImageUrl,
-        approved: false
-      });
-    }
+    // let uploadedImageUrl = null;
+    // if (file) {
+    //   const storage = getStorage();
+    //   const fileRef = ref(storage, `unapproved_photos/${file.name}-${Date.now()}`);
+    //   try {
+    //     const snapshot = await uploadBytes(fileRef, file);
+    //     uploadedImageUrl = await getDownloadURL(snapshot.ref);
+    //   } catch (error) {
+    //     alert("An error occurred while uploading the photo. Please try again.");
+    //     setIsLoading(false);
+    //     return;
+    //   }
+    //   await addDoc(collection(db, 'photos'), {
+    //     duckId,
+    //     photoURL: uploadedImageUrl,
+    //     approved: false
+    //   });
+    // }
 
     try {
       const duckRef = doc(db, 'ducks', duckId);
@@ -152,7 +152,7 @@ const DuckForm = () => {
             state,
             country,
             coordinates: newLocationCoordinates,
-            imageUrl: uploadedImageUrl
+            // imageUrl: uploadedImageUrl // Commented out for photo upload
           },
           timestamp: new Date(),
         });
@@ -239,10 +239,10 @@ const DuckForm = () => {
                     />
                   </Form.Field>
                 )}
-                <Form.Field>
+                {/* <Form.Field>
                   <label>Upload a photo (optional)</label>
                   <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-                </Form.Field>
+                </Form.Field> */}
                 <ButtonGroup>
                   <Button color="orange" type="submit">Submit Location</Button>
                   <ButtonOr />
