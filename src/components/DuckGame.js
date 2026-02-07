@@ -53,7 +53,7 @@ class DuckGame extends Component {
         showStartComponent: false,
         startImageLoaded: false,
         isGameActive: false,
-        carImages: {}, // Keep images in state or instance? State is fine as it's one-time load.
+        carImages: {},
         explosionImage: null,
     });
 
@@ -87,14 +87,74 @@ class DuckGame extends Component {
         }
     }
 
-    // ... (componentWillUnmount remains same)
+    componentWillUnmount() {
+        this.isComponentMounted = false;
+        document.removeEventListener("keydown", this.keyDownHandler);
+        document.removeEventListener("keyup", this.keyUpHandler);
+        cancelAnimationFrame(this.animationFrameId);
+        clearInterval(this.increaseDifficultyInterval);
 
-    // ... (loadCarImages remains same, uses setState for images which is fine)
+        if (this.canvasRef.current) {
+            this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
+            this.canvasRef.current.removeEventListener('touchstart', this.handleTouchStart);
+            this.canvasRef.current.removeEventListener('touchend', this.handleTouchEnd);
+        }
+    }
 
-    // key handlers update instance vars now
+    loadCarImages = () => {
+        const carImages = {
+            redCar: redCarImage,
+            greenCar: greenCarImage,
+            orangeCar: orangeCarImage,
+            blueCar: blueCarImage,
+        };
+
+        const imagePromises = Object.entries(carImages).map(([key, src]) => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve({ key, img });
+                img.onerror = reject;
+                img.src = src;
+            });
+        });
+
+        Promise.all(imagePromises)
+            .then(results => {
+                const loadedCarImages = results.reduce((acc, { key, img }) => {
+                    acc[key] = img;
+                    return acc;
+                }, {});
+
+                this.setState({ carImages: loadedCarImages }, this.setObstacles);
+            })
+            .catch(error => {
+                console.error('Error loading images:', error);
+                // Handle image loading error (e.g., show an error message or retry loading)
+            });
+    };
+
+    setupEventListeners = () => {
+        document.addEventListener("keydown", this.keyDownHandler);
+        document.addEventListener("keyup", this.keyUpHandler);
+    };
+
+    handleCanvasClick = (event) => {
+        const rect = this.canvasRef.current.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        // Adjusted coordinates for the "Play Again" button
+        if (this.state.gameOver &&
+            x > this.canvasRef.current.width / 2 - 75 &&
+            x < this.canvasRef.current.width / 2 + 75 &&
+            y > this.canvasRef.current.height - 40 && // Adjusted for bottom left corner
+            y < this.canvasRef.current.height) { // Adjusted for bottom left corner
+            this.restartGame();
+        }
+    };
+
     handleTouchStart = (e) => {
         if (this.state.gameOver && this.canvasRef.current) {
-            // ... (gameOver click logic remains same)
             const rect = this.canvasRef.current.getBoundingClientRect();
             const touch = e.touches[0];
             const x = touch.clientX - rect.left;
@@ -154,13 +214,14 @@ class DuckGame extends Component {
     };
 
     startGame = () => {
+        // Always restart the game if the "Try Again" button is clicked
         if (this.state.gameOver) {
             this.restartGame();
         } else {
             this.setState({
                 startSequenceFinished: true,
                 showStartComponent: true,
-                gameOver: false,
+                gameOver: false, // Ensure the game is not marked as over when starting
                 isGameActive: true
             }, () => {
                 if (this.props.onGameStateChange) {
@@ -171,6 +232,7 @@ class DuckGame extends Component {
     };
 
     restartGame = () => {
+        // Stop any running intervals first to be safe
         clearInterval(this.increaseDifficultyInterval);
         cancelAnimationFrame(this.animationFrameId);
 
@@ -181,12 +243,12 @@ class DuckGame extends Component {
         this.setState({
             ...initialState,
             startImageLoaded: true,
-            explosionImage: this.state.explosionImage || this.explosionImg
+            explosionImage: this.state.explosionImage || this.explosionImg // Preserve the loaded image
         }, () => {
             this.setupEventListeners();
             this.loadCarImages(); // This might trigger a setState, which is fine
             this.startGame();
-            this.draw();
+            this.draw(); // Force a draw to clear "Game Over" text immediately
         });
     };
 
@@ -197,6 +259,7 @@ class DuckGame extends Component {
         this.setState({
             gameOver: true,
         }, () => {
+            // Redraw the canvas to show the game over state immediately
             this.draw();
             if (this.props.onGameStateChange) {
                 this.props.onGameStateChange({ isGameActive: false, isGameOver: true });
@@ -204,37 +267,55 @@ class DuckGame extends Component {
         });
     };
 
-    // ... handleSequenceEnd remains same
+    handleSequenceEnd = () => {
+        // Hide the start component and start the game loop
+        this.setState({ startSequenceFinished: true, showStartComponent: false }, () => {
+            this.setupEventListeners();
+            this.loadCarImages();
+
+            // Start physics/timers NOW
+            clearInterval(this.increaseDifficultyInterval);
+            this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
+            this.gameLoop();
+        });
+    };
 
     draw = () => {
         const canvas = this.canvasRef.current;
-        if (!canvas || !this.state.startImageLoaded) return;
+        if (!canvas || !this.state.startImageLoaded) return; // Check if canvas exists and image is loaded
 
         const ctx = canvas.getContext('2d');
         ctx.save();
+
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
         if (!this.state.startSequenceFinished) {
-            // ... (start image drawing logic remains same)
+            // Fill the canvas with a black background
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate the aspect ratio of the image
             const imageAspectRatio = this.startImg.width / this.startImg.height;
+            // Calculate the dimensions to fit the canvas while maintaining aspect ratio
             let drawWidth = canvas.width;
             let drawHeight = drawWidth / imageAspectRatio;
             if (drawHeight > canvas.height) {
                 drawHeight = canvas.height;
                 drawWidth = drawHeight * imageAspectRatio;
             }
+            // Calculate the position to center the image
             const x = (canvas.width - drawWidth) / 2;
             const y = (canvas.height - drawHeight) / 2;
+            // Draw the resized and centered image
             ctx.drawImage(this.startImg, x, y, drawWidth, drawHeight);
         } else {
             this.drawRoad(ctx);
             this.drawDuck(ctx);
             this.drawCurbs(ctx);
 
-            // Draw Score from gameState
+            // Draw Score
             ctx.font = '24px Arial';
             ctx.fillStyle = 'white';
             ctx.fillText(`Score: ${this.gameState.score}`, SCORE_POSITION.x, SCORE_POSITION.y);
@@ -250,13 +331,50 @@ class DuckGame extends Component {
             this.handleGameOver(ctx);
         }
 
-        ctx.restore();
+        ctx.restore(); // Restore the context state to what it was before the save()
     };
 
-    // ... drawRoad remains same
+    drawRoad = (ctx) => {
+        const canvasWidth = ctx.canvas.width;
+        const canvasHeight = ctx.canvas.height;
+        const roadWidth = canvasWidth / 2;
+        const roadStart = (canvasWidth - roadWidth) / 2;
+        const grassWidth = roadStart;
+
+        // Gradient for the road to simulate lighting and depth
+        let roadGradient = ctx.createLinearGradient(roadStart, 0, roadStart + roadWidth, 0);
+        roadGradient.addColorStop(0, '#505050'); // Darker at the edges
+        roadGradient.addColorStop(0.5, '#585858'); // Lighter in the center
+        roadGradient.addColorStop(1, '#505050'); // Darker at the edges again
+
+        ctx.fillStyle = roadGradient;
+        ctx.fillRect(roadStart, 0, roadWidth, canvasHeight);
+
+        // Define the hex codes for your gradients
+        const darkGreenHex = '#006400'; // Darker green
+        const lighterGreenHex = '#138c13'; // Lighter but not too light green
+
+        // Create gradient for the grass on the left
+        let grassGradientLeft = ctx.createLinearGradient(0, 0, grassWidth, 0);
+        grassGradientLeft.addColorStop(0, lighterGreenHex);
+        grassGradientLeft.addColorStop(1, darkGreenHex);
+
+        // Draw the left grass area with the gradient
+        ctx.fillStyle = grassGradientLeft;
+        ctx.fillRect(0, 0, grassWidth, canvasHeight);
+
+        // Create gradient for the grass on the right
+        let grassGradientRight = ctx.createLinearGradient(canvasWidth - grassWidth, 0, canvasWidth, 0);
+        grassGradientRight.addColorStop(0, darkGreenHex);
+        grassGradientRight.addColorStop(1, lighterGreenHex);
+
+        // Draw the right grass area with the gradient
+        ctx.fillStyle = grassGradientRight;
+        ctx.fillRect(canvasWidth - grassWidth, 0, grassWidth, canvasHeight);
+    };
 
     drawDuck = (ctx) => {
-        const { duckX } = this.gameState; // Use gameState
+        const { duckX } = this.gameState;
         const canvas = this.canvasRef.current;
         const duckWidth = 50;
         const duckHeight = 50;
@@ -265,8 +383,8 @@ class DuckGame extends Component {
     };
 
     drawObstacles = (ctx) => {
-        const { obstacles } = this.gameState; // Use gameState
-        const { carImages } = this.state; // Images still in state
+        const { obstacles } = this.gameState;
+        const { carImages } = this.state;
         obstacles.forEach(obstacle => {
             const img = carImages[obstacle.image];
             if (img) {
@@ -276,7 +394,7 @@ class DuckGame extends Component {
     };
 
     drawCurbs = (ctx) => {
-        const { curbOffset } = this.gameState; // Use gameState
+        const { curbOffset } = this.gameState;
         const roadWidth = ctx.canvas.width / 2;
         const roadStart = (ctx.canvas.width - roadWidth) / 2;
         const curbWidth = 10;
@@ -295,7 +413,7 @@ class DuckGame extends Component {
     };
 
     handleGameOver = (ctx) => {
-        // ... (game over drawing uses gameState for collision index)
+        // Draw explosion if there was a collision
         const collidedObstacle = this.gameState.collidedObstacleIndex !== null
             ? this.gameState.obstacles[this.gameState.collidedObstacleIndex]
             : null;
@@ -309,6 +427,8 @@ class DuckGame extends Component {
                 collidedObstacle.height
             );
         }
+
+        // Draw the "Game Over" text
         ctx.font = '48px serif';
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
@@ -325,6 +445,13 @@ class DuckGame extends Component {
             { image: 'orangeCar', x: roadStart + roadWidth - 50, y: -650, width: 50, height: 50 },
             { image: 'greenCar', x: roadStart + roadWidth / 3 * 2, y: -450, width: 50, height: 50 },
         ];
+    };
+
+    gameLoop = () => {
+        if (!this.state.gameOver && this.isComponentMounted) {
+            this.draw();
+            this.animationFrameId = requestAnimationFrame(this.gameLoop);
+        }
     };
 
     increaseDifficulty = () => {
@@ -349,13 +476,14 @@ class DuckGame extends Component {
     };
 
     updateCurbs = () => {
+        // Half the obstacle speed for the curb scrolling speed
         const curbSpeed = this.gameState.obstacleSpeed * 2;
         const { curbOffset } = this.gameState;
         this.gameState.curbOffset = (curbOffset + curbSpeed) % (20 * 2);
     };
 
     updateObstacles = () => {
-        const { obstacles, obstacleSpeed, score } = this.gameState;
+        const { obstacles, obstacleSpeed } = this.gameState;
         const canvas = this.canvasRef.current;
         const roadWidth = canvas.width / 2;
         const roadStart = (canvas.width - roadWidth) / 2;
@@ -368,7 +496,7 @@ class DuckGame extends Component {
             if (newY > canvas.height) {
                 newY = -obstacle.height;
                 const newPosX = roadStart + Math.random() * (roadEnd - roadStart - obstacleWidth);
-                scoreIncrement++;
+                scoreIncrement++; // Increment score for dodging the obstacle
                 return { ...obstacle, y: newY, x: newPosX };
             }
             return { ...obstacle, y: newY };
@@ -387,6 +515,7 @@ class DuckGame extends Component {
 
         for (let i = 0; i < obstacles.length; i++) {
             const obstacle = obstacles[i];
+
             if (duckX < obstacle.x + obstacle.width &&
                 duckX + duckWidth > obstacle.x &&
                 duckY < obstacle.y + obstacle.height &&
@@ -401,7 +530,6 @@ class DuckGame extends Component {
 
     render() {
         const { gameOver } = this.state;
-
 
         const startComponentStyle = {
             position: 'absolute',
@@ -429,10 +557,6 @@ class DuckGame extends Component {
                     }}
                 />
 
-                {/* Touch Indicators - Verify if user is on mobile or always show? 
-                    For now, showing always as hints is helpful. 
-                    Can condition on window.innerWidth later if needed.
-                */}
                 {!gameOver && this.state.startSequenceFinished && !this.state.showStartComponent && (
                     <>
                         <div className="mobile-controls-arrow left">
