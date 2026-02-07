@@ -28,6 +28,7 @@ function App() {
               <NotFoundPage
                 header="You Found the Secret Duck Race!"
                 message="Congratulations! You've discovered the hidden game. Good luck!"
+                showConfetti={true}
               />
             }
           />

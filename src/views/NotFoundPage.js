@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Confetti from 'react-confetti';
 import DuckGame from '../components/DuckGame';
 import { Button, ButtonGroup, ButtonOr } from 'semantic-ui-react';
 import '../NotFoundPage.css';
 
 const NotFoundPage = ({
     header = "404 - Page Not Found",
-    message = "Sorry, the page you are looking for does not exist. But hey, enjoy this game while you're here!"
+    message = "Sorry, the page you are looking for does not exist. But hey, enjoy this game while you're here!",
+    showConfetti = false
 }) => {
     const duckGameRef = React.useRef(null);
     const [gameState, setGameState] = React.useState({
@@ -39,6 +41,7 @@ const NotFoundPage = ({
 
     return (
         <div className="not-found-page">
+            {showConfetti && <Confetti recycle={false} numberOfPieces={500} />}
             <div className="content">
                 <h1>{header}</h1>
                 <p>{message}</p>
