@@ -65,12 +65,18 @@ class DuckGame extends Component {
             leftPressed: false,
             obstacles: [],
             curbOffset: 0,
-            obstacleSpeed: 2,
+            // SPEEDS IN PIXELS PER SECOND (previously per frame @ 60fps)
+            // Old: 2px/frame * 60 = 120px/s
+            obstacleSpeed: 120,
+            // Old: 1px/frame * 60 = 60px/s (start difficulty)
             difficultyLevel: 1,
             collidedObstacleIndex: null,
             score: 0,
             curbs: [],
+            // Duck speed: 7px/frame * 60 = 420px/s
+            duckSpeed: 420,
         };
+        this.lastTime = null;
     };
 
     componentDidMount() {
@@ -333,11 +339,7 @@ class DuckGame extends Component {
         }
 
         if (!this.state.gameOver) {
-            this.checkCollisions();
             this.drawObstacles(ctx);
-            this.moveDuck();
-            this.updateObstacles();
-            this.updateCurbs();
         } else {
             this.handleGameOver(ctx);
         }
@@ -467,21 +469,37 @@ class DuckGame extends Component {
         ];
     };
 
-    gameLoop = () => {
+    gameLoop = (timestamp) => {
         if (!this.state.gameOver && this.isComponentMounted) {
+            if (!this.lastTime) this.lastTime = timestamp;
+            const deltaTime = (timestamp - this.lastTime) / 1000; // Convert ms to seconds
+            this.lastTime = timestamp;
+
+            // Cap dt to prevent spiraling if tab was inactive (max 0.1s frame)
+            const dt = Math.min(deltaTime, 0.1);
+
+            this.update(dt);
             this.draw();
             this.animationFrameId = requestAnimationFrame(this.gameLoop);
         }
     };
 
+    update = (dt) => {
+        this.moveDuck(dt);
+        this.updateObstacles(dt);
+        this.updateCurbs(dt);
+        this.checkCollisions();
+    };
+
     increaseDifficulty = () => {
         // Direct modification of gameState
         this.gameState.difficultyLevel += 1;
-        this.gameState.obstacleSpeed += 1;
+        // Increase speed by 60px/s (approx 1px/frame)
+        this.gameState.obstacleSpeed += 60;
     };
 
-    moveDuck = () => {
-        const { duckX, rightPressed, leftPressed } = this.gameState;
+    moveDuck = (dt) => {
+        const { duckX, rightPressed, leftPressed, duckSpeed } = this.gameState;
         const canvas = this.canvasRef.current;
         const roadWidth = canvas.width / 2;
         const roadStart = (canvas.width - roadWidth) / 2;
@@ -489,20 +507,21 @@ class DuckGame extends Component {
         const roadEnd = roadStart + roadWidth - duckWidth;
 
         if (rightPressed && duckX < roadEnd) {
-            this.gameState.duckX += 7;
+            this.gameState.duckX += duckSpeed * dt;
         } else if (leftPressed && duckX > roadStart) {
-            this.gameState.duckX -= 7;
+            this.gameState.duckX -= duckSpeed * dt;
         }
     };
 
-    updateCurbs = () => {
+    updateCurbs = (dt) => {
         // Half the obstacle speed for the curb scrolling speed
         const curbSpeed = this.gameState.obstacleSpeed * 2;
         const { curbOffset } = this.gameState;
-        this.gameState.curbOffset = (curbOffset + curbSpeed) % (20 * 2);
+        // Distance = Speed * Time
+        this.gameState.curbOffset = (curbOffset + (curbSpeed * dt)) % (20 * 2);
     };
 
-    updateObstacles = () => {
+    updateObstacles = (dt) => {
         const { obstacles, obstacleSpeed } = this.gameState;
         const canvas = this.canvasRef.current;
         const roadWidth = canvas.width / 2;
@@ -515,7 +534,8 @@ class DuckGame extends Component {
         // Mutate obstacles in place to avoid Garbage Collection
         for (let i = 0; i < obstacles.length; i++) {
             const obstacle = obstacles[i];
-            obstacle.y += obstacleSpeed;
+            // Y = Y + (Speed * dt)
+            obstacle.y += obstacleSpeed * dt;
 
             if (obstacle.y > canvas.height) {
                 obstacle.y = -obstacle.height;
