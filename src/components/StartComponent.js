@@ -50,7 +50,15 @@ class StartComponent extends Component {
 
     return (
       <div className="start-sequence">
-        <img src={graphicToDisplay} alt="Start Graphic" />
+        <img
+          src={graphicToDisplay}
+          alt="Start Graphic"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain'
+          }}
+        />
       </div>
     );
   }

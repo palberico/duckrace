@@ -73,6 +73,8 @@ class DuckGame extends Component {
 
         if (this.canvasRef.current) {
             this.canvasRef.current.addEventListener('click', this.handleCanvasClick);
+            this.canvasRef.current.addEventListener('touchstart', this.handleTouchStart, { passive: false });
+            this.canvasRef.current.addEventListener('touchend', this.handleTouchEnd, { passive: false });
         }
     }
 
@@ -85,6 +87,8 @@ class DuckGame extends Component {
 
         if (this.canvasRef.current) {
             this.canvasRef.current.removeEventListener('click', this.handleCanvasClick);
+            this.canvasRef.current.removeEventListener('touchstart', this.handleTouchStart);
+            this.canvasRef.current.removeEventListener('touchend', this.handleTouchEnd);
         }
     }
 
@@ -138,6 +142,48 @@ class DuckGame extends Component {
             y < this.canvasRef.current.height) { // Adjusted for bottom left corner
             this.restartGame();
         }
+    };
+
+    handleTouchStart = (e) => {
+        if (this.state.gameOver && this.canvasRef.current) {
+            const rect = this.canvasRef.current.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+
+            // Adjusted coordinates for the "Play Again" button - roughly same area as click
+            if (x > this.canvasRef.current.width / 2 - 75 &&
+                x < this.canvasRef.current.width / 2 + 75 &&
+                y > this.canvasRef.current.height - 40 &&
+                y < this.canvasRef.current.height) {
+                this.restartGame();
+                return;
+            }
+        }
+
+        if (e.cancelable) {
+            e.preventDefault(); // Prevent scrolling while playing
+        }
+
+        if (this.canvasRef.current) {
+            const rect = this.canvasRef.current.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const width = rect.width;
+
+            if (x < width / 2) {
+                this.setState({ leftPressed: true, rightPressed: false });
+            } else {
+                this.setState({ leftPressed: false, rightPressed: true });
+            }
+        }
+    };
+
+    handleTouchEnd = (e) => {
+        if (e.cancelable) {
+            e.preventDefault();
+        }
+        this.setState({ leftPressed: false, rightPressed: false });
     };
 
     keyDownHandler = (e) => {
@@ -208,19 +254,19 @@ class DuckGame extends Component {
     draw = () => {
         const canvas = this.canvasRef.current;
         if (!canvas || !this.state.startImageLoaded) return; // Check if canvas exists and image is loaded
-    
+
         const ctx = canvas.getContext('2d');
         ctx.save();
-    
+
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-    
+
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    
+
         if (!this.state.startSequenceFinished) {
             // Fill the canvas with a black background
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
             // Calculate the aspect ratio of the image
             const imageAspectRatio = this.startImg.width / this.startImg.height;
             // Calculate the dimensions to fit the canvas while maintaining aspect ratio
@@ -239,13 +285,13 @@ class DuckGame extends Component {
             this.drawRoad(ctx);
             this.drawDuck(ctx);
             this.drawCurbs(ctx);
-    
+
             // Draw Score
             ctx.font = '24px Arial';
             ctx.fillStyle = 'white';
             ctx.fillText(`Score: ${this.state.score}`, SCORE_POSITION.x, SCORE_POSITION.y);
         }
-    
+
         if (!this.state.gameOver) {
             this.checkCollisions();
             this.drawObstacles(ctx);
@@ -255,10 +301,10 @@ class DuckGame extends Component {
         } else {
             this.handleGameOver(ctx);
         }
-    
+
         ctx.restore(); // Restore the context state to what it was before the save()
     };
-    
+
     drawRoad = (ctx) => {
         const canvasWidth = ctx.canvas.width;
         const canvasHeight = ctx.canvas.height;
@@ -489,8 +535,18 @@ class DuckGame extends Component {
         };
 
         return (
-            <div className="game-container" style={{ position: 'relative', width: '800px', height: '600px', margin: '0 auto' }}>
-                <canvas ref={this.canvasRef} width="800" height="600" style={{ border: '1px solid black' }} />
+            <div className="game-container">
+                <canvas
+                    ref={this.canvasRef}
+                    width="800"
+                    height="600"
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)'
+                    }}
+                />
 
                 <Button color='red'
                     onClick={() => {
@@ -504,7 +560,7 @@ class DuckGame extends Component {
                 >
                     {gameOver ? 'Race Again' : 'Start Race'}
                 </Button>
-        
+
                 {/* StartComponent should show only during the start sequence */}
                 {this.state.showStartComponent && (
                     <div style={startComponentStyle}>

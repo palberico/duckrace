@@ -1,11 +1,14 @@
 .game-container {
     position: relative;
-    width: 800px;
-    height: 600px;
-    margin: 0 auto; /* Center the container horizontally */
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    aspect-ratio: 4 / 3;
+    /* Maintain 800x600 aspect ratio */
     display: flex;
     justify-content: center;
-    align-items: center; /* Center the content vertically */
+    align-items: center;
+    /* Center the content vertically */
 }
 
 .start-component-container {
@@ -17,6 +20,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 255, 255, 0.9); /* Optional: to obscure the game until start */
-    z-index: 10; /* Ensures it lays on top of the canvas */
+    background: rgba(255, 255, 255, 0.9);
+    /* Optional: to obscure the game until start */
+    z-index: 10;
+    /* Ensures it lays on top of the canvas */
 }
