@@ -289,7 +289,10 @@ class DuckGame extends Component {
             // Start physics/timers NOW
             clearInterval(this.increaseDifficultyInterval);
             this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
-            this.gameLoop();
+
+            // Reset timer and start loop with rAF to ensure valid timestamp
+            this.lastTime = null;
+            this.animationFrameId = requestAnimationFrame(this.gameLoop);
         });
     };
 
@@ -461,12 +464,19 @@ class DuckGame extends Component {
 
     gameLoop = (timestamp) => {
         if (!this.state.gameOver && this.isComponentMounted) {
-            if (!this.lastTime) this.lastTime = timestamp;
+            // Warm-up frame: If no lastTime, set it and skip update to avoid huge initial dt
+            if (!this.lastTime) {
+                this.lastTime = timestamp;
+                this.animationFrameId = requestAnimationFrame(this.gameLoop);
+                return;
+            }
+
             const deltaTime = (timestamp - this.lastTime) / 1000; // Convert ms to seconds
             this.lastTime = timestamp;
 
-            // Cap dt to prevent spiraling if tab was inactive (max 0.1s frame)
-            const dt = Math.min(deltaTime, 0.1);
+            // Cap dt to prevent spiraling (max 0.05s = 20fps)
+            // Tighter cap prevents huge jumps if browser hangs
+            const dt = Math.min(deltaTime, 0.05);
 
             this.update(dt);
             this.draw();
