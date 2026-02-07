@@ -13,6 +13,12 @@ import orangeCarImage from '../assets/images/cars/OrangeCar.png';
 
 import '../DuckGame.css';
 
+const GAME_WIDTH = 800;
+const GAME_HEIGHT = 600;
+const ROAD_WIDTH = GAME_WIDTH / 2; // 400
+const ROAD_START = (GAME_WIDTH - ROAD_WIDTH) / 2; // 200
+const ROAD_END = ROAD_START + ROAD_WIDTH; // 600
+
 const SCORE_POSITION = { x: 20, y: 30 };
 
 class DuckGame extends Component {
@@ -339,10 +345,11 @@ class DuckGame extends Component {
     };
 
     drawRoad = (ctx) => {
-        const canvasWidth = ctx.canvas.width;
-        const canvasHeight = ctx.canvas.height;
-        const roadWidth = canvasWidth / 2;
-        const roadStart = (canvasWidth - roadWidth) / 2;
+        // Use hardcoded dimensions for robustness
+        const canvasWidth = GAME_WIDTH;
+        const canvasHeight = GAME_HEIGHT;
+        const roadWidth = ROAD_WIDTH;
+        const roadStart = ROAD_START;
         const grassWidth = roadStart;
 
         // Gradient for the road to simulate lighting and depth
@@ -399,12 +406,13 @@ class DuckGame extends Component {
 
     drawCurbs = (ctx) => {
         const { curbOffset } = this.gameState;
-        const roadWidth = ctx.canvas.width / 2;
-        const roadStart = (ctx.canvas.width - roadWidth) / 2;
+        // Use hardcoded dimensions
+        const roadWidth = ROAD_WIDTH;
+        const roadStart = ROAD_START;
         const curbWidth = 10;
         const curbHeight = 20;
 
-        for (let y = curbOffset - curbHeight; y < ctx.canvas.height; y += curbHeight * 2) {
+        for (let y = curbOffset - curbHeight; y < GAME_HEIGHT; y += curbHeight * 2) {
             ctx.fillStyle = 'red';
             ctx.fillRect(roadStart - curbWidth, y, curbWidth, curbHeight);
             ctx.fillStyle = 'white';
@@ -482,11 +490,10 @@ class DuckGame extends Component {
 
     moveDuck = (dt) => {
         const { duckX, rightPressed, leftPressed, duckSpeed } = this.gameState;
-        const canvas = this.canvasRef.current;
-        const roadWidth = canvas.width / 2;
-        const roadStart = (canvas.width - roadWidth) / 2;
+        // Use hardcoded dimensions
+        const roadStart = ROAD_START;
         const duckWidth = 54;
-        const roadEnd = roadStart + roadWidth - duckWidth;
+        const roadEnd = ROAD_END - duckWidth;
 
         if (rightPressed && duckX < roadEnd) {
             this.gameState.duckX += duckSpeed * dt;
@@ -499,16 +506,22 @@ class DuckGame extends Component {
         // Half the obstacle speed for the curb scrolling speed
         const curbSpeed = this.gameState.obstacleSpeed * 2;
         const { curbOffset } = this.gameState;
-        // Distance = Speed * Time
-        this.gameState.curbOffset = (curbOffset + (curbSpeed * dt)) % (20 * 2);
+
+        let nextOffset = (curbOffset + (curbSpeed * dt)) % (20 * 2);
+
+        // Safety guard for NaN or undefined which can happen on tab switch/mobile suspend
+        if (isNaN(nextOffset)) {
+            nextOffset = 0;
+        }
+
+        this.gameState.curbOffset = nextOffset;
     };
 
     updateObstacles = (dt) => {
         const { obstacles, obstacleSpeed } = this.gameState;
-        const canvas = this.canvasRef.current;
-        const roadWidth = canvas.width / 2;
-        const roadStart = (canvas.width - roadWidth) / 2;
-        const roadEnd = roadStart + roadWidth;
+        // Use hardcoded dimensions
+        const roadStart = ROAD_START;
+        const roadEnd = ROAD_END;
         const obstacleWidth = 50;
 
         let scoreIncrement = 0;
@@ -519,7 +532,9 @@ class DuckGame extends Component {
             // Y = Y + (Speed * dt)
             obstacle.y += obstacleSpeed * dt;
 
-            if (obstacle.y > canvas.height) {
+            obstacle.y += obstacleSpeed * dt;
+
+            if (obstacle.y > GAME_HEIGHT) {
                 obstacle.y = -obstacle.height;
                 // Randomize X position
                 obstacle.x = roadStart + Math.random() * (roadEnd - roadStart - obstacleWidth);
