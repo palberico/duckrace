@@ -72,15 +72,15 @@ class DuckGame extends Component {
             obstacles: [],
             curbOffset: 0,
             // SPEEDS IN PIXELS PER SECOND (previously per frame @ 60fps)
-            // Old: 220px/s -> New: 180px/s (Slower, more relaxed)
-            obstacleSpeed: 180,
+            // Old: 180px/s -> New: 120px/s (Original baseline, smoother)
+            obstacleSpeed: 120,
             // Old: 1px/frame * 60 = 60px/s (start difficulty)
             difficultyLevel: 1,
             collidedObstacleIndex: null,
             score: 0,
             curbs: [],
-            // Duck speed: 500px/s -> New: 460px/s
-            duckSpeed: 460,
+            // Duck speed: 460px/s -> New: 420px/s (Original baseline)
+            duckSpeed: 420,
         };
         this.lastTime = null;
     };
