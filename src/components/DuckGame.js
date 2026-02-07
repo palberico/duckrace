@@ -72,15 +72,15 @@ class DuckGame extends Component {
             obstacles: [],
             curbOffset: 0,
             // SPEEDS IN PIXELS PER SECOND (previously per frame @ 60fps)
-            // Old: 120px/s -> New: 220px/s (Goldilocks zone)
-            obstacleSpeed: 220,
+            // Old: 220px/s -> New: 180px/s (Slower, more relaxed)
+            obstacleSpeed: 180,
             // Old: 1px/frame * 60 = 60px/s (start difficulty)
             difficultyLevel: 1,
             collidedObstacleIndex: null,
             score: 0,
             curbs: [],
-            // Duck speed: 420px/s -> New: 500px/s (Controllable)
-            duckSpeed: 500,
+            // Duck speed: 500px/s -> New: 460px/s
+            duckSpeed: 460,
         };
         this.lastTime = null;
     };
@@ -484,8 +484,8 @@ class DuckGame extends Component {
     increaseDifficulty = () => {
         // Direct modification of gameState
         this.gameState.difficultyLevel += 1;
-        // Increase speed by 40px/s
-        this.gameState.obstacleSpeed += 40;
+        // Increase speed by 30px/s
+        this.gameState.obstacleSpeed += 30;
     };
 
     moveDuck = (dt) => {
