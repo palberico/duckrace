@@ -46,8 +46,9 @@
 /* Mobile Controls Arrows */
 .mobile-controls-arrow {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: auto;
+    bottom: 20px;
+    transform: none;
     font-size: 4rem;
     color: rgba(255, 255, 255, 0.5);
     pointer-events: none;
