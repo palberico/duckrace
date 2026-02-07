@@ -23,7 +23,7 @@ function App() {
           <Route path="/map/:locationId" element={<MapScreen />} />
 
           <Route
-            path="/secret-race"
+            path="/secret-game"
             element={
               <NotFoundPage
                 header="You Found the Secret Duck Race!"
