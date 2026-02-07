@@ -42,3 +42,30 @@
         opacity: 0.5;
     }
 }
+
+/* Mobile Controls Arrows */
+.mobile-controls-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    z-index: 15;
+    animation: pulse 1.5s infinite;
+}
+
+.mobile-controls-arrow.left {
+    left: 20px;
+}
+
+.mobile-controls-arrow.right {
+    right: 20px;
+}
+
+/* Hide arrows on desktop */
+@media (min-width: 769px) {
+    .mobile-controls-arrow {
+        display: none !important;
+    }
+}

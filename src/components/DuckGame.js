@@ -228,11 +228,12 @@ class DuckGame extends Component {
         clearInterval(this.increaseDifficultyInterval);
         cancelAnimationFrame(this.animationFrameId);
 
-        // Reset the state to its initial values but keep startImageLoaded true
+        // Reset the state to its initial values but keep startImageLoaded and explosionImage
         const initialState = this.getInitialState();
         this.setState({
             ...initialState,
-            startImageLoaded: true
+            startImageLoaded: true,
+            explosionImage: this.state.explosionImage || this.explosionImg // Preserve the loaded image
         }, () => {
             this.setupEventListeners();
             this.loadCarImages();
@@ -532,20 +533,7 @@ class DuckGame extends Component {
 
     render() {
         const { gameOver } = this.state;
-        // Styles for touch indicators
-        const indicatorStyle = {
-            position: 'absolute',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            fontSize: '4rem',
-            color: 'rgba(255, 255, 255, 0.5)',
-            pointerEvents: 'none', // Allow clicks to pass through
-            zIndex: 15,
-            animation: 'pulse 1.5s infinite'
-        };
 
-        const leftIndicatorStyle = { ...indicatorStyle, left: '20px' };
-        const rightIndicatorStyle = { ...indicatorStyle, right: '20px' };
 
         const startComponentStyle = {
             position: 'absolute',
@@ -579,10 +567,10 @@ class DuckGame extends Component {
                 */}
                 {!gameOver && this.state.startSequenceFinished && !this.state.showStartComponent && (
                     <>
-                        <div style={leftIndicatorStyle}>
+                        <div className="mobile-controls-arrow left">
                             <Icon name='chevron left' />
                         </div>
-                        <div style={rightIndicatorStyle}>
+                        <div className="mobile-controls-arrow right">
                             <Icon name='chevron right' />
                         </div>
                     </>
