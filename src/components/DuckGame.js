@@ -235,7 +235,7 @@ class DuckGame extends Component {
             this.loadCarImages();
             // Clear any existing intervals to prevent speedups
             clearInterval(this.increaseDifficultyInterval);
-            this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
+            // this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
 
             // Do NOT start game loop here. Wait for sequence end.
             if (this.props.onGameStateChange) {
@@ -264,6 +264,10 @@ class DuckGame extends Component {
         this.setState({ startSequenceFinished: true, showStartComponent: false }, () => {
             this.setupEventListeners();
             this.loadCarImages();
+
+            // Start physics/timers NOW
+            clearInterval(this.increaseDifficultyInterval);
+            this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
             this.gameLoop();
         });
     };
