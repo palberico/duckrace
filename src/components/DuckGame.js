@@ -78,6 +78,10 @@ class DuckGame extends Component {
         this.isComponentMounted = true;
         this.setupEventListeners();
         this.loadCarImages();
+
+        // Initialize background canvas once
+        this.initBackgroundCanvas();
+
         this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
 
         if (this.canvasRef.current) {
@@ -311,7 +315,14 @@ class DuckGame extends Component {
             // Draw the resized and centered image
             ctx.drawImage(this.startImg, x, y, drawWidth, drawHeight);
         } else {
-            this.drawRoad(ctx);
+            // Draw cached background instead of recalculating gradients
+            if (this.bgCanvas) {
+                ctx.drawImage(this.bgCanvas, 0, 0);
+            } else {
+                // Fallback if init failed
+                this.drawRoad(ctx);
+            }
+
             this.drawDuck(ctx);
             this.drawCurbs(ctx);
 
@@ -332,6 +343,15 @@ class DuckGame extends Component {
         }
 
         ctx.restore(); // Restore the context state to what it was before the save()
+    };
+
+    // Initialize the static background on an off-screen canvas
+    initBackgroundCanvas = () => {
+        this.bgCanvas = document.createElement('canvas');
+        this.bgCanvas.width = 800; // Match game resolution
+        this.bgCanvas.height = 600;
+        const ctx = this.bgCanvas.getContext('2d');
+        this.drawRoad(ctx); // Draw road once to this canvas
     };
 
     drawRoad = (ctx) => {
@@ -491,18 +511,20 @@ class DuckGame extends Component {
         const obstacleWidth = 50;
 
         let scoreIncrement = 0;
-        const updatedObstacles = obstacles.map(obstacle => {
-            let newY = obstacle.y + obstacleSpeed;
-            if (newY > canvas.height) {
-                newY = -obstacle.height;
-                const newPosX = roadStart + Math.random() * (roadEnd - roadStart - obstacleWidth);
-                scoreIncrement++; // Increment score for dodging the obstacle
-                return { ...obstacle, y: newY, x: newPosX };
-            }
-            return { ...obstacle, y: newY };
-        });
 
-        this.gameState.obstacles = updatedObstacles;
+        // Mutate obstacles in place to avoid Garbage Collection
+        for (let i = 0; i < obstacles.length; i++) {
+            const obstacle = obstacles[i];
+            obstacle.y += obstacleSpeed;
+
+            if (obstacle.y > canvas.height) {
+                obstacle.y = -obstacle.height;
+                // Randomize X position
+                obstacle.x = roadStart + Math.random() * (roadEnd - roadStart - obstacleWidth);
+                scoreIncrement++;
+            }
+        }
+
         this.gameState.score += scoreIncrement;
     };
 
@@ -553,7 +575,7 @@ class DuckGame extends Component {
                         width: '100%',
                         height: '100%',
                         border: '1px solid rgba(255, 255, 255, 0.2)',
-                        boxShadow: '0 0 20px rgba(0, 0, 0, 0.5)'
+                        // Box shadow removed for performance
                     }}
                 />
 
