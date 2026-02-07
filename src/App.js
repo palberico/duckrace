@@ -22,6 +22,15 @@ function App() {
           <Route path="/duck/:duckId" element={<DuckProfile />} />
           <Route path="/map/:locationId" element={<MapScreen />} />
 
+          <Route
+            path="/secret-race"
+            element={
+              <NotFoundPage
+                header="You Found the Secret Duck Race!"
+                message="Congratulations! You've discovered the hidden game. Good luck!"
+              />
+            }
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>

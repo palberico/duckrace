@@ -4,7 +4,10 @@ import DuckGame from '../components/DuckGame';
 import { Button, ButtonGroup, ButtonOr } from 'semantic-ui-react';
 import '../NotFoundPage.css';
 
-const NotFoundPage = () => {
+const NotFoundPage = ({
+    header = "404 - Page Not Found",
+    message = "Sorry, the page you are looking for does not exist. But hey, enjoy this game while you're here!"
+}) => {
     const duckGameRef = React.useRef(null);
     const [gameState, setGameState] = React.useState({
         isGameActive: false,
@@ -37,8 +40,8 @@ const NotFoundPage = () => {
     return (
         <div className="not-found-page">
             <div className="content">
-                <h1>404 - Page Not Found</h1>
-                <p>Sorry, the page you are looking for does not exist. But hey, enjoy this game while you're here!</p>
+                <h1>{header}</h1>
+                <p>{message}</p>
                 <ButtonGroup>
                     <Button color='red' onClick={handleStartRace}>
                         {gameState.isGameOver ? 'Race Again' : (gameState.isGameActive ? 'Racing...' : 'Start Race')}
