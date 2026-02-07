@@ -228,11 +228,16 @@ class DuckGame extends Component {
         clearInterval(this.increaseDifficultyInterval);
         cancelAnimationFrame(this.animationFrameId);
 
-        // Reset the state to its initial values
-        this.setState(this.getInitialState(), () => {
+        // Reset the state to its initial values but keep startImageLoaded true
+        const initialState = this.getInitialState();
+        this.setState({
+            ...initialState,
+            startImageLoaded: true
+        }, () => {
             this.setupEventListeners();
             this.loadCarImages();
             this.startGame();
+            this.draw(); // Force a draw to clear "Game Over" text immediately
         });
     };
 
