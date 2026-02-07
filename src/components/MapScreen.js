@@ -7,7 +7,6 @@ import { db } from '../firebase/Config';
 import {
   Icon,
   Button,
-  Segment,
 } from 'semantic-ui-react';
 
 //Things to change. We need to group similar locations into the same marker. 

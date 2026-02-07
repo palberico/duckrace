@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Header, Input, Message, Button } from 'semantic-ui-react';
+import { Input, Button } from 'semantic-ui-react';
 
 const DuckCodeModal = ({ open, handleClose, code, setCode, isCodeIncorrect, handleCodeSubmit, duckName }) => {
   const [loading, setLoading] = useState(false);

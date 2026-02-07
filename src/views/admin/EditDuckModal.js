@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Modal, Button, Icon, Form, Loader, Message, Dropdown, TextArea } from 'semantic-ui-react';
+import { Button, Icon, Form, Message, Dropdown, TextArea } from 'semantic-ui-react';
 import { useDropzone } from 'react-dropzone';
 import { doc, updateDoc, GeoPoint } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';

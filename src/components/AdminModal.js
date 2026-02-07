@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Form, Input, Button, Icon, Header, Message } from 'semantic-ui-react';
+import { Modal, Form, Input, Button, Icon, Message } from 'semantic-ui-react';
 
 const AdminModal = ({
     isOpen,

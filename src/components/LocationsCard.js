@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Header, List, Icon, ListItem, ListContent, ListDescription } from 'semantic-ui-react';
+import { Button, Header, Icon } from 'semantic-ui-react';
 import { collection, query, where, getDocs, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import countryOptions from '../components/data/Countries';

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Card,
+
   Image,
   Button,
   Form,
-  ButtonOr,
-  ButtonGroup,
   Segment,
   Dropdown,
   Loader,
@@ -369,23 +367,4 @@ const DuckForm = () => {
 
 export default DuckForm;
 
-const styles = {
-  homeContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '50px',
-    marginBottom: '50px',
-    maxWidth: '100vw', // Ensure the container does not exceed the viewport width
-    padding: '0 20px', // Add some padding to prevent content from touching the screen edges
-  },
 
-  checkerboardFooter: {
-    width: '100%',
-    height: '50px',
-    backgroundSize: '20px 20px',
-    backgroundImage: `linear-gradient(45deg, #000 25%, transparent 25%), linear-gradient(-45deg, #000 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #000 75%), linear-gradient(-45deg, transparent 75%, #000 75%)`,
-    backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
-  },
-};

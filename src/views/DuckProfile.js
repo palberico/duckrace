@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Grid, Loader, Message,
+  Button, Loader, Message,
   Header, Image, Icon
 } from 'semantic-ui-react';
 import {

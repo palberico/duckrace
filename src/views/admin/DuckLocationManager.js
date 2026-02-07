@@ -16,6 +16,7 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
 
     useEffect(() => {
         fetchLocations();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [duck.id]);
 
     const fetchLocations = async () => {

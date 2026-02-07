@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase/Config';
-import { Loader, Input, Icon } from 'semantic-ui-react';
+import { Loader, Input } from 'semantic-ui-react';
 import DuckLocationManager from './DuckLocationManager';
 
 const DuckManager = () => {
