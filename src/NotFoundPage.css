@@ -41,3 +41,14 @@
         font-size: 1rem;
     }
 }
+
+.footer {
+    margin-top: auto;
+    width: 100%;
+    padding: 2rem 0;
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    border-top: 1px solid #333;
+    background-color: #000;
+}

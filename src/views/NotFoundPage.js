@@ -44,10 +44,14 @@ const NotFoundPage = () => {
                         {gameState.isGameOver ? 'Race Again' : (gameState.isGameActive ? 'Racing...' : 'Start Race')}
                     </Button>
                     <ButtonOr />
-                    <Button as={Link} to='/' color='blue'>Back to Home</Button>
+                    <Button as={Link} to='/' basic color='yellow'>Back to Home</Button>
                 </ButtonGroup>
             </div>
             <DuckGame ref={duckGameRef} onGameStateChange={handleGameStateChange} />
+            <div className="footer">
+                <p>© 2024 RaceDucks.com. All rights reserved.</p>
+                <p style={{ marginTop: '0.5rem', opacity: 0.6 }}>Keep on quackin'.</p>
+            </div>
         </div>
     );
 };

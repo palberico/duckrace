@@ -217,6 +217,8 @@ class DuckGame extends Component {
                 if (this.props.onGameStateChange) {
                     this.props.onGameStateChange({ isGameActive: true, isGameOver: false });
                 }
+                // We do NOT start the game loop here anymore. 
+                // It starts when the sequence ends.
             });
         }
     };
@@ -231,8 +233,11 @@ class DuckGame extends Component {
         }, () => {
             this.setupEventListeners();
             this.loadCarImages();
+            // Clear any existing intervals to prevent speedups
+            clearInterval(this.increaseDifficultyInterval);
             this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
-            this.gameLoop(); // Start the game loop
+
+            // Do NOT start game loop here. Wait for sequence end.
             if (this.props.onGameStateChange) {
                 this.props.onGameStateChange({ isGameActive: true, isGameOver: false });
             }
