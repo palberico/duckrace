@@ -66,15 +66,15 @@ class DuckGame extends Component {
             obstacles: [],
             curbOffset: 0,
             // SPEEDS IN PIXELS PER SECOND (previously per frame @ 60fps)
-            // Old: 2px/frame * 60 = 120px/s
-            obstacleSpeed: 120,
+            // Old: 120px/s -> New: 300px/s (Faster base speed)
+            obstacleSpeed: 300,
             // Old: 1px/frame * 60 = 60px/s (start difficulty)
             difficultyLevel: 1,
             collidedObstacleIndex: null,
             score: 0,
             curbs: [],
-            // Duck speed: 7px/frame * 60 = 420px/s
-            duckSpeed: 420,
+            // Duck speed: 420px/s -> New: 600px/s (Snappier)
+            duckSpeed: 600,
         };
         this.lastTime = null;
     };
@@ -84,9 +84,6 @@ class DuckGame extends Component {
         this.isComponentMounted = true;
         this.setupEventListeners();
         this.loadCarImages();
-
-        // Initialize background canvas once
-        this.initBackgroundCanvas();
 
         this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
 
@@ -321,13 +318,7 @@ class DuckGame extends Component {
             // Draw the resized and centered image
             ctx.drawImage(this.startImg, x, y, drawWidth, drawHeight);
         } else {
-            // Draw cached background instead of recalculating gradients
-            if (this.bgCanvas) {
-                ctx.drawImage(this.bgCanvas, 0, 0);
-            } else {
-                // Fallback if init failed
-                this.drawRoad(ctx);
-            }
+            this.drawRoad(ctx);
 
             this.drawDuck(ctx);
             this.drawCurbs(ctx);
@@ -345,15 +336,6 @@ class DuckGame extends Component {
         }
 
         ctx.restore(); // Restore the context state to what it was before the save()
-    };
-
-    // Initialize the static background on an off-screen canvas
-    initBackgroundCanvas = () => {
-        this.bgCanvas = document.createElement('canvas');
-        this.bgCanvas.width = 800; // Match game resolution
-        this.bgCanvas.height = 600;
-        const ctx = this.bgCanvas.getContext('2d');
-        this.drawRoad(ctx); // Draw road once to this canvas
     };
 
     drawRoad = (ctx) => {
@@ -494,8 +476,8 @@ class DuckGame extends Component {
     increaseDifficulty = () => {
         // Direct modification of gameState
         this.gameState.difficultyLevel += 1;
-        // Increase speed by 60px/s (approx 1px/frame)
-        this.gameState.obstacleSpeed += 60;
+        // Increase speed by 50px/s (approx 1px/frame)
+        this.gameState.obstacleSpeed += 50;
     };
 
     moveDuck = (dt) => {
