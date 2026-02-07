@@ -542,8 +542,6 @@ class DuckGame extends Component {
             // Y = Y + (Speed * dt)
             obstacle.y += obstacleSpeed * dt;
 
-            obstacle.y += obstacleSpeed * dt;
-
             if (obstacle.y > GAME_HEIGHT) {
                 obstacle.y = -obstacle.height;
                 // Randomize X position
