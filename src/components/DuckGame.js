@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 
 import StartComponent from './StartComponent';
 import startImage from '../assets/images/crashDuck.png';
@@ -63,6 +63,7 @@ class DuckGame extends Component {
         showStartComponent: false,
         score: 0,
         startImageLoaded: false,
+        isGameActive: false, // Track if game is running for parent
     });
 
     componentDidMount() {
@@ -210,7 +211,12 @@ class DuckGame extends Component {
             this.setState({
                 startSequenceFinished: true,
                 showStartComponent: true,
-                gameOver: false // Ensure the game is not marked as over when starting
+                gameOver: false, // Ensure the game is not marked as over when starting
+                isGameActive: true
+            }, () => {
+                if (this.props.onGameStateChange) {
+                    this.props.onGameStateChange({ isGameActive: true, isGameOver: false });
+                }
             });
         }
     };
@@ -227,6 +233,9 @@ class DuckGame extends Component {
             this.loadCarImages();
             this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
             this.gameLoop(); // Start the game loop
+            if (this.props.onGameStateChange) {
+                this.props.onGameStateChange({ isGameActive: true, isGameOver: false });
+            }
         });
     };
 
@@ -239,6 +248,9 @@ class DuckGame extends Component {
         }, () => {
             // Redraw the canvas to show the game over state immediately
             this.draw();
+            if (this.props.onGameStateChange) {
+                this.props.onGameStateChange({ isGameActive: false, isGameOver: true });
+            }
         });
     };
 
@@ -514,17 +526,20 @@ class DuckGame extends Component {
 
     render() {
         const { gameOver } = this.state;
-
-        const startButtonStyle = {
+        // Styles for touch indicators
+        const indicatorStyle = {
             position: 'absolute',
             top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 20, // Ensure button is above everything else
-            fontSize: '1.5rem',
-            padding: '15px 30px',
-            boxShadow: '0 0 15px rgba(0,0,0,0.5)'
+            transform: 'translateY(-50%)',
+            fontSize: '4rem',
+            color: 'rgba(255, 255, 255, 0.5)',
+            pointerEvents: 'none', // Allow clicks to pass through
+            zIndex: 15,
+            animation: 'pulse 1.5s infinite'
         };
+
+        const leftIndicatorStyle = { ...indicatorStyle, left: '20px' };
+        const rightIndicatorStyle = { ...indicatorStyle, right: '20px' };
 
         const startComponentStyle = {
             position: 'absolute',
@@ -535,7 +550,7 @@ class DuckGame extends Component {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            zIndex: 10 // Ensure it's above the canvas but below the start button
+            zIndex: 10 // Ensure it's above the canvas
         };
 
         return (
@@ -552,19 +567,19 @@ class DuckGame extends Component {
                     }}
                 />
 
-                {((!this.state.startSequenceFinished && !this.state.showStartComponent) || gameOver) && (
-                    <Button color='red'
-                        onClick={() => {
-                            if (gameOver) {
-                                window.location.reload();
-                            } else {
-                                this.startGame();
-                            }
-                        }}
-                        style={startButtonStyle}
-                    >
-                        {gameOver ? 'Race Again' : 'Start Race'}
-                    </Button>
+                {/* Touch Indicators - Verify if user is on mobile or always show? 
+                    For now, showing always as hints is helpful. 
+                    Can condition on window.innerWidth later if needed.
+                */}
+                {!gameOver && this.state.startSequenceFinished && !this.state.showStartComponent && (
+                    <>
+                        <div style={leftIndicatorStyle}>
+                            <Icon name='chevron left' />
+                        </div>
+                        <div style={rightIndicatorStyle}>
+                            <Icon name='chevron right' />
+                        </div>
+                    </>
                 )}
 
                 {/* StartComponent should show only during the start sequence */}

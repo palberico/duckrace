@@ -25,3 +25,20 @@
     z-index: 10;
     /* Ensures it lays on top of the canvas */
 }
+
+@keyframes pulse {
+    0% {
+        transform: translateY(-50%) scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: translateY(-50%) scale(1.2);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-50%) scale(1);
+        opacity: 0.5;
+    }
+}
