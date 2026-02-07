@@ -224,23 +224,15 @@ class DuckGame extends Component {
     };
 
     restartGame = () => {
+        // Stop any running intervals first to be safe
+        clearInterval(this.increaseDifficultyInterval);
+        cancelAnimationFrame(this.animationFrameId);
+
         // Reset the state to its initial values
-        this.setState({
-            ...this.getInitialState(),
-            startSequenceFinished: true, // Ensure the start sequence is marked as finished
-            showStartComponent: true, // Ensure the start component is shown
-            gameOver: false, // Reset the game over state
-        }, () => {
+        this.setState(this.getInitialState(), () => {
             this.setupEventListeners();
             this.loadCarImages();
-            // Clear any existing intervals to prevent speedups
-            clearInterval(this.increaseDifficultyInterval);
-            // this.increaseDifficultyInterval = setInterval(this.increaseDifficulty, 30000);
-
-            // Do NOT start game loop here. Wait for sequence end.
-            if (this.props.onGameStateChange) {
-                this.props.onGameStateChange({ isGameActive: true, isGameOver: false });
-            }
+            this.startGame();
         });
     };
 
