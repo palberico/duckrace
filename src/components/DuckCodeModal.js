@@ -13,23 +13,51 @@ const DuckCodeModal = ({ open, handleClose, code, setCode, isCodeIncorrect, hand
     }
   };
 
+  if (!open) return null;
+
   return (
-    <Modal open={open} onClose={handleClose} size='small'>
-      <Header>Enter {duckName}'s Six Digit Code.</Header>
-      <Modal.Content>
-        <p>To log distances for this duck, please enter its unique code:</p>
-        <Input value={code} onChange={(e) => setCode(e.target.value)} fluid />
+    <div className="modal-overlay" onClick={handleClose}>
+      <div className="glass-card modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px', width: '90%', textAlign: 'center' }}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <h2 style={{ color: 'var(--neon-blue)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>Found {duckName}?</h2>
+          <p style={{ color: '#aaa' }}>Enter the 6-digit code found on the duck to log its journey.</p>
+        </div>
+
+        <Input
+          placeholder='ENTER CODE'
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          fluid
+          className="custom-input-modal"
+          style={{ marginBottom: '1.5rem', fontSize: '1.5rem', textAlign: 'center' }}
+          maxLength={6}
+        />
+
         {isCodeIncorrect && (
-          <Message negative>
-            <Message.Header>Incorrect Code - Please try again.</Message.Header>
-          </Message>
+          <div style={{ color: 'var(--neon-red)', marginBottom: '1rem', fontWeight: 'bold' }}>
+            Incorrect Code - Try Again
+          </div>
         )}
-      </Modal.Content>
-      <Modal.Actions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button positive onClick={handleSubmit} loading={loading} disabled={loading}>Submit</Button>
-      </Modal.Actions>
-    </Modal>
+
+        <div className="modal-actions" style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <Button basic inverted onClick={handleClose} style={{ flex: 1 }}>Cancel</Button>
+          <Button
+            onClick={handleSubmit}
+            loading={loading}
+            disabled={loading || code.length !== 6}
+            style={{
+              flex: 1,
+              background: 'var(--neon-blue)',
+              color: 'black',
+              fontWeight: 'bold',
+              border: 'none',
+              boxShadow: '0 0 10px rgba(0, 240, 255, 0.3)'
+            }}>
+            Verify Code
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

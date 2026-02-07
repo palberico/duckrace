@@ -1,212 +1,1330 @@
-/* Add styles for the header, logo, and search box */
-.header {
+:root {
+  --bg-dark: #121212;
+  --bg-card: rgba(30, 30, 30, 0.7);
+  --bg-glass: rgba(0, 0, 0, 0.6);
+  --text-primary: #ffffff;
+  --text-secondary: #aaaaaa;
+
+  /* Neon Accents */
+  --neon-red: #ff3b3b;
+  --neon-blue: #00f0ff;
+  --neon-yellow: #ffd700;
+
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.App {
+  min-height: 100vh;
   display: flex;
-  justify-content: space-between; /* Spreads out logo and search box */
-  align-items: center;
-  padding: 1rem; /* Add some padding */
+  flex-direction: column;
 }
 
-.headerLogo {
-  flex-grow: 1; /* Allows logo to grow and take necessary space */
-}
-
-.headerSearch {
-  flex-grow: 2; /* Allows search box to take more space */
-  max-width: 500px; /* Maximum width of the search box */
-  margin-left: auto; /* Ensures it stays to the right */
-}
-
-/* DuckCard styles */
-.duck-card-link {
-  display: block;
-  color: inherit; /* Ensure the link color does not change */
-  text-decoration: none; /* Remove underline from links */
-}
-
-.duck-card {
-  cursor: pointer;
-  transition: box-shadow 0.3s ease;
-  margin-bottom: 1rem; /* Add space below the card */
-}
-
-.duck-card:hover {
-  box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Add a subtle shadow to indicate interactivity */
-}
-
-.duck-card-header {
+/* --- Header --- */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem; /* Space between the header and the card content */
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  /* Match Page Background */
+  background: var(--bg-dark);
+  backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-.duck-card-distance {
-  font-weight: bold; /* Make the distance stand out */
+.headerLogo img {
+  height: 40px;
+  width: auto;
 }
 
-/* Color styles for different positions */
-.red-text {
-  color: red; /* Red text color */
+.logo-text {
+  font-family: 'Inter', sans-serif;
+  /* Or a racing font if available */
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  font-style: italic;
 }
 
-.blue-text {
-  color: blue; /* Blue text color */
+.logo-highlight {
+  color: var(--neon-yellow);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-.green-text {
-  color: green; /* Green text color */
+.headerSearch {
+  flex-grow: 1;
+  max-width: 500px;
+  margin: 0 2rem;
 }
 
-.position-badge {
-  display: inline-block;
-  padding: .5em;
-  font-size: larger; /* Adjust the font size as needed */
-  font-weight: bold; /* Makes the text bold */
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.375rem;
+.headerAdmin {
+  margin-left: 1rem;
 }
 
-.default-position {
-  color: #333; /* Dark text for contrast */
+/* Custom Menu Button - No Border Override */
+.ui.button.menu-btn-custom {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
-/*Home Screen Hero and scroll */
+.ui.button.menu-btn-custom:hover,
+.ui.button.menu-btn-custom:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
 
+/* Custom Input Styling to match Dark Mode */
+.ui.input input {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 25px !important;
+}
+
+.ui.input input:focus {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-color: var(--neon-blue) !important;
+}
+
+/* Custom Search Button & Input */
+.search-btn {
+  background-color: var(--neon-blue) !important;
+  color: black !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.search-input input {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+/* --- Mobile Header Tweaks --- */
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    justify-content: space-between !important;
+    padding: 1rem 1.5rem;
+    height: auto;
+  }
+
+  .headerLogo {
+    order: 1;
+    flex: 0 0 auto;
+  }
+
+  .headerAdmin {
+    order: 2;
+    margin-left: 0;
+    flex: 0 0 auto;
+  }
+
+  .headerSearch {
+    order: 3;
+    width: 100%;
+    margin: 1rem 0 0 0;
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  /* Stack Checkboxes on Mobile */
+  .mobile-stack-container {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: flex-start !important;
+  }
+}
+
+/* --- Hero Section --- */
 .homeContainer {
-  position: relative; /* This makes it a reference point for absolute positioning */
+  position: relative;
+  min-height: 100vh;
+  background: var(--bg-dark);
+  /* Ensure page background matches */
 }
+
+/* ... existing hero styles (keep those clean) ... */
 
 .heroSection {
-  position: relative; /* Needed for the filter overlay positioning */
-  height: 450px; /* Set the height of your hero section */
-  overflow: hidden; /* Ensures no overflow of content */
-  /* background: url('../src/assets/images/HeroImageSmall.jpg') no-repeat center center; */
-  background-size: cover;
-  background-attachment: fixed;
-  /* background-position: center 70px; */
+  position: relative;
+  height: 60vh;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bg-dark);
+  /* Fallback */
 }
 
-.heroSection::after {
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.6;
+  /* Slight dim for text readability, matches previous overlay vibe */
+}
+
+/* Overlay for readability */
+.heroSection::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  /* background-color: rgba(0, 0, 0, 0.5); Overlay effect */
+  background: radial-gradient(circle at center, transparent 0%, var(--bg-dark) 90%);
   z-index: 1;
 }
 
-.heroText {
-  color: white; /* Set text color to white */
-  font-size: 2rem; /* Set the desired font size */
-  text-align: center; /* Center the text horizontally */
-  width: 100%; /* Ensure the div takes full width */
-  padding-top: 20px; /* Add some padding at the top to push it down slightly from the hero section */
-  padding-bottom: 20px; /* Add some padding at the bottom for spacing before the next content section */
-  background: linear-gradient(to bottom, #A6051A, #000000); 
-  /*background: rgb(0, 0, 0.5); Optional: Add a semi-transparent background to ensure text readability */
-  /* Remove negative margins, absolute positioning, and z-index */
+.heroContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 20px;
+  width: 100%;
+  max-width: 800px;
 }
 
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(to right, #fff, var(--neon-blue), #fff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+  text-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.heroSubtitle {
+  font-size: 1.3rem;
+  color: #e0e0e0;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-weight: 300;
+}
+
+/* --- Content Section --- */
 .scrollContent {
-  background: transparent;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
 }
 
-.heroImage {
+.section-title {
+  text-align: center;
+  color: var(--neon-yellow);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 3rem 0 2rem;
+  font-weight: 700;
+}
+
+/* --- Duck Cards Redesign --- */
+.duck-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.ui.card.duck-card {
+  background: #1e1e1e !important;
+  border: none !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  height: 320px;
+  /* Fixed height for uniformity */
+  position: relative;
+}
+
+.duck-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 240, 255, 0.2) !important;
+}
+
+/* Make image cover the whole card */
+.duck-card .image {
+  height: 100%;
+  width: 100%;
+}
+
+.duck-card .image img {
+  height: 100% !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.5s ease;
+}
+
+.duck-card:hover .image img {
+  transform: scale(1.1);
+}
+
+/* Gradient Overlay - Subtle now */
+.duck-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Content Box */
+.duck-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 1.2rem;
+  z-index: 2;
+  background: rgba(20, 20, 20, 0.9);
+  /* Solid dark box */
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.duck-name {
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.duck-distance {
+  color: var(--neon-blue);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Position Badges - Floating */
+/* Position Badges - Floating for Card */
+.duck-card .position-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  /* Moved to right for clean look */
+  z-index: 10;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Position Badges */
+.position-badge {
+  font-weight: bold;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.position-badge.default-position {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.position-badge.p1 {
+  background: var(--neon-red);
+  color: black;
+  box-shadow: 0 0 15px var(--neon-red);
+  border: none;
+}
+
+.position-badge.p2 {
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+}
+
+.position-badge.p3 {
+  border-color: var(--neon-yellow);
+  color: var(--neon-yellow);
+}
+
+/* --- Profile Page --- */
+.profile-content {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: -100px auto 0;
+  /* Overlap hero */
+  position: relative;
+  z-index: 10;
+}
+
+.profile-hero {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border-radius: 20px;
+  border: none;
+  box-shadow: none;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+/* Image on top/left */
+.profile-image-container {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  /* Added rounded corners */
+  isolation: isolate;
+  /* Fix for Safari border-radius clipping */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  /* Fix for Safari border-radius clipping */
+}
+
+.profile-image-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures the image covers the area */
-  position: absolute; /* Aligns the image properly within the heroSection */
-  top: 0;
-  left: 0;
+  object-fit: contain;
+  /* Ensure full duck is visible */
+  background: rgba(0, 0, 0, 0.2);
+  /* Subtle background for aspect ratio gaps */
+  transition: transform 0.5s ease;
+  border-radius: 16px;
+  /* Ensure image also has radius */
 }
 
-.game-container {
+/* Stats Section */
+.profile-stats-container {
+  padding: 2rem;
+  background: var(--bg-dark);
+}
+
+.duck-title {
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: linear-gradient(to right, #fff, var(--neon-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-5px);
+  border-color: var(--neon-blue);
+  box-shadow: 0 5px 15px rgba(0, 240, 255, 0.1);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  min-height: 1.5rem;
+  /* Ensure height if empty */
+}
+
+/* Specific override for Profile Stat Box */
+.stat-value .position-badge {
+  position: static;
+  /* Force static positioning to flow with text-align: center */
+  font-size: 1.5rem;
+  padding: 0.2rem 1rem;
+  box-shadow: none;
+  /* Optional: remove shadow if it looks too heavy */
+  display: inline-block;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.stat-value.neon {
+  color: var(--neon-blue);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+/* Actions */
+/* Actions */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.profile-action-btn {
+  flex: 1;
+  min-width: 200px;
+}
+
+.profile-action-btn.primary {
+  background-color: var(--neon-blue) !important;
+  color: black !important;
+  font-weight: bold !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+  border: none !important;
+}
+
+.profile-action-btn.primary:hover {
+  background-color: #00d0dd !important;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.6) !important;
+}
+
+.profile-action-btn.secondary {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  color: var(--neon-yellow) !important;
+  border: 2px solid var(--neon-yellow) !important;
+  font-weight: bold !important;
+}
+
+.profile-action-btn.secondary:hover {
+  background-color: rgba(255, 215, 0, 0.1) !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .profile-action-btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.timeline-card:hover {
+  transform: translateX(5px);
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--neon-blue) !important;
+}
+
+/* Bio Section */
+.bio-section {
+  background: rgba(30, 30, 30, 0.4);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 2rem;
+  color: #ddd;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.bio-section h3 {
+  color: var(--neon-yellow);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+/* Map & Locations cards override */
+.dark-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  padding: 1rem !important;
+  margin-bottom: 2rem;
+}
+
+.dark-card h3.ui.header {
+  color: white !important;
+}
+
+.ui.list>.item .description,
+.ui.list>.item .header {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.locations-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Glass Modal Styles - Overrides Semantic UI */
+.ui.modal.glass-modal {
+  background: rgba(18, 18, 18, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8) !important;
+}
+
+.ui.modal.glass-modal>.header {
+  background: transparent !important;
+  color: white !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-family: 'Outfit', sans-serif !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ui.modal.glass-modal>.content {
+  background: transparent !important;
+  color: #ddd !important;
+}
+
+.ui.modal.glass-modal>.actions {
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.ui.modal.glass-modal .close.icon {
+  color: white !important;
+  top: 1.5rem !important;
+  right: 1.5rem !important;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  z-index: 1001 !important;
+  pointer-events: auto !important;
+}
+
+.ui.modal.glass-modal .close.icon:hover {
+  opacity: 1;
+  color: var(--neon-blue) !important;
+}
+
+/* Modal Buttons Override */
+.ui.modal.glass-modal .actions .button.primary {
+  background-color: var(--neon-blue) !important;
+  color: black !important;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.ui.modal.glass-modal .actions .button.primary:hover {
+  background-color: #00d0dd !important;
+  /* Slightly darker/different shade on hover */
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.7);
+  transform: translateY(-2px);
+}
+
+.ui.modal.glass-modal .actions .button:not(.primary) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ui.modal.glass-modal .actions .button:not(.primary):hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* --- Responsive Helpers --- */
+@media (max-width: 768px) {
+  /* Header styles moved to top of file to fix layout issues */
+
+  .heroTitle {
+    font-size: 2rem;
+  }
+}
+
+/* --- Admin Modal (Light Theme) --- */
+.ui.modal.admin-modal {
+  background: white !important;
+  border-radius: 12px !important;
+  color: #333 !important;
+  border: none !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ui.modal.admin-modal>.header.admin-modal-header {
+  background: white !important;
+  color: #333 !important;
+  border-bottom: 1px solid #eee !important;
+  font-family: var(--font-main);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.ui.modal.admin-modal>.content.admin-modal-content {
+  background: white !important;
+  color: #333 !important;
+}
+
+.ui.modal.admin-modal .close.icon {
+  color: #333 !important;
+  top: 1.5rem !important;
+  right: 1.5rem !important;
+}
+
+.admin-label {
+  color: #555 !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+  display: block;
+}
+
+/* Override Global Dark Input Styles for Admin Modal */
+.admin-modal .ui.input input.admin-input,
+.admin-modal .ui.input input {
+  background-color: #f5f5f5 !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+}
+
+.admin-modal .ui.input input:focus {
+  background-color: white !important;
+  border-color: var(--neon-blue) !important;
+  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.2) !important;
+}
+
+.admin-modal .ui.button.admin-btn {
+  background-color: var(--neon-blue) !important;
+  color: black !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+
+.admin-modal .ui.icon.input>i.icon {
+  color: #888 !important;
+  opacity: 1 !important;
+}
+
+/* --- Admin Tabs --- */
+/* --- Admin Sidebar Layout --- */
+.admin-layout {
+  display: flex !important;
+  min-height: 100vh !important;
+  width: 100%;
+}
+
+/* Duck Code Modal Input Override */
+.custom-input-modal input {
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: var(--neon-blue) !important;
+  border: 1px solid var(--neon-blue) !important;
+  border-radius: 8px !important;
+  padding: 1rem !important;
+  text-align: center !important;
+}
+
+.custom-input-modal input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+  letter-spacing: normal !important;
+  font-size: 1.2rem !important;
+}
+
+/* Modal Overlay & Centering */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Full viewport height */
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
 }
 
-/* loaderContainer {
-  display: 'flex';
-  justify-content: 'center';
-  align-Items: 'center';
-  height: '100vh';
-} */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
 
-
-@media (min-width: 769px) {
-  .heroSection {
-    background-image: url('../src/assets/images/HeroImage.jpg'); /* Path to your larger image */
+  to {
+    opacity: 1;
   }
 }
-  /* .heroSection {
-    background: url('../src/assets/images/HeroImage.jpg') no-repeat center center;
-    background-size: cover;
-    background-attachment: fixed;
-  }
-} */
 
-/* Mobile friendly adjustments */
+.admin-sidebar {
+  width: 250px;
+  background: rgba(0, 0, 0, 0.4);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.admin-content {
+  flex-grow: 1;
+  padding: 3rem;
+  overflow-y: auto;
+  background: #121212;
+  /* Double ensure dark bg */
+}
+
+/* Sidebar Navigation */
+.sidebar-title {
+  color: white;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+  padding-left: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-left: 3px solid var(--neon-blue);
+}
+
+.nav-item {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-family: var(--font-main);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+}
+
+.nav-item i {
+  margin-right: 10px;
+}
+
+.nav-item:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+  color: var(--neon-blue);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+}
+
+.nav-item.danger-tab {
+  margin-top: auto;
+  color: #ff6666;
+}
+
+.nav-item.danger-tab:hover {
+  background: rgba(255, 50, 50, 0.1);
+  color: var(--neon-red);
+}
+
+.nav-item.danger-tab.active {
+  color: var(--neon-red);
+  background: rgba(255, 0, 0, 0.15);
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+}
+
+/* Glass Card Container */
+.glass-card {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card.danger {
+  border-color: rgba(255, 59, 59, 0.3);
+  background: rgba(40, 0, 0, 0.4);
+}
+
+.glass-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.glass-header h2 {
+  color: white;
+  margin: 0;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Custom Inputs */
+.custom-form label {
+  display: block;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.custom-input,
+.custom-input-dropdown {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  color: white !important;
+  font-family: var(--font-main) !important;
+  font-size: 1rem !important;
+  margin-bottom: 1.5rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.custom-input.no-bottom-margin {
+  margin-bottom: 0 !important;
+}
+
+.custom-input:focus,
+.custom-input-dropdown:focus {
+  outline: none !important;
+  border-color: var(--neon-blue) !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1) !important;
+}
+
+/* Dropdown specific overrides */
+.ui.selection.dropdown.custom-input-dropdown {
+  padding: 0.8rem 1rem !important;
+  min-height: auto !important;
+}
+
+.ui.selection.dropdown.custom-input-dropdown .text {
+  color: white !important;
+}
+
+.ui.selection.dropdown.custom-input-dropdown .menu {
+  background: #222 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.ui.selection.dropdown.custom-input-dropdown .item {
+  color: white !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.ui.selection.dropdown.custom-input-dropdown .item:hover,
+.ui.selection.dropdown.custom-input-dropdown .item.selected {
+  background: rgba(0, 240, 255, 0.1) !important;
+}
+
+.custom-btn {
+  background: var(--neon-blue);
+  color: black;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.custom-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+}
+
+.custom-btn.danger {
+  background: var(--neon-red);
+  color: white;
+}
+
+.custom-btn.danger:hover {
+  box-shadow: 0 5px 15px rgba(255, 59, 59, 0.3);
+}
+
+/* Custom Table */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th {
+  text-align: left;
+  padding: 1rem;
+  color: #888;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.custom-table td {
+  padding: 1rem;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.custom-table tr:last-child td {
+  border-bottom: none;
+}
+
+.btn-icon {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon.green:hover {
+  border-color: #00ff00;
+  color: #00ff00;
+}
+
+
+/* --- Admin Stats Grid --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.stat-card {
+  background: rgba(30, 30, 30, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.stat-icon {
+  font-size: 2.5rem !important;
+  color: var(--neon-blue);
+  margin-right: 1.5rem !important;
+  background: rgba(0, 240, 255, 0.1);
+  padding: 1rem;
+  border-radius: 50%;
+  width: auto !important;
+  height: auto !important;
+}
+
+.stat-content h3 {
+  margin: 0 0 0.5rem 0;
+  color: #aaa;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-content .value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+/* Light Card Variant (Welcome Card) */
+.glass-card.light {
+  background: white !important;
+  color: #333 !important;
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.glass-card.light h2 {
+  color: #333 !important;
+  border-bottom-color: #eee !important;
+}
+
+.glass-card.light p {
+  color: #666 !important;
+}
+
+/* --- Custom Form Toggle Checkbox Styles --- */
+
+/* Default / Unchecked State: Text is White */
+.custom-form .ui.checkbox label,
+.custom-form .ui.toggle.checkbox label,
+.custom-form .ui.checkbox input:focus~label,
+.custom-form .ui.toggle.checkbox input:focus~label,
+.custom-form .ui.checkbox label:hover,
+.custom-form .ui.toggle.checkbox label:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: bold !important;
+}
+
+/* Checked State: Text is Neon Blue */
+.custom-form .ui.checkbox input:checked~label,
+.custom-form .ui.checkbox.checked label,
+.custom-form .ui.toggle.checkbox input:checked~label,
+.custom-form .ui.toggle.checkbox.checked label,
+.custom-form .ui.checkbox input:checked:focus~label,
+.custom-form .ui.toggle.checkbox input:checked:focus~label {
+  color: var(--neon-blue) !important;
+}
+
+/* Toggle Switch Styling */
+.custom-form .ui.toggle.checkbox input:checked~label:before,
+.custom-form .ui.toggle.checkbox.checked label:before,
+.custom-form .ui.toggle.checkbox input:checked:focus~label:before {
+  background-color: var(--neon-blue) !important;
+}
+
+/* Fix for nested label inline styles being overridden */
+.custom-form .ui.checkbox label label,
+.custom-form .ui.toggle.checkbox label label {
+  color: inherit !important;
+  font-weight: inherit !important;
+}
+
+/* --- Footer --- */
+.footer {
+  margin-top: 4rem;
+  text-align: center;
+  padding: 2rem;
+  /* Removed border-top as requested */
+  color: var(--text-secondary);
+}
+
+.footer p {
+  color: #FFD700 !important;
+  /* Yellow text as requested */
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* --- Mobile Buttons Stacking --- */
+@media (max-width: 768px) {
+  .mobile-buttons-container {
+    flex-direction: column !important;
+  }
+
+  .mobile-buttons-container>* {
+    width: 100% !important;
+    margin: 0 !important;
+    flex: 1 1 auto !important;
+  }
+}
+
+/* --- Admin Mobile Responsiveness --- */
+
+/* Mobile Toggle Button */
+.mobile-menu-toggle {
+  display: none;
+  /* Hidden on desktop */
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  /* Above header if needed, but header is sticky */
+  background: var(--neon-blue);
+  color: black;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.mobile-close-btn {
+  display: none;
+}
+
+.admin-sidebar-overlay {
+  display: none;
+}
 
 @media (max-width: 768px) {
 
-  .heroSection {
-    background: url('../src/assets/images/HeroImageSmall.jpg') no-repeat center center; /* Path to your smaller image */
-    height: 321px;
-    overflow: hidden;
+  /* Show Toggle Button */
+  .mobile-menu-toggle {
+    display: block;
   }
 
-  .header {
-    flex-direction: column; /* Stack logo and search box vertically */
+  /* Admin Layout - Remove Flex to allow full width content */
+  .admin-layout {
+    display: block !important;
   }
 
-  .headerSearch {
-    width: 100%; /* Full width for the search box */
-    margin-top: 1rem; /* Add some space between logo and search box */
+  /* Admin Content - Full Width */
+  .admin-content {
+    padding: 2rem 1rem 6rem 1rem;
+    /* Added bottom padding for nav/safe area */
+    width: 100%;
   }
 
-  /* Responsive grid adjustments for DuckCard on smaller screens */
-  .ui.grid>.row>.column, .ui.grid>.column {
-    flex-basis: 50% !important; /* Set to use 50% of the row */
-    max-width: 50% !important; /* Set a maximum width to 50% of the container */
-    display: inline-block !important; /* Needed to prevent full-width stretch on flex items */
+  /* Sidebar - Drawer Styles */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 80%;
+    max-width: 300px;
+    background: #1a1a1a;
+    z-index: 2000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    border-right: 1px solid var(--neon-blue);
   }
 
-  .duck-card {
-    margin-left: auto; /* Centers the card if it's less than full width */
-    margin-right: auto; /* Centers the card if it's less than full width */
-    max-width: 100%; /* Limits card width to prevent stretching */
+  .admin-sidebar.open {
+    transform: translateX(0);
   }
 
-  .duck-card-header {
-    flex-direction: column; /* Position above distance */
-    text-align: center; /* Center the text for mobile */
-    font-size: 24px; /* Adjust font size as needed */
-    font-weight: bold; /* Make the font bold */
+  /* Overlay */
+  .admin-sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1999;
+    /* Below sidebar, above content */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
   }
 
-  .duck-card-distance, .position, .ui.header.h3 {
-    display: block; /* Stack position, distance, and name */
-    width: 100%; /* Full width of the card */
-    margin-top: 5px; /* Space between position, distance, and name */
-    /* text-align: center; Center the text */
+  .admin-sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
   }
-  /* Text color
-styles for positions /
-.red-text {
-color: #db2828 !important; / Semantic UI red text color */
+
+  /* Mobile Close Button */
+  .mobile-close-btn {
+    display: block;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  /* Adjust Sidebar Title alignment for mobile */
 }
 
-.blue-text {
-color: #2185d0 !important; /* Semantic UI blue text color */
+/* --- Generate Code Button Styling --- */
+.generate-code-btn {
+  position: absolute !important;
+  top: 50% !important;
+  right: 5px !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: translateY(-50%) !important;
+
+  width: 36px !important;
+  /* Fixed size for icon button */
+  height: 36px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  z-index: 10 !important;
+  min-width: 0 !important;
+
+  background: var(--neon-blue) !important;
+  color: black !important;
+  border-radius: 4px !important;
+  font-size: 1.2rem !important;
 }
 
-.green-text {
-color: #21ba45 !important; /* Semantic UI green text color */
+/* Prevent button from jumping on hover (override custom-btn hover) */
+.generate-code-btn:hover {
+  transform: translateY(-50%) !important;
+  background: #00d0dd !important;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+/* Ensure icon is always visible and centered */
+.generate-code-btn .icon {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 }

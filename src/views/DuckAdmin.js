@@ -1,33 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Button, 
-  Form, 
-  Input, 
-  Message, 
-  Segment, 
-  Header, 
-  Dropdown, 
-  Table,
-  Image,
-  Icon,
-  Loader } from 'semantic-ui-react';
-import { 
-  addDoc, 
-  collection, 
-  GeoPoint, 
-  query, 
-  where, 
-  getDocs,  
-  writeBatch, 
+import {
+  Icon
+} from 'semantic-ui-react';
+import {
+  addDoc,
+  collection,
+  GeoPoint,
+  query,
+  where,
+  getDocs,
+  writeBatch,
   updateDoc,
   deleteDoc,
-  doc } from 'firebase/firestore';
+  doc
+} from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // Make sure axios is installed and imported
+import axios from 'axios';
 import { db } from '../firebase/Config';
 import countryOptions from '../components/data/Countries';
 import stateOptions from '../components/data/States';
+
+// Import New Sub-Components
+import DashboardStats from './admin/DashboardStats';
+import RegisterForm from './admin/RegisterForm';
+import ApprovalsTable from './admin/ApprovalsTable';
+import DangerZone from './admin/DangerZone';
+import DuckManager from './admin/DuckManager';
 
 const DuckAdmin = () => {
   const [name, setName] = useState('');
@@ -42,11 +41,23 @@ const DuckAdmin = () => {
   const [deleteInput, setDeleteInput] = useState('');
   const [unapprovedPhotos, setUnapprovedPhotos] = useState([]);
   const [photosLoading, setPhotosLoading] = useState(false);
+  const [totalDucks, setTotalDucks] = useState(0);
 
 
   useEffect(() => {
     fetchUnapprovedPhotos();
+    fetchStats();
+    // Force body background to be dark
+    document.body.style.backgroundColor = '#121212';
+    return () => {
+      document.body.style.backgroundColor = ''; // Cleanup
+    };
   }, []);
+
+  const fetchStats = async () => {
+    const ducksSnapshot = await getDocs(collection(db, 'ducks'));
+    setTotalDucks(ducksSnapshot.size);
+  };
 
   const fetchUnapprovedPhotos = async () => {
     setPhotosLoading(true);
@@ -110,47 +121,48 @@ const DuckAdmin = () => {
     e.preventDefault();
     setIsLoading(true); // Start loading
     setError('');
-  
+
     // Optional: Validate the bio word count
     if (!validateBioWordCount(bio)) {
       setError('Bio must be 100 words or less.');
       setIsLoading(false); // Stop loading
       return;
     }
-  
+
     // Continue with image upload if an image is selected
     if (image) {
       const storage = getStorage();
       const storageRef = ref(storage, `ducks/${image.name}-${Date.now()}`); // Unique path for each image
-  
+
       try {
         const uploadTaskSnapshot = await uploadBytes(storageRef, image);
         const imageUrl = await getDownloadURL(uploadTaskSnapshot.ref);
-  
+
         // Proceed with the rest of the form submission once you have the image URL
         const coordinates = await getCoordinates(startLocation);
-  
+
         if (!coordinates) {
           setError('Failed to get coordinates for the location.');
           setIsLoading(false); // Stop loading
           return;
         }
-  
+
         // Add the bio and hometown fields to the document being added to Firestore
         const docRef = await addDoc(collection(db, 'ducks'), {
           name,
           code,
           bio,
-          hometown, 
-          imageUrl, 
+          hometown,
+          imageUrl,
           startLocation: {
             ...startLocation,
             coordinates,
           },
           distance: parseFloat(distance) || 0,
         });
-  
+
         console.log('Document written with ID: ', docRef.id);
+        fetchStats(); // Update stats
         // Reset form fields after successful submission
       } catch (error) {
         console.error('Error during the image upload or document creation:', error);
@@ -162,12 +174,12 @@ const DuckAdmin = () => {
       setError('No image selected for upload.');
       setIsLoading(false); // Stop loading
     }
-  
+
     // Reset form states and bio after processing
     setName('');
     setCode('');
     setBio('');
-    setHometown(''); 
+    setHometown('');
     setImage(null);
     setDistance(''); // Reset the distance field
     setStartLocation({ city: '', state: '', country: '' });
@@ -175,197 +187,209 @@ const DuckAdmin = () => {
 
   const deleteDuckAndLocations = async (duckId) => {
     const batch = writeBatch(db);
-  
+
     // Delete related locations
     const locationsQuery = query(collection(db, 'locations'), where('duckId', '==', duckId));
     const locationsSnapshot = await getDocs(locationsQuery);
     locationsSnapshot.forEach((doc) => {
       batch.delete(doc.ref);
     });
-  
+
     // Delete the duck
     const duckRef = doc(db, 'ducks', duckId);
     batch.delete(duckRef);
-  
+
     // Commit the batch
     await batch.commit();
     console.log(`Deleted duck and ${locationsSnapshot.size} location(s).`);
   };
 
 
-//Delete Logic below:
+  //Delete Logic below:
 
-const handleDeleteDuck = async () => {
-  if (!deleteInput.trim()) return;
+  const handleDeleteDuck = async () => {
+    if (!deleteInput.trim()) return;
 
-  setIsLoading(true);
-  setError('');
+    setIsLoading(true);
+    setError('');
 
-  try {
-    const ducksRef = collection(db, 'ducks');
-    const nameQuery = query(ducksRef, where("name", "==", deleteInput.trim()));
-    const codeQuery = query(ducksRef, where("code", "==", deleteInput.trim()));
+    try {
+      const ducksRef = collection(db, 'ducks');
+      const nameQuery = query(ducksRef, where("name", "==", deleteInput.trim()));
+      const codeQuery = query(ducksRef, where("code", "==", deleteInput.trim()));
 
-    const [nameSnapshot, codeSnapshot] = await Promise.all([
-      getDocs(nameQuery),
-      getDocs(codeQuery)
-    ]);
+      const [nameSnapshot, codeSnapshot] = await Promise.all([
+        getDocs(nameQuery),
+        getDocs(codeQuery)
+      ]);
 
-    const docsToDelete = [...nameSnapshot.docs, ...codeSnapshot.docs];
+      const docsToDelete = [...nameSnapshot.docs, ...codeSnapshot.docs];
 
-    for (const docToDelete of docsToDelete) {
-      await deleteDuckAndLocations(docToDelete.id);
+      for (const docToDelete of docsToDelete) {
+        await deleteDuckAndLocations(docToDelete.id);
+      }
+
+      console.log(`${docsToDelete.length} duck(s) and their locations deleted.`);
+      fetchStats(); // Update stats
+    } catch (error) {
+      console.error("Error deleting ducks and locations:", error);
+      setError(`Error deleting ducks and locations: ${error.message}`);
     }
 
-    console.log(`${docsToDelete.length} duck(s) and their locations deleted.`);
-  } catch (error) {
-    console.error("Error deleting ducks and locations:", error);
-    setError(`Error deleting ducks and locations: ${error.message}`);
-  }
+    setIsLoading(false);
+    setDeleteInput(''); // Clear the delete input field
+  };
+  const validateBioWordCount = (text) => {
+    const words = text.trim().split(/\s+/); // Split based on one or more whitespace characters
+    return words.length <= 100;
+  };
 
-  setIsLoading(false);
-  setDeleteInput(''); // Clear the delete input field
-};
-const validateBioWordCount = (text) => {
-  const words = text.trim().split(/\s+/); // Split based on one or more whitespace characters
-  return words.length <= 100;
-};
-  
+
+  // TABS STATE
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Close mobile menu when a tab is selected
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
-    <>
-    {isLoading && <Loader active inline='centered'>Processing...</Loader>}
-    <Segment padded="very" style={{ maxWidth: '600px', margin: '0 auto', marginTop: '20px' }}>
-      <Header as='h2' textAlign='center'>Duck Registration</Header>
-      <Form error={!!error} onSubmit={handleSubmit}>
-        <Form.Field>
-          <label>Duck Name</label>
-          <Input placeholder='Enter Duck Name' value={name} onChange={(e) => setName(e.target.value)} />
-        </Form.Field>
-        <Form.Field>
-          <label>Code</label>
-          <Input placeholder='Enter Duck Code' value={code} onChange={(e) => setCode(e.target.value)} />
-        </Form.Field>
-        <Form.Field>
-            <label>Distance Traveled (miles)</label>
-            <Input
-              placeholder='Enter Distance Traveled'
-              value={distance}
-              onChange={(e) => setDistance(e.target.value)}
-              type='number' // Ensure numeric input
-            />
-          </Form.Field>
-        <Form.Field>
-          <label>Bio (up to 100 words)</label>
-            <textarea
-              placeholder='Enter Bio Here...'
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-            />
-        </Form.Field>
-        <Form.Field>
-          <label>Hometown</label>
-            <Input
-              placeholder='Enter Hometown'
-              value={hometown}
-              onChange={(e) => setHometown(e.target.value)}
-            />
-        </Form.Field>
-        <Form.Field>
-          <label>Start Location</label>
-          <div style={{ marginBottom: '10px' }}>
-          <Input
-            placeholder='Enter City'
-            value={startLocation.city}
-            onChange={(e) => setStartLocation({ ...startLocation, city: e.target.value })}
-            />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-          <Dropdown
-            placeholder="Select State"
-            fluid
-            search
-            selection
-            options={stateOptions}
-            value={startLocation.state}
-            onChange={(e, { value }) => setStartLocation({ ...startLocation, state: value })}
-          />
-          </div>
-          <div style={{ marginBottom: '10px' }}>
-          <Dropdown
-            placeholder="Select Country"
-            fluid
-            search
-            selection
-            options={countryOptions}
-            value={startLocation.country}
-            onChange={(e, { value }) => setStartLocation({ ...startLocation, country: value })}
-            
-          />
-        </div>
-        </Form.Field>
-        <Form.Field>
-          <label>Image</label>
-          <Input type='file' onChange={(e) => setImage(e.target.files[0])} />
-        </Form.Field>
-        {error && <Message error header='Error' content={error} />}
-        <Button type='submit' primary fluid>Submit</Button>
-        <Link to="/Home">
-          <Button color='grey' fluid style={{ marginTop: '10px' }}>Back to Leaderboard</Button>
-        </Link>
-      </Form>
-      <Segment padded="very" style={{ maxWidth: '600px', margin: '0 auto', marginTop: '20px' }}>
-  <Header as='h2' textAlign='center'>Delete Duck</Header>
-  <Form onSubmit={handleDeleteDuck}>
-    <Form.Field>
-      <Input
-        placeholder='Enter Duck Name or Code'
-        value={deleteInput}
-        onChange={handleDeleteInputChange}
+    <div className="admin-layout">
+      {/* Mobile Menu Toggle */}
+      <button
+        className="mobile-menu-toggle"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        <Icon name="bars" />
+      </button>
+
+      {/* Mobile Overlay */}
+      <div
+        className={`admin-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`}
+        onClick={() => setIsMobileMenuOpen(false)}
       />
-    </Form.Field>
-    <Button type='submit' color='red'>Gone Foreves</Button>
-  </Form>
-</Segment>
 
-{/* Photo approval section */}
-<Segment loading={photosLoading}>
-        <Header as='h3'>Approve Photos</Header>
-        <Table compact celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>Photo</Table.HeaderCell>
-              <Table.HeaderCell>Approve</Table.HeaderCell>
-              <Table.HeaderCell>Delete</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
+      {/* SIDEBAR */}
+      <div className={`admin-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 className="sidebar-title">Duck Admin</h2>
+          <button
+            className="mobile-close-btn"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <Icon name="close" />
+          </button>
+        </div>
 
-          <Table.Body>
-            {unapprovedPhotos.map((photo) => (
-              <Table.Row key={photo.id}>
-                <Table.Cell><Image src={photo.photoURL} size='small' /></Table.Cell>
-                <Table.Cell>
-                  <Button icon color='green' onClick={() => handleApprovePhoto(photo.id)}>
-                    <Icon name='checkmark' />
-                  </Button>
-                </Table.Cell>
-                <Table.Cell>
-                  <Button icon color='red' onClick={() => handleDeletePhoto(photo.id, photo.photoURL)}>
-                    <Icon name='delete' />
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Segment>
+        <button
+          className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+          onClick={() => handleTabClick('dashboard')}
+        >
+          <Icon name='dashboard' /> Dashboard
+        </button>
+        <button
+          className={`nav-item ${activeTab === 'manage_ducks' ? 'active' : ''}`}
+          onClick={() => handleTabClick('manage_ducks')}
+        >
+          <Icon name='list' /> Manage Ducks
+        </button>
+        <button
+          className={`nav-item ${activeTab === 'register' ? 'active' : ''}`}
+          onClick={() => handleTabClick('register')}
+        >
+          <Icon name='plus circle' /> Register Duck
+        </button>
+        <button
+          className={`nav-item ${activeTab === 'approvals' ? 'active' : ''}`}
+          onClick={() => handleTabClick('approvals')}
+        >
+          <Icon name='camera' /> Approvals
+          {unapprovedPhotos.length > 0 &&
+            <span style={{
+              marginLeft: 'auto',
+              background: 'var(--neon-yellow)',
+              color: 'black',
+              padding: '2px 8px',
+              borderRadius: '10px',
+              fontSize: '0.8rem',
+              fontWeight: 'bold'
+            }}>
+              {unapprovedPhotos.length}
+            </span>
+          }
+        </button>
 
+        <Link to="/Home" style={{ textDecoration: 'none', marginTop: '1rem' }}>
+          <button className="nav-item">
+            <Icon name='arrow left' /> Back to Home
+          </button>
+        </Link>
 
+        {/* Mobile Logout / Close spacer if needed */}
+        <div style={{ flexGrow: 1 }}></div>
 
+        {/* Danger Zone at Bottom */}
+        <button
+          className={`nav-item danger-tab ${activeTab === 'danger' ? 'active' : ''}`}
+          onClick={() => handleTabClick('danger')}
+        >
+          <Icon name='warning sign' /> Danger Zone
+        </button>
+      </div>
 
+      {/* MAIN CONTENT AREA */}
+      <div className="admin-content">
 
-    </Segment>
-    </>
+        {activeTab === 'dashboard' &&
+          <DashboardStats
+            totalDucks={totalDucks}
+            unapprovedPhotos={unapprovedPhotos}
+            onTotalDucksClick={() => setActiveTab('manage_ducks')}
+          />
+        }
+
+        {activeTab === 'manage_ducks' &&
+          <DuckManager />
+        }
+
+        {activeTab === 'register' &&
+          <RegisterForm
+            handleSubmit={handleSubmit}
+            isLoading={isLoading}
+            error={error}
+            name={name} setName={setName}
+            code={code} setCode={setCode}
+            distance={distance} setDistance={setDistance}
+            hometown={hometown} setHometown={setHometown}
+            bio={bio} setBio={setBio}
+            startLocation={startLocation} setStartLocation={setStartLocation}
+            setImage={setImage}
+            countryOptions={countryOptions}
+            stateOptions={stateOptions}
+          />
+        }
+
+        {activeTab === 'approvals' &&
+          <ApprovalsTable
+            unapprovedPhotos={unapprovedPhotos}
+            photosLoading={photosLoading}
+            handleApprovePhoto={handleApprovePhoto}
+            handleDeletePhoto={handleDeletePhoto}
+          />
+        }
+
+        {activeTab === 'danger' &&
+          <DangerZone
+            handleDeleteDuck={handleDeleteDuck}
+            deleteInput={deleteInput}
+            handleDeleteInputChange={handleDeleteInputChange}
+          />
+        }
+
+      </div>
+    </div>
   );
 };
 

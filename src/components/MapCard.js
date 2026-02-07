@@ -6,13 +6,31 @@ const MapCard = ({ location }) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
+    // Fix for Leaflet Default Icon issue in React/Webpack
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+      iconUrl: require('leaflet/dist/images/marker-icon.png'),
+      shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+    });
+
     if (!location.startLocation || !location.newLocation) return;
+
+    // Ensure container exists
+    if (!mapRef.current) return;
 
     const map = L.map(mapRef.current, {
       scrollWheelZoom: false,
       dragging: false,
       zoomControl: false,
-    }).setView([0, 0], 1);
+    });
+
+    // Invalidate size after mount to fix grey tiles issue
+    const timerId = setTimeout(() => {
+      if (map) {
+        map.invalidateSize();
+      }
+    }, 100);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -27,6 +45,9 @@ const MapCard = ({ location }) => {
       location.newLocation.coordinates.longitude,
     ];
 
+    // Create marker bounds to center properly
+    const bounds = L.latLngBounds([startLatLng, endLatLng]);
+
     // Create start marker with popup
     const startMarker = L.marker(startLatLng).addTo(map);
     startMarker.bindPopup(
@@ -39,31 +60,17 @@ const MapCard = ({ location }) => {
       `<b>New Location</b><br>${location.newLocation.city}, ${location.newLocation.state}`
     );
 
-    // Custom Icon for red marker. Change URL path and delete the above method. 
-
-  //   const redIcon = L.icon({
-  //     iconUrl: 'path/to/red-marker-icon.png', // Path to your red marker image
-  //     iconSize: [25, 41], // Size of the icon, default is [25, 41]
-  //     iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
-  //     popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
-  //     shadowUrl: 'path/to/marker-shadow.png', // Optional: Path to marker shadow image
-  //     shadowSize: [41, 41] // Optional: Size of the shadow image, default is [41, 41]
-  // });
-  
-  // Create end marker with the custom red icon and bind a popup
-  //     const endMarker = L.marker(endLatLng, {icon: redIcon}).addTo(map);
-  //     endMarker.bindPopup(
-  //     `<b>New Location</b><br>${location.newLocation.city}, ${location.newLocation.state}`
-  // );
-
     // Add a polyline between start and end markers
-    const polyline = L.polyline([startLatLng, endLatLng], { color: 'red' }).addTo(map);
+    L.polyline([startLatLng, endLatLng], { color: 'red' }).addTo(map);
 
-    // Fit the map to the polyline's bounds
-    map.fitBounds(polyline.getBounds());
+    // Fit the map to the bounds with padding
+    map.fitBounds(bounds, { padding: [20, 20] });
 
     // Cleanup function to remove the map when the component unmounts
-    return () => map.remove();
+    return () => {
+      clearTimeout(timerId); // Prevent invalidateSize from running if unmounted
+      map.remove();
+    };
   }, [location]); // Run the effect when 'location' changes
 
   return <div ref={mapRef} style={{ height: '300px', width: '100%' }} />;

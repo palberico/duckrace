@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import Link from React Router for navigation
 import { Button, Header, List, Icon, ListItem, ListContent, ListDescription } from 'semantic-ui-react';
 import { collection, query, where, getDocs, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 import countryOptions from '../components/data/Countries';
+import { getDistanceFromLatLonInKm } from './data/geoUtils';
+import LocationsMapModal from './LocationsMapModal';
 
 const LocationsCard = ({ duckId }) => {
   const [locations, setLocations] = useState([]);
   const [lastVisible, setLastVisible] = useState(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const navigate = useNavigate();
+  const [mapModalOpen, setMapModalOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
 
   const fetchMoreLocations = useCallback(async () => {
     if (!duckId || !lastVisible) {
@@ -22,7 +24,7 @@ const LocationsCard = ({ duckId }) => {
     const locationsQuery = query(
       collection(db, 'locations'),
       where('duckId', '==', duckId),
-      orderBy('timestamp', 'asc'),
+      orderBy('timestamp', 'desc'),
       startAfter(lastVisible),
       limit(10)
     );
@@ -54,13 +56,13 @@ const LocationsCard = ({ duckId }) => {
       console.error("Duck ID is undefined.");
       return;
     }
-    
+
     setLoading(true);
     const fetchInitialLocations = async () => {
       const locationsQuery = query(
         collection(db, 'locations'),
         where('duckId', '==', duckId),
-        orderBy('timestamp', 'asc'),
+        orderBy('timestamp', 'desc'),
         limit(10)
       );
 
@@ -99,35 +101,113 @@ const LocationsCard = ({ duckId }) => {
   };
 
   const handleLocationClick = (location) => {
-    navigate('/map/' + location.id, { state: { duckId: duckId } });
+    setSelectedLocation(location);
+    setMapModalOpen(true);
   };
-  
+
+
+  const getDistance = (location) => {
+    if (location.distance) return location.distance;
+    if (location.startLocation?.coordinates && location.newLocation?.coordinates) {
+      const distKm = getDistanceFromLatLonInKm(
+        location.startLocation.coordinates.latitude,
+        location.startLocation.coordinates.longitude,
+        location.newLocation.coordinates.latitude,
+        location.newLocation.coordinates.longitude
+      );
+      return Math.round(distKm * 0.621371);
+    }
+    return 0;
+  };
 
   return (
     <div style={{ marginTop: '30px' }}>
-      <Header>All Locations Found</Header>
-      <List divided>
-        {locations.map((location) => (
-          <ListItem key={location.id} onClick={() => handleLocationClick(location)} style={{ cursor: 'pointer' }}>
-            <Icon name='map marker alternate' size='large' color='red' />
-            <ListContent>
-              <ListDescription>
-                <strong>Date: </strong> {formatDate(location.timestamp)}
-              </ListDescription>
-              <ListDescription>
-                <strong>Found: </strong>
-                {location.startLocation.state
-                  ? `${location.startLocation.city}, ${location.startLocation.state}`
-                  : `${location.startLocation.city}, ${getCountryFullName(location.startLocation.country)}`}
-              </ListDescription>
-            </ListContent>
-          </ListItem>
+      <Header as='h3' inverted>All Locations Found</Header>
+
+      <div className="timeline-container" style={{ position: 'relative', paddingLeft: '20px' }}>
+        {/* Vertical Line */}
+        <div style={{
+          position: 'absolute',
+          left: '29px', /* Center of marker */
+          top: '20px',
+          bottom: '20px',
+          width: '2px',
+          background: 'linear-gradient(to bottom, var(--neon-blue), transparent)',
+          zIndex: 0
+        }} />
+
+        {locations.map((location, index) => (
+          <div
+            key={location.id}
+            className="timeline-item"
+            onClick={() => handleLocationClick(location)}
+            style={{
+              display: 'flex',
+              gap: '20px',
+              marginBottom: '20px',
+              position: 'relative',
+              cursor: 'pointer'
+            }}
+          >
+            {/* Marker */}
+            <div style={{
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: 'var(--neon-blue)',
+              boxShadow: '0 0 10px var(--neon-blue)',
+              zIndex: 1,
+              marginTop: '20px', // Align with card top
+              flexShrink: 0
+            }} />
+
+            {/* Content Card */}
+            <div className="glass-card timeline-card" style={{
+              flex: 1,
+              padding: '1.5rem',
+              marginBottom: '0',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              transition: 'transform 0.2s, background 0.2s'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold' }}>{formatDate(location.timestamp)}</span>
+                <span style={{ fontSize: '0.9rem', color: '#888' }}>
+                  {getDistance(location)} Miles
+                </span>
+              </div>
+
+              <h4 style={{ margin: '0 0 0.5rem', color: 'white' }}>
+                {location.newLocation.city}, {location.newLocation.state || getCountryFullName(location.newLocation.country)}
+              </h4>
+
+              <div style={{ fontSize: '0.9rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Icon name='map marker alternate' />
+                <span>View on Map</span>
+              </div>
+            </div>
+          </div>
         ))}
-      </List>
-      {loading && <p>Loading more locations...</p>}
+      </div>
+
+      {loading && <p style={{ color: '#aaa', textAlign: 'center' }}>Loading more locations...</p>}
       {!loading && hasMore && (
-        <Button onClick={fetchMoreLocations}>Load More</Button>
+        <Button
+          onClick={fetchMoreLocations}
+          fluid
+          className="profile-action-btn secondary"
+          style={{ marginTop: '1rem' }}
+        >
+          Load More History
+        </Button>
       )}
+
+      <LocationsMapModal
+        open={mapModalOpen}
+        onClose={() => setMapModalOpen(false)}
+        locations={locations}
+        selectedLocation={selectedLocation}
+        duckId={duckId}
+      />
     </div>
   );
 };

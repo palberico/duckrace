@@ -4,9 +4,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { doc, getDoc, collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
-import { 
-  Icon, 
-  Button, 
+import {
+  Icon,
+  Button,
   Segment,
 } from 'semantic-ui-react';
 
@@ -55,7 +55,7 @@ const MapScreen = () => {
           const docSnap = await getDoc(locationRef);
           querySnapshot = docSnap.exists() ? { docs: [docSnap] } : { docs: [] };
         }
-  
+
         querySnapshot.docs.forEach((doc) => {
           const locationData = doc.data().startLocation;
           if (locationData?.coordinates) {
@@ -71,7 +71,7 @@ const MapScreen = () => {
               );
           }
         });
-  
+
         // After adding all markers, adjust the map view
         if (showAllLocations && querySnapshot.docs.length > 0) {
           const group = L.featureGroup(querySnapshot.docs.map((doc) => {
@@ -83,12 +83,12 @@ const MapScreen = () => {
           const coords = querySnapshot.docs[0].data().startLocation.coordinates;
           map.current.setView([coords.latitude, coords.longitude], 5);
         }
-  
+
       } catch (error) {
         console.error("Error fetching locations: ", error);
       }
     };
-  
+
     fetchLocations();
   }, [locationId, showAllLocations, duckId]);
 
@@ -96,22 +96,52 @@ const MapScreen = () => {
   const handleShowAllLocations = () => setShowAllLocations((prevState) => !prevState);
 
   return (
-    <>
-      <div ref={mapRef} style={{ height: 'calc(100vh - 65px)', width: '100%' }} />
-      <Segment inverted style={{ position: 'absolute', bottom: 0, width: '100%', display: 'flex' }}>
-      
-          <Button icon labelPosition='left' onClick={goBack} fluid >
-            <Icon name='arrow left' />
-            Back
-          </Button>
-      
-          <Button icon labelPosition='right' onClick={handleShowAllLocations} fluid >
-            <Icon name='world' />
-            All Locations
-          </Button>
-    
-      </Segment>
-    </>
+    <div style={{ position: 'relative', height: 'calc(100vh - 65px)', width: '100%', overflow: 'hidden' }}>
+
+      {/* Map Container - Adding class for dark mode styling */}
+      <div ref={mapRef} className="sci-fi-map" style={{ height: '100%', width: '100%', outline: 'none' }} />
+
+      {/* Floating Back Button (Top Left) */}
+      <div style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 1000 }}>
+        <Button
+          icon
+          labelPosition='left'
+          onClick={goBack}
+          className="glass-button"
+          size='large'
+          style={{
+            background: 'rgba(0,0,0,0.6)',
+            color: 'white',
+            border: '1px solid rgba(255,255,255,0.2)',
+            backdropFilter: 'blur(10px)'
+          }}
+        >
+          <Icon name='arrow left' />
+          Back
+        </Button>
+      </div>
+
+      {/* Floating Toggle Button (Bottom Right) */}
+      <div style={{ position: 'absolute', bottom: '40px', right: '20px', zIndex: 1000 }}>
+        <Button
+          icon
+          labelPosition='right'
+          onClick={handleShowAllLocations}
+          size='large'
+          style={{
+            background: showAllLocations ? 'var(--neon-blue)' : 'rgba(0,0,0,0.6)',
+            color: showAllLocations ? 'black' : 'white',
+            border: showAllLocations ? 'none' : '1px solid rgba(255,255,255,0.2)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: showAllLocations ? '0 0 15px var(--neon-blue)' : 'none'
+          }}
+        >
+          <Icon name='world' />
+          {showAllLocations ? 'Showing All' : 'Show All Locations'}
+        </Button>
+      </div>
+
+    </div>
   );
 };
 

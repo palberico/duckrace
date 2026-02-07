@@ -6,11 +6,11 @@ const PositionBadge = ({ position }) => {
   const getPositionClassName = (position) => {
     switch (position) {
       case 'P1':
-        return 'red-text';
+        return 'p1';
       case 'P2':
-        return 'blue-text';
+        return 'p2';
       case 'P3':
-        return 'green-text';
+        return 'p3';
       default:
         return 'default-position'; // A default class for positions beyond P3
     }

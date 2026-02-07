@@ -1,8 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import ScreenSizeRedirect from './components/ScreenSizeRedirect'; 
 import MapScreen from './components/MapScreen';
-import TempHome from './views/TempHome';
 import Home from './views/Home';
 import DuckProfile from './views/DuckProfile';
 import DuckForm from './views/DuckForm';
@@ -16,9 +14,8 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route exact path="/" element={<ScreenSizeRedirect />} />
+          <Route path="/" element={<Home />} />
           <Route path="/Home" element={<Home />} />
-          <Route path="/large-screen" element={<TempHome />} />
           <Route path="/Admin" element={<Admin />} />
 
           <Route path="/log-distance/:duckId" element={<DuckForm />} />

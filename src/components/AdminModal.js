@@ -1,36 +1,71 @@
-import React from 'react';
-import { Modal, Form, Input, Button, Icon } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import { Modal, Form, Input, Button, Icon, Header, Message } from 'semantic-ui-react';
 
-const AdminModal = ({ 
-    isOpen, 
-    setIsOpen, 
-    email, 
-    setEmail, 
-    password, 
-    setPassword, 
-    onSubmit, 
-    authError 
+const AdminModal = ({
+    isOpen,
+    setIsOpen,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    onSubmit,
+    authError
 }) => {
+    const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <Modal 
-          open={isOpen} 
-          onClose={() => setIsOpen(false)}
-          closeIcon={<Icon name="close" />}
+        <Modal
+            open={isOpen}
+            onClose={() => setIsOpen(false)}
+            closeIcon
+            className="admin-modal"
+            size="tiny"
         >
-            <Modal.Header>Admin Login - This login is for administrators only. </Modal.Header>
-            <Modal.Content>
+            <Modal.Header className="admin-modal-header">
+                Admin Login
+            </Modal.Header>
+            <Modal.Content className="admin-modal-content">
+                <p style={{ color: '#666', marginBottom: '1.5rem' }}>
+                    This login is restricted to administrators only.
+                </p>
                 <Form onSubmit={onSubmit}>
                     <Form.Field>
-                        <label>Email</label>
-                        <Input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <label className="admin-label">Email</label>
+                        <Input
+                            className="admin-input"
+                            type="email"
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            icon="mail"
+                            iconPosition="left"
+                        />
                     </Form.Field>
                     <Form.Field>
-                        <label>Password</label>
-                        <Input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <label className="admin-label">Password</label>
+                        <Input
+                            className="admin-input"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            icon={
+                                <Icon
+                                    name={showPassword ? 'eye slash' : 'eye'}
+                                    link
+                                    onClick={() => setShowPassword(!showPassword)}
+                                />
+                            }
+                        />
                     </Form.Field>
-                    <Button type="submit">Login</Button>
-                    {authError && <div style={{ color: 'red', marginTop: '10px' }}>{authError}</div>}
+                    <Button type="submit" fluid primary size="large" className="admin-btn">
+                        Login
+                    </Button>
+                    {authError && (
+                        <Message negative size="small">
+                            {authError}
+                        </Message>
+                    )}
                 </Form>
             </Modal.Content>
         </Modal>
