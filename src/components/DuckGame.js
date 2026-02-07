@@ -517,9 +517,13 @@ class DuckGame extends Component {
 
         const startButtonStyle = {
             position: 'absolute',
-            bottom: '10px',
-            left: '10px',
-            zIndex: 20 // Ensure button is above everything else
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 20, // Ensure button is above everything else
+            fontSize: '1.5rem',
+            padding: '15px 30px',
+            boxShadow: '0 0 15px rgba(0,0,0,0.5)'
         };
 
         const startComponentStyle = {
@@ -548,18 +552,20 @@ class DuckGame extends Component {
                     }}
                 />
 
-                <Button color='red'
-                    onClick={() => {
-                        if (gameOver) {
-                            window.location.reload();
-                        } else {
-                            this.startGame();
-                        }
-                    }}
-                    style={startButtonStyle}
-                >
-                    {gameOver ? 'Race Again' : 'Start Race'}
-                </Button>
+                {((!this.state.startSequenceFinished && !this.state.showStartComponent) || gameOver) && (
+                    <Button color='red'
+                        onClick={() => {
+                            if (gameOver) {
+                                window.location.reload();
+                            } else {
+                                this.startGame();
+                            }
+                        }}
+                        style={startButtonStyle}
+                    >
+                        {gameOver ? 'Race Again' : 'Start Race'}
+                    </Button>
+                )}
 
                 {/* StartComponent should show only during the start sequence */}
                 {this.state.showStartComponent && (
