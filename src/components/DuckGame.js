@@ -513,8 +513,8 @@ class DuckGame extends Component {
     };
 
     updateCurbs = (dt) => {
-        // Half the obstacle speed for the curb scrolling speed
-        const curbSpeed = this.gameState.obstacleSpeed * 2;
+        // Curbs move 3x faster than obstacles for dramatic speed illusion
+        const curbSpeed = this.gameState.obstacleSpeed * 3;
         const { curbOffset } = this.gameState;
 
         let nextOffset = (curbOffset + (curbSpeed * dt)) % (20 * 2);
