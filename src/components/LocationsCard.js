@@ -174,18 +174,18 @@ const LocationsCard = ({ duckId }) => {
             }}>
               {/* Top row: Date and Miles */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.9rem' }}>{formatDate(location.timestamp)}</span>
-                <span style={{ fontSize: '0.85rem', color: '#888' }}>
+                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.85rem', lineHeight: '1' }}>{formatDate(location.timestamp)}</span>
+                <span style={{ fontSize: '0.8rem', color: '#888', lineHeight: '1' }}>
                   {getDistance(location)} Miles
                 </span>
               </div>
 
               {/* Bottom row: Location and View on Map */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'white', fontSize: '1rem', fontWeight: '500' }}>
+                <span style={{ color: 'white', fontSize: '0.95rem', fontWeight: '500', lineHeight: '1' }}>
                   {location.newLocation.city}, {location.newLocation.state || getCountryFullName(location.newLocation.country)}
                 </span>
-                <div style={{ fontSize: '0.85rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: '0.8rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap', lineHeight: '1' }}>
                   <Icon name='map marker alternate' />
                   <span>View on Map</span>
                 </div>

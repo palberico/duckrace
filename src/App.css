@@ -560,6 +560,10 @@ body {
   }
 }
 
+.timeline-card {
+  padding: 0.6rem 1rem !important;
+}
+
 .timeline-card:hover {
   transform: translateX(5px);
   background: rgba(255, 255, 255, 0.05) !important;
