@@ -52,7 +52,7 @@ const DashboardMap = () => {
                     });
                     
                     const locationData = allLocations[0];
-                    const coords = locationData.coordinates;
+                    const coords = locationData.newLocation?.coordinates;
                     console.log('🦆 DashboardMap: Most recent coords for', duckData.name, ':', coords);
                     
                     if (coords && coords.latitude && coords.longitude) {
@@ -61,7 +61,7 @@ const DashboardMap = () => {
                             duckName: duckData.name,
                             lat: coords.latitude,
                             lng: coords.longitude,
-                            location: locationData.location || 'Unknown',
+                            location: locationData.newLocation?.city + ", " + (locationData.newLocation?.state || locationData.newLocation?.country) || 'Unknown',
                             distance: duckData.distance || 0
                         });
                         console.log('🦆 DashboardMap: ✅ Added location for', duckData.name);
