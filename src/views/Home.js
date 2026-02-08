@@ -60,18 +60,6 @@ const Home = () => {
         <div className="heroContent">
           <h1 className="heroTitle">Join the Global Duck Race</h1>
           <p className="heroSubtitle">Track, Log, and Hide ducks around the world.</p>
-          <Button
-            primary
-            size='huge'
-            style={{
-              backgroundColor: 'var(--neon-blue)',
-              color: '#000',
-              fontWeight: 'bold',
-              boxShadow: '0 0 15px var(--neon-blue)'
-            }}
-          >
-            Log a Duck
-          </Button>
         </div>
       </div>
 
