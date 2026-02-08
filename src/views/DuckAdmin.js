@@ -395,16 +395,10 @@ const DuckAdmin = () => {
           <Icon name='list' /> Manage Ducks
         </button>
         <button
-          className={`nav-item ${activeTab === 'comments' ? 'active' : ''}`}
-          onClick={() => handleTabClick('comments')}
-        >
-          <Icon name='comment' /> Comments
-        </button>
-        <button
           className={`nav-item ${activeTab === 'approvals' ? 'active' : ''}`}
           onClick={() => handleTabClick('approvals')}
         >
-          <Icon name='camera' /> Approvals
+          <Icon name='check circle' /> Approvals
           {unapprovedPhotos.length > 0 &&
             <span style={{
               marginLeft: 'auto',
@@ -521,16 +515,17 @@ const DuckAdmin = () => {
         }
 
         {activeTab === 'approvals' &&
-          <ApprovalsTable
-            unapprovedPhotos={unapprovedPhotos}
-            photosLoading={photosLoading}
-            handleApprovePhoto={handleApprovePhoto}
-            handleDeletePhoto={handleDeletePhoto}
-          />
-        }
-
-        {activeTab === 'comments' &&
-          <CommentApprovals />
+          <>
+            <CommentApprovals />
+            <div style={{ marginTop: '3rem' }}>
+              <ApprovalsTable
+                unapprovedPhotos={unapprovedPhotos}
+                photosLoading={photosLoading}
+                handleApprovePhoto={handleApprovePhoto}
+                handleDeletePhoto={handleDeletePhoto}
+              />
+            </div>
+          </>
         }
 
         {activeTab === 'inactive_ducks' &&
