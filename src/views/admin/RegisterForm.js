@@ -59,14 +59,12 @@ const RegisterForm = ({
     };
 
     return (
-        <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <div className="glass-header">
-                <h2>Register New Duck</h2>
-            </div>
+        <div className="register-form-container">
+            <h1 className="register-form-title">Register New Duck</h1>
 
             {isLoading && <Loader active inline='centered'>Box...Box...</Loader>}
 
-            <form className="custom-form" onSubmit={handleSubmit}>
+            <form className="custom-form register-form" onSubmit={handleSubmit}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div>
                         <label>Duck Name</label>
