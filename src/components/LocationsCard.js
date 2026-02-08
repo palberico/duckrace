@@ -173,7 +173,7 @@ const LocationsCard = ({ duckId }) => {
               gap: '0.3rem'
             }}>
               {/* Top row: Date and Miles */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '16px' }}>
                 <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.85rem', lineHeight: '1' }}>{formatDate(location.timestamp)}</span>
                 <span style={{ fontSize: '0.8rem', color: '#888', lineHeight: '1' }}>
                   {getDistance(location)} Miles
@@ -181,7 +181,7 @@ const LocationsCard = ({ duckId }) => {
               </div>
 
               {/* Bottom row: Location and View on Map */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '16px' }}>
                 <span style={{ color: 'white', fontSize: '0.95rem', fontWeight: '500', lineHeight: '1' }}>
                   {location.newLocation.city}, {location.newLocation.state || getCountryFullName(location.newLocation.country)}
                 </span>
