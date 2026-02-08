@@ -62,35 +62,82 @@ const DashboardStats = ({
                 <div
                     className="stat-card"
                     onClick={onApprovalsClick}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', padding: '1.5rem' }}
                 >
-                    <Icon name='check circle' className="stat-icon" />
-                    <div className="stat-content">
-                        <h3>Approvals</h3>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ fontSize: '0.9rem', color: '#aaa' }}>
-                                    <Icon name='comment' size='small' /> Comments
-                                </span>
-                                <span style={{
-                                    fontSize: '1.1rem',
+                    <div style={{ width: '100%' }}>
+                        {/* Header Row */}
+                        <h3 style={{
+                            textAlign: 'center',
+                            marginBottom: '1rem',
+                            fontSize: '1.1rem',
+                            letterSpacing: '0.05em',
+                            color: 'white'
+                        }}>
+                            APPROVALS
+                        </h3>
+
+                        {/* Two Column Layout */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-around',
+                            alignItems: 'center',
+                            gap: '1rem'
+                        }}>
+                            {/* Comments Column */}
+                            <div style={{
+                                flex: 1,
+                                textAlign: 'center',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                <Icon name='comment' size='big' style={{
+                                    color: pendingComments.length > 0 ? 'var(--neon-yellow)' : '#888',
+                                    margin: 0
+                                }} />
+                                <div style={{
+                                    fontSize: '1.8rem',
                                     fontWeight: 'bold',
                                     color: pendingComments.length > 0 ? 'var(--neon-yellow)' : 'white'
                                 }}>
                                     {pendingComments.length}
-                                </span>
+                                </div>
+                                <div style={{ fontSize: '0.85rem', color: '#aaa' }}>
+                                    Comments
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ fontSize: '0.9rem', color: '#aaa' }}>
-                                    <Icon name='camera' size='small' /> Photos
-                                </span>
-                                <span style={{
-                                    fontSize: '1.1rem',
+
+                            {/* Vertical Divider */}
+                            <div style={{
+                                width: '1px',
+                                height: '80px',
+                                background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent)'
+                            }} />
+
+                            {/* Photos Column */}
+                            <div style={{
+                                flex: 1,
+                                textAlign: 'center',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                <Icon name='camera' size='big' style={{
+                                    color: unapprovedPhotos.length > 0 ? 'var(--neon-yellow)' : '#888',
+                                    margin: 0
+                                }} />
+                                <div style={{
+                                    fontSize: '1.8rem',
                                     fontWeight: 'bold',
                                     color: unapprovedPhotos.length > 0 ? 'var(--neon-yellow)' : 'white'
                                 }}>
                                     {unapprovedPhotos.length}
-                                </span>
+                                </div>
+                                <div style={{ fontSize: '0.85rem', color: '#aaa' }}>
+                                    Photos
+                                </div>
                             </div>
                         </div>
                     </div>
