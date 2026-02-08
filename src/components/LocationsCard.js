@@ -251,7 +251,7 @@ const LocationsCard = ({ duckId }) => {
                 background: 'rgba(0, 240, 255, 0.05)',
                 border: '1px solid rgba(0, 240, 255, 0.2)',
                 borderRadius: '8px',
-                padding: '1rem',
+                padding: '0.5rem',
                 marginBottom: '1rem'
               }}
             >
