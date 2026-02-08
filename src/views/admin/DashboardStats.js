@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icon } from 'semantic-ui-react';
+import DashboardMap from './DashboardMap';
 
 const DashboardStats = ({
     totalDucks,
@@ -128,6 +129,9 @@ const DashboardStats = ({
                     </div>
                 </div>
             </div>
+
+            {/* Interactive Map Preview */}
+            <DashboardMap />
         </div>
     );
 };
