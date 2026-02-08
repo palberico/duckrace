@@ -29,17 +29,23 @@ const DashboardMap = () => {
             for (const duckDoc of ducksSnapshot.docs) {
                 const duckData = duckDoc.data();
 
-                // Get most recent location for this duck
+                // Get all locations for this duck (without orderBy to avoid index requirement)
                 const locationsQuery = query(
                     collection(db, 'locations'),
-                    where('duckId', '==', duckDoc.id),
-                    orderBy('timestamp', 'desc'),
-                    limit(1)
+                    where('duckId', '==', duckDoc.id)
                 );
                 const locationsSnapshot = await getDocs(locationsQuery);
 
                 if (!locationsSnapshot.empty) {
-                    const locationData = locationsSnapshot.docs[0].data();
+                    // Sort locations by timestamp in JavaScript to get most recent
+                    const allLocations = locationsSnapshot.docs.map(doc => doc.data());
+                    allLocations.sort((a, b) => {
+                        const timeA = a.timestamp?.toDate() || new Date(0);
+                        const timeB = b.timestamp?.toDate() || new Date(0);
+                        return timeB - timeA; // Descending order (newest first)
+                    });
+
+                    const locationData = allLocations[0]; // Most recent location
                     const coords = locationData.coordinates;
 
                     if (coords && coords.latitude && coords.longitude) {
