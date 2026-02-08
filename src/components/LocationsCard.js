@@ -164,7 +164,6 @@ const LocationsCard = ({ duckId }) => {
             {/* Content Card */}
             <div className="glass-card timeline-card" style={{
               flex: 1,
-              padding: '0.6rem 1rem',
               marginBottom: '0',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               transition: 'transform 0.2s, background 0.2s',
