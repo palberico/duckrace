@@ -38,9 +38,7 @@ const DashboardStats = ({
                     className="stat-card"
                     onClick={onRegisterClick}
                     style={{
-                        cursor: 'pointer',
-                        borderColor: 'var(--neon-blue)',
-                        background: 'rgba(0, 240, 255, 0.05)'
+                        cursor: 'pointer'
                     }}
                 >
                     <Icon name='plus circle' className="stat-icon" style={{ color: 'var(--neon-blue)', background: 'rgba(0, 240, 255, 0.1)' }} />
@@ -75,7 +73,10 @@ const DashboardStats = ({
                 </div>
 
                 {/* Row 2 */}
-                <div className="stat-card">
+                <div className="stat-card" style={{
+                    borderColor: 'var(--neon-blue)',
+                    background: 'rgba(0, 240, 255, 0.05)'
+                }}>
                     <Icon name='world' className="stat-icon" style={{ color: 'var(--neon-blue)', background: 'rgba(0, 240, 255, 0.1)' }} />
                     <div className="stat-content">
                         <h3>Total Distance</h3>
