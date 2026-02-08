@@ -1,39 +1,29 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Ducks collection - public read, no write
+    // Ducks collection: read/write access for all
     match /ducks/{duckId} {
-      allow read: if true;
-      allow write: if false; // Only through admin panel
+      allow read, write: if true;
     }
-    
-    // Locations collection - public read, public write
+
+    // Locations collection: read/write access for all
     match /locations/{locationId} {
-      allow read: if true;
-      allow write: if true; // Users can log duck locations
+      allow read, write: if true;
     }
-    
-    // Comments collection - public write, public read (approved only via app logic)
+
+    // Comments collection: read/write access for all
     match /comments/{commentId} {
-      allow read: if true; // Allow reading all comments (app filters by approved)
-      allow create: if true; // Users can submit comments
-      allow update: if true; // Admins can approve/reject
-      allow delete: if true; // Admins can delete
+      allow read, write: if true;
     }
-    
-    // Photos collection - public write for submissions, read for approval
+
+    // Photos collection: read/write access for all
     match /photos/{photoId} {
-      allow read: if true;
-      allow create: if true; // Users can upload photos
-      allow update: if true; // Admins can approve
-      allow delete: if true; // Admins can delete
+      allow read, write: if true;
     }
-    
-    // Admin settings (if needed in future)
-    match /admin_settings/{settingId} {
-      allow read: if true;
-      allow write: if false; // Only through admin panel
+
+    // Restrict access to other collections to only authenticated users
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }

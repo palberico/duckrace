@@ -14,17 +14,23 @@ const CommentApprovals = () => {
     const fetchPendingComments = async () => {
         setLoading(true);
         try {
+            // Simpler query to avoid needing composite index
             const q = query(
                 collection(db, 'comments'),
                 where('approved', '==', false),
-                where('rejected', '==', false),
-                orderBy('timestamp', 'desc')
+                where('rejected', '==', false)
             );
             const snapshot = await getDocs(q);
             const comments = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
+            // Sort client-side by timestamp descending
+            comments.sort((a, b) => {
+                const timeA = a.timestamp?.toDate() || new Date(0);
+                const timeB = b.timestamp?.toDate() || new Date(0);
+                return timeB - timeA;
+            });
             setPendingComments(comments);
         } catch (error) {
             console.error('Error fetching comments:', error);
