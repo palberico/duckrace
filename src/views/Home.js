@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, Segment } from 'semantic-ui-react';
+import { Card, Segment } from 'semantic-ui-react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/Config';
