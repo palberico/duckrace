@@ -901,6 +901,8 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .glass-header h2 {
@@ -1605,5 +1607,16 @@ body {
   /* Submit button */
   .custom-form .custom-btn[type="submit"] {
     margin-top: 1.5rem !important;
+  }
+}
+/* Toast notification animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

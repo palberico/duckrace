@@ -144,6 +144,8 @@ const RegisterForm = ({
                         options={stateOptions}
                         value={startLocation.state}
                         onChange={(e, { value }) => setStartLocation({ ...startLocation, state: value })}
+                        selectOnBlur={false}
+                        searchInput={{ readOnly: true }}
                     />
 
                     <Dropdown
@@ -155,36 +157,73 @@ const RegisterForm = ({
                         options={countryOptions}
                         value={startLocation.country}
                         onChange={(e, { value }) => setStartLocation({ ...startLocation, country: value })}
+                        selectOnBlur={false}
+                        searchInput={{ readOnly: true }}
                     />
                 </div>
 
                 <div>
                     <label>Duck Image</label>
-                    <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`} style={{
-                        border: '2px dashed rgba(255,255,255,0.2)',
-                        borderRadius: '8px',
-                        padding: '2rem',
-                        textAlign: 'center',
-                        cursor: 'pointer',
-                        background: isDragActive ? 'rgba(0, 240, 255, 0.1)' : 'rgba(0,0,0,0.2)',
-                        transition: 'all 0.2s',
-                        marginBottom: '1.5rem',
-                        color: isDragActive ? 'var(--neon-blue)' : '#aaa',
-                        borderColor: isDragActive ? 'var(--neon-blue)' : 'rgba(255,255,255,0.2)'
-                    }}>
-                        <input {...getInputProps()} />
-                        {
-                            image ? (
-                                <div style={{ color: 'var(--neon-blue)', fontWeight: 'bold' }}>
-                                    <Icon name='check circle' /> Selected: {image.name}
-                                </div>
+                    {image ? (
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <div style={{
+                                position: 'relative',
+                                width: '150px',
+                                height: '150px',
+                                margin: '0 auto 1rem',
+                                borderRadius: '12px',
+                                overflow: 'hidden',
+                                border: '2px solid var(--neon-blue)',
+                                boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)'
+                            }}>
+                                <img
+                                    src={URL.createObjectURL(image)}
+                                    alt="Preview"
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            </div>
+                            <div style={{ textAlign: 'center', color: 'var(--neon-blue)', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                                <Icon name='check circle' /> {image.name}
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setImage(null)}
+                                    style={{
+                                        background: 'rgba(255, 59, 59, 0.1)',
+                                        border: '1px solid var(--neon-red)',
+                                        color: 'var(--neon-red)',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '14px'
+                                    }}
+                                >
+                                    <Icon name='trash' /> Remove Image
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`} style={{
+                            border: '2px dashed rgba(255,255,255,0.2)',
+                            borderRadius: '8px',
+                            padding: '2rem',
+                            textAlign: 'center',
+                            cursor: 'pointer',
+                            background: isDragActive ? 'rgba(0, 240, 255, 0.1)' : 'rgba(0,0,0,0.2)',
+                            transition: 'all 0.2s',
+                            marginBottom: '1.5rem',
+                            color: isDragActive ? 'var(--neon-blue)' : '#aaa',
+                            borderColor: isDragActive ? 'var(--neon-blue)' : 'rgba(255,255,255,0.2)'
+                        }}>
+                            <input {...getInputProps()} />
+                            {isDragActive ? (
+                                <p>Drop the file here ...</p>
                             ) : (
-                                isDragActive ?
-                                    <p>Drop the file here ...</p> :
-                                    <p><Icon name='cloud upload' size='large' style={{ marginBottom: '0.5rem' }} /><br />Drag & drop an image here, or click to select one</p>
-                            )
-                        }
-                    </div>
+                                <p><Icon name='cloud upload' size='large' style={{ marginBottom: '0.5rem' }} /><br />Drag & drop an image here, or click to select one</p>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {error && <Message error header='Error' content={error} />}

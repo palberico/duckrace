@@ -42,6 +42,7 @@ const DuckAdmin = () => {
   const [unapprovedPhotos, setUnapprovedPhotos] = useState([]);
   const [photosLoading, setPhotosLoading] = useState(false);
   const [totalDucks, setTotalDucks] = useState(0);
+  const [successMessage, setSuccessMessage] = useState('');
 
 
   useEffect(() => {
@@ -163,6 +164,8 @@ const DuckAdmin = () => {
 
         console.log('Document written with ID: ', docRef.id);
         fetchStats(); // Update stats
+        setSuccessMessage(`🎉 Duck "${name}" successfully registered!`);
+        setTimeout(() => setSuccessMessage(''), 5000); // Clear after 5 seconds
         // Reset form fields after successful submission
       } catch (error) {
         console.error('Error during the image upload or document creation:', error);
@@ -341,6 +344,27 @@ const DuckAdmin = () => {
 
       {/* MAIN CONTENT AREA */}
       <div className="admin-content">
+
+        {/* Success Toast Notification */}
+        {successMessage && (
+          <div style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: 'linear-gradient(135deg, #00f0ff 0%, #0080ff 100%)',
+            color: 'black',
+            padding: '1rem 1.5rem',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(0, 240, 255, 0.4)',
+            zIndex: 9999,
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            animation: 'slideInRight 0.3s ease',
+            maxWidth: '400px'
+          }}>
+            {successMessage}
+          </div>
+        )}
 
         {activeTab === 'dashboard' &&
           <DashboardStats
