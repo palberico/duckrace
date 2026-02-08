@@ -136,7 +136,10 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
     return (
         <div style={{ padding: '2rem' }}>
             <div className="glass-header">
-                <h2>Editing: {duck.name}</h2>
+                <h2>
+                    <Icon name='arrow left' onClick={onBack} style={{ cursor: 'pointer', marginRight: '0.5rem' }} />
+                    Editing: {duck.name}
+                </h2>
             </div>
 
             {loading || recalculating ? (
