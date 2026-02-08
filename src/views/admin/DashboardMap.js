@@ -12,29 +12,35 @@ const DashboardMap = () => {
     const mapInstanceRef = useRef(null);
 
     useEffect(() => {
+        console.log('🦆 DashboardMap: Component mounted, starting fetchDuckLocations');
         fetchDuckLocations();
     }, []);
 
     useEffect(() => {
         if (duckLocations.length > 0 && mapRef.current && !mapInstanceRef.current) {
+            console.log('🦆 DashboardMap: Initializing map with', duckLocations.length, 'locations');
             initializeMap();
         }
     }, [duckLocations]);
 
     const fetchDuckLocations = async () => {
         try {
+            console.log('🦆 DashboardMap: Fetching ducks from Firestore');
             const ducksSnapshot = await getDocs(collection(db, 'ducks'));
+            console.log('🦆 DashboardMap: Found', ducksSnapshot.docs.length, 'ducks');
             const locations = [];
 
             for (const duckDoc of ducksSnapshot.docs) {
                 const duckData = duckDoc.data();
-
-                // Get all locations for this duck (without orderBy to avoid index requirement)
+                console.log('🦆 DashboardMap: Processing duck:', duckData.name, 'ID:', duckDoc.id);
+                
+                // Get all locations for this duck
                 const locationsQuery = query(
                     collection(db, 'locations'),
                     where('duckId', '==', duckDoc.id)
                 );
                 const locationsSnapshot = await getDocs(locationsQuery);
+                console.log('🦆 DashboardMap: Found', locationsSnapshot.docs.length, 'locations for', duckData.name);
 
                 if (!locationsSnapshot.empty) {
                     // Sort locations by timestamp in JavaScript to get most recent
@@ -42,12 +48,13 @@ const DashboardMap = () => {
                     allLocations.sort((a, b) => {
                         const timeA = a.timestamp?.toDate() || new Date(0);
                         const timeB = b.timestamp?.toDate() || new Date(0);
-                        return timeB - timeA; // Descending order (newest first)
+                        return timeB - timeA;
                     });
-
-                    const locationData = allLocations[0]; // Most recent location
+                    
+                    const locationData = allLocations[0];
                     const coords = locationData.coordinates;
-
+                    console.log('🦆 DashboardMap: Most recent coords for', duckData.name, ':', coords);
+                    
                     if (coords && coords.latitude && coords.longitude) {
                         locations.push({
                             duckId: duckDoc.id,
@@ -57,20 +64,23 @@ const DashboardMap = () => {
                             location: locationData.location || 'Unknown',
                             distance: duckData.distance || 0
                         });
+                        console.log('🦆 DashboardMap: ✅ Added location for', duckData.name);
+                    } else {
+                        console.log('🦆 DashboardMap: ❌ Invalid coords for', duckData.name, coords);
                     }
                 }
             }
 
+            console.log('🦆 DashboardMap: FINAL - Total locations to display:', locations.length);
             setDuckLocations(locations);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching duck locations:', error);
+            console.error('🦆 DashboardMap: ERROR fetching duck locations:', error);
             setLoading(false);
         }
     };
 
     const initializeMap = () => {
-        // Fix for Leaflet Default Icon issue in React/Webpack
         delete L.Icon.Default.prototype._getIconUrl;
         L.Icon.Default.mergeOptions({
             iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -78,7 +88,6 @@ const DashboardMap = () => {
             shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
         });
 
-        // Create custom icon for duck markers
         const duckIcon = L.divIcon({
             className: 'custom-duck-marker',
             html: '<div style="background: #00f0ff; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,240,255,0.5);"></div>',
@@ -87,7 +96,6 @@ const DashboardMap = () => {
             popupAnchor: [0, -8]
         });
 
-        // Initialize map
         const map = L.map(mapRef.current, {
             scrollWheelZoom: true,
             dragging: true,
@@ -96,20 +104,19 @@ const DashboardMap = () => {
 
         mapInstanceRef.current = map;
 
-        // Use standard OpenStreetMap tiles
+        // Standard OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
-        // Add markers for each duck
         const bounds = [];
         duckLocations.forEach((duck) => {
             const latLng = [duck.lat, duck.lng];
             bounds.push(latLng);
 
             const marker = L.marker(latLng, { icon: duckIcon }).addTo(map);
-
+            
             marker.bindPopup(`
                 <div style="color: #000; padding: 0.5rem;">
                     <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem;">${duck.duckName}</h4>
@@ -122,13 +129,11 @@ const DashboardMap = () => {
             `);
         });
 
-        // Fit map to show all markers
         if (bounds.length > 0) {
             const latLngBounds = L.latLngBounds(bounds);
             map.fitBounds(latLngBounds, { padding: [50, 50] });
         }
 
-        // Invalidate size after mount to fix grey tiles issue
         setTimeout(() => {
             if (map) {
                 map.invalidateSize();
@@ -136,7 +141,6 @@ const DashboardMap = () => {
         }, 100);
     };
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             if (mapInstanceRef.current) {
@@ -148,8 +152,8 @@ const DashboardMap = () => {
 
     if (loading) {
         return (
-            <div style={{
-                textAlign: 'center',
+            <div style={{ 
+                textAlign: 'center', 
                 padding: '2rem',
                 color: '#aaa'
             }}>
@@ -161,8 +165,8 @@ const DashboardMap = () => {
 
     if (duckLocations.length === 0) {
         return (
-            <div style={{
-                textAlign: 'center',
+            <div style={{ 
+                textAlign: 'center', 
                 padding: '2rem',
                 color: '#aaa',
                 background: 'rgba(255, 255, 255, 0.05)',
@@ -177,8 +181,8 @@ const DashboardMap = () => {
 
     return (
         <div style={{ marginTop: '2rem' }}>
-            <h3 style={{
-                color: 'var(--neon-blue)',
+            <h3 style={{ 
+                color: 'var(--neon-blue)', 
                 marginBottom: '1rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -186,24 +190,24 @@ const DashboardMap = () => {
             }}>
                 <Icon name='map' />
                 Duck Locations Map
-                <span style={{
-                    fontSize: '0.9rem',
+                <span style={{ 
+                    fontSize: '0.9rem', 
                     color: '#aaa',
                     fontWeight: 'normal'
                 }}>
                     ({duckLocations.length} ducks)
                 </span>
             </h3>
-
-            <div
-                ref={mapRef}
-                style={{
-                    height: '500px',
+            
+            <div 
+                ref={mapRef} 
+                style={{ 
+                    height: '500px', 
                     width: '100%',
                     borderRadius: '12px',
                     overflow: 'hidden',
                     border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}
+                }} 
             />
         </div>
     );
