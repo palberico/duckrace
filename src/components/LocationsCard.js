@@ -252,35 +252,45 @@ const LocationsCard = ({ duckId }) => {
                 border: '1px solid rgba(0, 240, 255, 0.2)',
                 borderRadius: '8px',
                 padding: '0.5rem',
-                marginBottom: '1rem'
+                marginBottom: '1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.3rem'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+              {/* Top row: Icon, Name, and Hometown */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', height: 'auto', maxHeight: '24px' }}>
                 <Icon
                   name={comment.transportType === 'cruise' ? 'ship' : 'car'}
                   size='large'
-                  style={{ color: 'var(--neon-blue)' }}
+                  style={{ color: 'var(--neon-blue)', margin: 0, fontSize: '1.2rem' }}
                 />
-                <div>
-                  <strong style={{ color: 'white', fontSize: '1rem' }}>{comment.firstName}</strong>
-                  <span style={{ color: '#888', marginLeft: '0.5rem', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', lineHeight: '1' }}>
+                  <strong style={{ color: 'white', fontSize: '0.95rem', lineHeight: '1', display: 'block' }}>{comment.firstName}</strong>
+                  <span style={{ color: '#888', fontSize: '0.85rem', lineHeight: '1', display: 'block' }}>
                     from {comment.hometown}
                   </span>
                 </div>
               </div>
+
+              {/* Comment text */}
               <p style={{
                 color: '#ccc',
                 fontStyle: 'italic',
-                marginLeft: '2.5rem',
-                marginBottom: '0.5rem',
-                lineHeight: '1.5'
+                marginLeft: '2.0rem',
+                marginBottom: '0',
+                lineHeight: '1.3',
+                fontSize: '0.9rem'
               }}>
                 "{comment.comment}"
               </p>
+
+              {/* Date */}
               <div style={{
-                fontSize: '0.8rem',
+                fontSize: '0.75rem',
                 color: '#666',
-                marginLeft: '2.5rem'
+                marginLeft: '2.0rem',
+                lineHeight: '1'
               }}>
                 {comment.timestamp?.toDate().toLocaleDateString()}
               </div>
