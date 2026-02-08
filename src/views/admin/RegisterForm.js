@@ -60,7 +60,9 @@ const RegisterForm = ({
 
     return (
         <div className="register-form-container">
-            <h1 className="register-form-title">Register New Duck</h1>
+            <div className="glass-header">
+                <h2>Register New Duck</h2>
+            </div>
 
             {isLoading && <Loader active inline='centered'>Box...Box...</Loader>}
 
