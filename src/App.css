@@ -141,6 +141,21 @@ body {
     flex-basis: 100%;
   }
 
+  /* Full-width duck cards on mobile for app-like feel */
+  .ui.grid.duck-grid {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .ui.grid.duck-grid>.column {
+    padding: 0.5rem !important;
+  }
+
+  .ui.card.duck-card {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
   /* Stack Checkboxes on Mobile */
   .mobile-stack-container {
     flex-direction: column !important;
