@@ -175,6 +175,9 @@ const EditDuckModal = ({ isOpen, onClose, duck, onUpdate }) => {
                             options={stateOptions}
                             value={startLocation.state}
                             onChange={(e, { value }) => setStartLocation({ ...startLocation, state: value })}
+                            upward={false}
+                            closeOnChange
+                            onFocus={(e) => e.target.blur()}
                         />
                         <Dropdown
                             placeholder="Country"
@@ -183,6 +186,9 @@ const EditDuckModal = ({ isOpen, onClose, duck, onUpdate }) => {
                             options={countryOptions}
                             value={startLocation.country}
                             onChange={(e, { value }) => setStartLocation({ ...startLocation, country: value })}
+                            upward={false}
+                            closeOnChange
+                            onFocus={(e) => e.target.blur()}
                         />
                     </div>
 
