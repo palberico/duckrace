@@ -65,6 +65,7 @@ const Header = ({ code, setCode, error, setError, loading, handleSearch }) => {
           loading={loading}
           actionPosition='right'
           className="search-input"
+          autoFocus={false}
         />
       </div>
 
