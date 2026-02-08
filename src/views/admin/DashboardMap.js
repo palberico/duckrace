@@ -85,6 +85,63 @@ const DashboardMap = () => {
         }
     }, [duckLocations]);
 
+    const fetchDuckLocations = async () => {
+        try {
+            console.log('🦆 DashboardMap: Fetching ducks from Firestore');
+            const ducksSnapshot = await getDocs(collection(db, 'ducks'));
+            console.log('🦆 DashboardMap: Found', ducksSnapshot.docs.length, 'ducks');
+            const locations = [];
+
+            for (const duckDoc of ducksSnapshot.docs) {
+                const duckData = duckDoc.data();
+                console.log('🦆 DashboardMap: Processing duck:', duckData.name, 'ID:', duckDoc.id);
+
+                // Get all locations for this duck
+                const locationsQuery = query(
+                    collection(db, 'locations'),
+                    where('duckId', '==', duckDoc.id)
+                );
+                const locationsSnapshot = await getDocs(locationsQuery);
+                console.log('🦆 DashboardMap: Found', locationsSnapshot.docs.length, 'locations for', duckData.name);
+
+                if (!locationsSnapshot.empty) {
+                    // Sort locations by timestamp in JavaScript to get most recent
+                    const allLocations = locationsSnapshot.docs.map(doc => doc.data());
+                    allLocations.sort((a, b) => {
+                        const timeA = a.timestamp?.toDate() || new Date(0);
+                        const timeB = b.timestamp?.toDate() || new Date(0);
+                        return timeB - timeA;
+                    });
+
+                    const locationData = allLocations[0];
+                    const coords = locationData.newLocation?.coordinates;
+                    console.log('🦆 DashboardMap: Most recent coords for', duckData.name, ':', coords);
+
+                    if (coords && coords.latitude && coords.longitude) {
+                        locations.push({
+                            duckId: duckDoc.id,
+                            duckName: duckData.name,
+                            lat: coords.latitude,
+                            lng: coords.longitude,
+                            location: locationData.newLocation?.city + ", " + (locationData.newLocation?.state || locationData.newLocation?.country) || 'Unknown',
+                            distance: duckData.distance || 0
+                        });
+                        console.log('🦆 DashboardMap: ✅ Added location for', duckData.name);
+                    } else {
+                        console.log('🦆 DashboardMap: ❌ Invalid coords for', duckData.name, coords);
+                    }
+                }
+            }
+
+            console.log('🦆 DashboardMap: FINAL - Total locations to display:', locations.length);
+            setDuckLocations(locations);
+            setLoading(false);
+        } catch (error) {
+            console.error('🦆 DashboardMap: ERROR fetching duck locations:', error);
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         return () => {
             if (mapInstanceRef.current) {
