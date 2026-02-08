@@ -13,6 +13,7 @@ const LocationsCard = ({ duckId }) => {
   const [hasMore, setHasMore] = useState(true);
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [comments, setComments] = useState([]);
 
   const fetchMoreLocations = useCallback(async () => {
     if (!duckId || !lastVisible) {
@@ -89,6 +90,32 @@ const LocationsCard = ({ duckId }) => {
     };
     fetchInitialLocations();
   }, [duckId]); // Only runs once when the component mounts, as duckId should not change
+
+  // Fetch approved comments
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (!duckId) return;
+
+      try {
+        const q = query(
+          collection(db, 'comments'),
+          where('duckId', '==', duckId),
+          where('approved', '==', true),
+          orderBy('timestamp', 'desc')
+        );
+        const snapshot = await getDocs(q);
+        const approvedComments = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setComments(approvedComments);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    };
+
+    fetchComments();
+  }, [duckId]);
 
   const getCountryFullName = (countryCode) => {
     const country = countryOptions.find(option => option.key === countryCode.toLowerCase());
@@ -204,6 +231,56 @@ const LocationsCard = ({ duckId }) => {
         >
           Load More History
         </Button>
+      )}
+
+      {/* Comments Section */}
+      {comments.length > 0 && (
+        <div style={{ marginTop: '3rem' }}>
+          <Header as='h3' inverted style={{ marginBottom: '1.5rem' }}>Comments</Header>
+          {comments.map(comment => (
+            <div
+              key={comment.id}
+              className="glass-card"
+              style={{
+                background: 'rgba(0, 240, 255, 0.05)',
+                border: '1px solid rgba(0, 240, 255, 0.2)',
+                borderRadius: '8px',
+                padding: '1rem',
+                marginBottom: '1rem'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                <Icon
+                  name={comment.transportType === 'cruise' ? 'ship' : 'car'}
+                  size='large'
+                  style={{ color: 'var(--neon-blue)' }}
+                />
+                <div>
+                  <strong style={{ color: 'white', fontSize: '1rem' }}>{comment.firstName}</strong>
+                  <span style={{ color: '#888', marginLeft: '0.5rem', fontSize: '0.9rem' }}>
+                    from {comment.hometown}
+                  </span>
+                </div>
+              </div>
+              <p style={{
+                color: '#ccc',
+                fontStyle: 'italic',
+                marginLeft: '2.5rem',
+                marginBottom: '0.5rem',
+                lineHeight: '1.5'
+              }}>
+                "{comment.comment}"
+              </p>
+              <div style={{
+                fontSize: '0.8rem',
+                color: '#666',
+                marginLeft: '2.5rem'
+              }}>
+                {comment.timestamp?.toDate().toLocaleDateString()}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       <LocationsMapModal

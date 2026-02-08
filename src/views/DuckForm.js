@@ -18,6 +18,7 @@ import HomeHeader from '../components/HomeHeader';
 import StandardModal from '../components/StandardModal';
 import CruiseModal from '../components/CruiseModal';
 import JeepModal from '../components/JeepModal';
+import CommentModal from '../components/CommentModal';
 
 import countryOptions from '../components/data/Countries';
 import stateOptions from '../components/data/States';
@@ -39,6 +40,9 @@ const DuckForm = () => {
   const [showCruiseModal, setShowCruiseModal] = useState(false);
   const [isOnJeep, setIsOnJeep] = useState(false);
   const [showJeepModal, setShowJeepModal] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [lastLocationId, setLastLocationId] = useState(null);
+  const [currentTransportType, setCurrentTransportType] = useState(null);
 
   useEffect(() => {
     const fetchDuckData = async () => {
@@ -145,7 +149,7 @@ const DuckForm = () => {
 
       if (startLocation && startLocation.coordinates) {
         const locationsRef = collection(db, 'locations');
-        await addDoc(locationsRef, {
+        const locationDoc = await addDoc(locationsRef, {
           duckId,
           startLocation: startLocation,
           newLocation: {
@@ -158,14 +162,17 @@ const DuckForm = () => {
           distance: addedMiles,
           timestamp: new Date(),
         });
+        setLastLocationId(locationDoc.id);
       }
 
       // Check if the duck was found on a Jeep
       if (isOnJeep) {
+        setCurrentTransportType('jeep');
         setShowJeepModal(true);
         setShowStandardModal(false);
         setShowCruiseModal(false);
       } else if (isOnCruise) {
+        setCurrentTransportType('cruise');
         setShowCruiseModal(true);
         setShowStandardModal(false);
       } else {
@@ -338,7 +345,7 @@ const DuckForm = () => {
         open={showJeepModal}
         onClose={() => {
           setShowJeepModal(false);
-          navigate(`/duck/${duckId}`);
+          setShowCommentModal(true);
         }}
         duckName={duckData.name}
         addedMiles={addedMiles}
@@ -352,10 +359,26 @@ const DuckForm = () => {
         }}
         onFinish={() => {
           setShowCruiseModal(false);
-          navigate(`/duck/${duckId}`);
+          setShowCommentModal(true);
         }}
         duckName={duckData.name}
         addedMiles={addedMiles}
+      />
+      <CommentModal
+        open={showCommentModal}
+        onClose={() => {
+          setShowCommentModal(false);
+          navigate(`/duck/${duckId}`);
+        }}
+        onSkip={() => {
+          setShowCommentModal(false);
+          navigate(`/duck/${duckId}`);
+        }}
+        duckId={duckId}
+        duckCode={duckData.code}
+        duckName={duckData.name}
+        locationId={lastLocationId}
+        transportType={currentTransportType}
       />
       <div className="footer">
         <p>© 2024 RaceDucks.com. All rights reserved.</p>

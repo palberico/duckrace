@@ -30,6 +30,7 @@ import ApprovalsTable from './admin/ApprovalsTable';
 import DangerZone from './admin/DangerZone';
 import DuckManager from './admin/DuckManager';
 import InactiveDucks from './admin/InactiveDucks';
+import CommentApprovals from './admin/CommentApprovals';
 
 const DuckAdmin = () => {
   const [name, setName] = useState('');
@@ -394,6 +395,12 @@ const DuckAdmin = () => {
           <Icon name='list' /> Manage Ducks
         </button>
         <button
+          className={`nav-item ${activeTab === 'comments' ? 'active' : ''}`}
+          onClick={() => handleTabClick('comments')}
+        >
+          <Icon name='comment' /> Comments
+        </button>
+        <button
           className={`nav-item ${activeTab === 'approvals' ? 'active' : ''}`}
           onClick={() => handleTabClick('approvals')}
         >
@@ -520,6 +527,10 @@ const DuckAdmin = () => {
             handleApprovePhoto={handleApprovePhoto}
             handleDeletePhoto={handleDeletePhoto}
           />
+        }
+
+        {activeTab === 'comments' &&
+          <CommentApprovals />
         }
 
         {activeTab === 'inactive_ducks' &&
