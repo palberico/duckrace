@@ -1577,11 +1577,6 @@ body {
     grid-column: 1 / -1 !important;
   }
 
-  /* Reduce timeline card padding on mobile */
-  .timeline-card {
-    padding: 1rem !important;
-  }
-
   /* Stack grid layouts vertically on mobile */
   .custom-form>div[style*="grid"] {
     display: flex !important;
