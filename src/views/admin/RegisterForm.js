@@ -146,6 +146,8 @@ const RegisterForm = ({
                         onChange={(e, { value }) => setStartLocation({ ...startLocation, state: value })}
                         selectOnBlur={false}
                         onFocus={(e) => e.target.blur()}
+                        upward={false}
+                        closeOnChange
                     />
 
                     <Dropdown
@@ -159,6 +161,8 @@ const RegisterForm = ({
                         onChange={(e, { value }) => setStartLocation({ ...startLocation, country: value })}
                         selectOnBlur={false}
                         onFocus={(e) => e.target.blur()}
+                        upward={false}
+                        closeOnChange
                     />
                 </div>
 
