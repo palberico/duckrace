@@ -164,23 +164,23 @@ const LocationsCard = ({ duckId }) => {
             {/* Content Card */}
             <div className="glass-card timeline-card" style={{
               flex: 1,
-              padding: '1.5rem',
+              padding: '0.75rem',
               marginBottom: '0',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               transition: 'transform 0.2s, background 0.2s'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold' }}>{formatDate(location.timestamp)}</span>
-                <span style={{ fontSize: '0.9rem', color: '#888' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.9rem' }}>{formatDate(location.timestamp)}</span>
+                <span style={{ fontSize: '0.85rem', color: '#888' }}>
                   {getDistance(location)} Miles
                 </span>
               </div>
 
-              <h4 style={{ margin: '0 0 0.5rem', color: 'white' }}>
+              <h4 style={{ margin: '0 0 0.25rem', color: 'white', fontSize: '1rem' }}>
                 {location.newLocation.city}, {location.newLocation.state || getCountryFullName(location.newLocation.country)}
               </h4>
 
-              <div style={{ fontSize: '0.9rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ fontSize: '0.85rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Icon name='map marker alternate' />
                 <span>View on Map</span>
               </div>
