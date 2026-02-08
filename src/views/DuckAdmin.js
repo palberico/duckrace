@@ -138,7 +138,7 @@ const DuckAdmin = () => {
           });
         } else {
           const lastLocation = locationsSnapshot.docs[0];
-          const lastUpdate = lastLocation.data().createdAt?.toDate();
+          const lastUpdate = lastLocation.data().timestamp?.toDate();
 
           if (lastUpdate && lastUpdate < sixMonthsAgo) {
             const daysInactive = Math.floor((new Date() - lastUpdate) / (1000 * 60 * 60 * 24));
