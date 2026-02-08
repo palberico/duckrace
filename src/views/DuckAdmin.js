@@ -12,7 +12,9 @@ import {
   writeBatch,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  orderBy,
+  limit
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { Link } from 'react-router-dom';
