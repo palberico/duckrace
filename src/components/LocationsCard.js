@@ -173,21 +173,21 @@ const LocationsCard = ({ duckId }) => {
               gap: '0.3rem'
             }}>
               {/* Top row: Date and Miles */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '16px' }}>
-                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.85rem', lineHeight: '1' }}>{formatDate(location.timestamp)}</span>
-                <span style={{ fontSize: '0.8rem', color: '#888', lineHeight: '1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 'auto', maxHeight: '20px' }}>
+                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.85rem', lineHeight: '1', display: 'block' }}>{formatDate(location.timestamp)}</span>
+                <span style={{ fontSize: '0.8rem', color: '#888', lineHeight: '1', display: 'block' }}>
                   {getDistance(location)} Miles
                 </span>
               </div>
 
               {/* Bottom row: Location and View on Map */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '16px' }}>
-                <span style={{ color: 'white', fontSize: '0.95rem', fontWeight: '500', lineHeight: '1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 'auto', maxHeight: '20px' }}>
+                <span style={{ color: 'white', fontSize: '0.95rem', fontWeight: '500', lineHeight: '1', display: 'block' }}>
                   {location.newLocation.city}, {location.newLocation.state || getCountryFullName(location.newLocation.country)}
                 </span>
-                <div style={{ fontSize: '0.8rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap', lineHeight: '1' }}>
-                  <Icon name='map marker alternate' />
-                  <span>View on Map</span>
+                <div style={{ fontSize: '0.8rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap', lineHeight: '1', height: 'auto' }}>
+                  <Icon name='map marker alternate' style={{ margin: 0, fontSize: '0.8rem' }} />
+                  <span style={{ display: 'block' }}>View on Map</span>
                 </div>
               </div>
             </div>
