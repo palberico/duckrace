@@ -145,7 +145,7 @@ const RegisterForm = ({
                         value={startLocation.state}
                         onChange={(e, { value }) => setStartLocation({ ...startLocation, state: value })}
                         selectOnBlur={false}
-                        searchInput={{ readOnly: true }}
+                        onFocus={(e) => e.target.blur()}
                     />
 
                     <Dropdown
@@ -158,7 +158,7 @@ const RegisterForm = ({
                         value={startLocation.country}
                         onChange={(e, { value }) => setStartLocation({ ...startLocation, country: value })}
                         selectOnBlur={false}
-                        searchInput={{ readOnly: true }}
+                        onFocus={(e) => e.target.blur()}
                     />
                 </div>
 

@@ -1550,6 +1550,7 @@ body {
 
   .glass-header {
     padding: 1.5rem 1rem !important;
+    text-align: center !important;
   }
 
   .glass-header h2 {
@@ -1609,12 +1610,14 @@ body {
     margin-top: 1.5rem !important;
   }
 }
+
 /* Toast notification animation */
 @keyframes slideInRight {
   from {
     transform: translateX(400px);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;

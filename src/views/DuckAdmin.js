@@ -389,6 +389,7 @@ const DuckAdmin = () => {
             hometown={hometown} setHometown={setHometown}
             bio={bio} setBio={setBio}
             startLocation={startLocation} setStartLocation={setStartLocation}
+            image={image}
             setImage={setImage}
             countryOptions={countryOptions}
             stateOptions={stateOptions}
