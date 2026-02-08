@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, doc, updateDoc, Timestamp, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc, deleteDoc, Timestamp, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase/Config';
 import { Icon, Button, Loader } from 'semantic-ui-react';
 
@@ -68,6 +68,20 @@ const CommentApprovals = () => {
         } catch (error) {
             console.error('Error rejecting comment:', error);
             alert('Error rejecting comment. Please try again.');
+        }
+    };
+
+    const handleDelete = async (commentId) => {
+        if (!window.confirm('Are you sure you want to permanently delete this comment? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await deleteDoc(doc(db, 'comments', commentId));
+            fetchPendingComments();
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            alert('Error deleting comment. Please try again.');
         }
     };
 
@@ -158,6 +172,16 @@ const CommentApprovals = () => {
                                     }}
                                 >
                                     <Icon name="times" /> Reject
+                                </Button>
+                                <Button
+                                    onClick={() => handleDelete(comment.id)}
+                                    style={{
+                                        background: '#666',
+                                        color: 'white',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    <Icon name="trash" /> Delete
                                 </Button>
                             </div>
                         </div>

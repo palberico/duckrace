@@ -52,7 +52,18 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
         setRecalculating(true);
 
         try {
-            // 1. Delete the location document
+            // 1. Delete associated comments first
+            const commentsQuery = query(
+                collection(db, 'comments'),
+                where('locationId', '==', locationToDelete.id)
+            );
+            const commentsSnapshot = await getDocs(commentsQuery);
+            const deleteCommentPromises = commentsSnapshot.docs.map(commentDoc =>
+                deleteDoc(doc(db, 'comments', commentDoc.id))
+            );
+            await Promise.all(deleteCommentPromises);
+
+            // 2. Delete the location document
             await deleteDoc(doc(db, 'locations', locationToDelete.id));
 
             // 2. Fetch remaining locations (newest first)
