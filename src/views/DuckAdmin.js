@@ -329,9 +329,6 @@ const DuckAdmin = () => {
           }
         </button>
 
-        {/* Mobile Logout / Close spacer if needed */}
-        <div style={{ flexGrow: 1 }}></div>
-
         {/* Danger Zone */}
         <button
           className={`nav-item danger-tab ${activeTab === 'danger' ? 'active' : ''}`}
@@ -339,6 +336,9 @@ const DuckAdmin = () => {
         >
           <Icon name='warning sign' /> Danger Zone
         </button>
+
+        {/* Mobile Logout / Close spacer if needed */}
+        <div style={{ flexGrow: 1 }}></div>
 
         <Link to="/Home" style={{ textDecoration: 'none' }}>
           <button className="nav-item">
