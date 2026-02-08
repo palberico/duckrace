@@ -8,6 +8,7 @@ const DashboardStats = ({
     mostActiveDuck,
     inactiveDucks,
     unapprovedPhotos,
+    pendingComments,
     onTotalDucksClick,
     onRegisterClick,
     onApprovalsClick,
@@ -63,11 +64,34 @@ const DashboardStats = ({
                     onClick={onApprovalsClick}
                     style={{ cursor: 'pointer' }}
                 >
-                    <Icon name='camera' className="stat-icon" />
+                    <Icon name='check circle' className="stat-icon" />
                     <div className="stat-content">
-                        <h3>Pending Photos</h3>
-                        <div className="value" style={{ color: unapprovedPhotos.length > 0 ? 'var(--neon-yellow)' : 'white' }}>
-                            {unapprovedPhotos.length}
+                        <h3>Approvals</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: '0.9rem', color: '#aaa' }}>
+                                    <Icon name='comment' size='small' /> Comments
+                                </span>
+                                <span style={{
+                                    fontSize: '1.1rem',
+                                    fontWeight: 'bold',
+                                    color: pendingComments.length > 0 ? 'var(--neon-yellow)' : 'white'
+                                }}>
+                                    {pendingComments.length}
+                                </span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: '0.9rem', color: '#aaa' }}>
+                                    <Icon name='camera' size='small' /> Photos
+                                </span>
+                                <span style={{
+                                    fontSize: '1.1rem',
+                                    fontWeight: 'bold',
+                                    color: unapprovedPhotos.length > 0 ? 'var(--neon-yellow)' : 'white'
+                                }}>
+                                    {unapprovedPhotos.length}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

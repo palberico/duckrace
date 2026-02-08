@@ -45,6 +45,7 @@ const DuckAdmin = () => {
   const [deleteInput, setDeleteInput] = useState('');
   const [unapprovedPhotos, setUnapprovedPhotos] = useState([]);
   const [photosLoading, setPhotosLoading] = useState(false);
+  const [pendingComments, setPendingComments] = useState([]);
   const [totalDucks, setTotalDucks] = useState(0);
   const [totalDistance, setTotalDistance] = useState(0);
   const [mostActiveDuck, setMostActiveDuck] = useState(null);
@@ -55,6 +56,7 @@ const DuckAdmin = () => {
 
   useEffect(() => {
     fetchUnapprovedPhotos();
+    fetchPendingComments();
     fetchStats();
     fetchInactiveDucks();
     // Force body background to be dark
@@ -100,16 +102,40 @@ const DuckAdmin = () => {
     setMostActiveDuck(activeDuck);
   };
 
+  const fetchPendingComments = async () => {
+    try {
+      const q = query(
+        collection(db, 'comments'),
+        where('approved', '==', false),
+        where('rejected', '==', false)
+      );
+      const snapshot = await getDocs(q);
+      const comments = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPendingComments(comments);
+    } catch (error) {
+      console.error('Error fetching pending comments:', error);
+    }
+  };
+
   const fetchUnapprovedPhotos = async () => {
     setPhotosLoading(true);
-    const photosRef = collection(db, 'photos');
-    const q = query(photosRef, where('approved', '==', false));
-    const querySnapshot = await getDocs(q);
-    const photos = [];
-    querySnapshot.forEach((doc) => {
-      photos.push({ id: doc.id, ...doc.data() });
-    });
-    setUnapprovedPhotos(photos);
+    try {
+      const q = query(
+        collection(db, 'photos'),
+        where('approved', '==', false)
+      );
+      const snapshot = await getDocs(q);
+      const photos = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setUnapprovedPhotos(photos);
+    } catch (error) {
+      console.error('Error fetching photos:', error);
+    };
     setPhotosLoading(false);
   };
 
@@ -484,6 +510,7 @@ const DuckAdmin = () => {
             mostActiveDuck={mostActiveDuck}
             inactiveDucks={inactiveDucks}
             unapprovedPhotos={unapprovedPhotos}
+            pendingComments={pendingComments}
             onTotalDucksClick={() => setActiveTab('manage_ducks')}
             onRegisterClick={() => setActiveTab('register')}
             onApprovalsClick={() => setActiveTab('approvals')}
