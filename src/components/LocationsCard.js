@@ -164,13 +164,13 @@ const LocationsCard = ({ duckId }) => {
             {/* Content Card */}
             <div className="glass-card timeline-card" style={{
               flex: 1,
-              padding: '0.75rem 1rem',
+              padding: '0.6rem 1rem',
               marginBottom: '0',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               transition: 'transform 0.2s, background 0.2s',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.5rem'
+              gap: '0.3rem'
             }}>
               {/* Top row: Date and Miles */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
