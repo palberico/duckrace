@@ -42,6 +42,8 @@ const DuckAdmin = () => {
   const [unapprovedPhotos, setUnapprovedPhotos] = useState([]);
   const [photosLoading, setPhotosLoading] = useState(false);
   const [totalDucks, setTotalDucks] = useState(0);
+  const [totalDistance, setTotalDistance] = useState(0);
+  const [mostActiveDuck, setMostActiveDuck] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [deleteSuccessMessage, setDeleteSuccessMessage] = useState('');
 
@@ -59,6 +61,37 @@ const DuckAdmin = () => {
   const fetchStats = async () => {
     const ducksSnapshot = await getDocs(collection(db, 'ducks'));
     setTotalDucks(ducksSnapshot.size);
+
+    // Calculate total distance
+    let totalDist = 0;
+    ducksSnapshot.docs.forEach(doc => {
+      totalDist += doc.data().distance || 0;
+    });
+    setTotalDistance(totalDist);
+
+    // Find most active duck (duck with most locations)
+    let maxLocations = 0;
+    let activeDuck = null;
+
+    for (const duckDoc of ducksSnapshot.docs) {
+      const locationsQuery = query(
+        collection(db, 'locations'),
+        where('duckId', '==', duckDoc.id)
+      );
+      const locationsSnapshot = await getDocs(locationsQuery);
+      const locationCount = locationsSnapshot.size;
+
+      if (locationCount > maxLocations) {
+        maxLocations = locationCount;
+        activeDuck = {
+          id: duckDoc.id,
+          name: duckDoc.data().name,
+          locationCount: locationCount
+        };
+      }
+    }
+
+    setMostActiveDuck(activeDuck);
   };
 
   const fetchUnapprovedPhotos = async () => {
@@ -395,8 +428,13 @@ const DuckAdmin = () => {
         {activeTab === 'dashboard' &&
           <DashboardStats
             totalDucks={totalDucks}
+            totalDistance={totalDistance}
+            mostActiveDuck={mostActiveDuck}
             unapprovedPhotos={unapprovedPhotos}
             onTotalDucksClick={() => setActiveTab('manage_ducks')}
+            onRegisterClick={() => setActiveTab('register')}
+            onApprovalsClick={() => setActiveTab('approvals')}
+            onMostActiveDuckClick={(duckId) => window.location.href = `/duck/${duckId}`}
           />
         }
 
