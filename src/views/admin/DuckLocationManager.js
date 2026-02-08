@@ -135,22 +135,8 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
 
     return (
         <div style={{ padding: '2rem' }}>
-            <div className="glass-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Button icon onClick={onBack} basic inverted className="btn-icon">
-                        <Icon name='arrow left' />
-                    </Button>
-                    <h2 style={{ margin: '0 0 0 1rem' }}>Editing: {duck.name}</h2>
-                </div>
-                <Button
-                    icon labelPosition='left'
-                    basic inverted
-                    color="blue"
-                    onClick={() => setIsEditModalOpen(true)}
-                >
-                    <Icon name='pencil' />
-                    Edit Duck
-                </Button>
+            <div className="glass-header">
+                <h2>Editing: {duck.name}</h2>
             </div>
 
             {loading || recalculating ? (
@@ -171,6 +157,18 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
                         </div>
                         <p style={{ color: '#aaa', margin: 0 }}>Current Total Distance (Database): <span style={{ color: 'var(--neon-yellow)', fontWeight: 'bold' }}>{duck.distance} miles</span></p>
                     </div>
+
+                    <Button
+                        icon labelPosition='left'
+                        basic inverted
+                        color="blue"
+                        onClick={() => setIsEditModalOpen(true)}
+                        fluid
+                        style={{ marginBottom: '2rem' }}
+                    >
+                        <Icon name='pencil' />
+                        Edit Duck
+                    </Button>
 
                     {locations.length === 0 ? (
                         <p style={{ color: '#888', textAlign: 'center' }}>No locations traveled yet.</p>
