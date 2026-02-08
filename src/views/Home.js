@@ -63,7 +63,6 @@ const Home = () => {
           <Button
             primary
             size='huge'
-            onClick={() => document.querySelector('.headerSearch input').focus()}
             style={{
               backgroundColor: 'var(--neon-blue)',
               color: '#000',
