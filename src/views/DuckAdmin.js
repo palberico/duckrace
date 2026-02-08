@@ -281,8 +281,8 @@ const DuckAdmin = () => {
 
       {/* SIDEBAR */}
       <div className={`admin-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 className="sidebar-title">Duck Admin</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h2 className="sidebar-title" style={{ margin: 0 }}>Duck Admin</h2>
           <button
             className="mobile-close-btn"
             onClick={() => setIsMobileMenuOpen(false)}
@@ -298,16 +298,16 @@ const DuckAdmin = () => {
           <Icon name='dashboard' /> Dashboard
         </button>
         <button
-          className={`nav-item ${activeTab === 'manage_ducks' ? 'active' : ''}`}
-          onClick={() => handleTabClick('manage_ducks')}
-        >
-          <Icon name='list' /> Manage Ducks
-        </button>
-        <button
           className={`nav-item ${activeTab === 'register' ? 'active' : ''}`}
           onClick={() => handleTabClick('register')}
         >
           <Icon name='plus circle' /> Register Duck
+        </button>
+        <button
+          className={`nav-item ${activeTab === 'manage_ducks' ? 'active' : ''}`}
+          onClick={() => handleTabClick('manage_ducks')}
+        >
+          <Icon name='list' /> Manage Ducks
         </button>
         <button
           className={`nav-item ${activeTab === 'approvals' ? 'active' : ''}`}
@@ -329,22 +329,22 @@ const DuckAdmin = () => {
           }
         </button>
 
-        <Link to="/Home" style={{ textDecoration: 'none', marginTop: '1rem' }}>
-          <button className="nav-item">
-            <Icon name='arrow left' /> Back to Home
-          </button>
-        </Link>
-
         {/* Mobile Logout / Close spacer if needed */}
         <div style={{ flexGrow: 1 }}></div>
 
-        {/* Danger Zone at Bottom */}
+        {/* Danger Zone */}
         <button
           className={`nav-item danger-tab ${activeTab === 'danger' ? 'active' : ''}`}
           onClick={() => handleTabClick('danger')}
         >
           <Icon name='warning sign' /> Danger Zone
         </button>
+
+        <Link to="/Home" style={{ textDecoration: 'none' }}>
+          <button className="nav-item">
+            <Icon name='arrow left' /> Back to Home
+          </button>
+        </Link>
       </div>
 
       {/* MAIN CONTENT AREA */}
