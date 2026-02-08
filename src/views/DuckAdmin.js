@@ -27,6 +27,7 @@ import RegisterForm from './admin/RegisterForm';
 import ApprovalsTable from './admin/ApprovalsTable';
 import DangerZone from './admin/DangerZone';
 import DuckManager from './admin/DuckManager';
+import InactiveDucks from './admin/InactiveDucks';
 
 const DuckAdmin = () => {
   const [name, setName] = useState('');
@@ -44,6 +45,7 @@ const DuckAdmin = () => {
   const [totalDucks, setTotalDucks] = useState(0);
   const [totalDistance, setTotalDistance] = useState(0);
   const [mostActiveDuck, setMostActiveDuck] = useState(null);
+  const [inactiveDucks, setInactiveDucks] = useState([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [deleteSuccessMessage, setDeleteSuccessMessage] = useState('');
 
@@ -51,6 +53,7 @@ const DuckAdmin = () => {
   useEffect(() => {
     fetchUnapprovedPhotos();
     fetchStats();
+    fetchInactiveDucks();
     // Force body background to be dark
     document.body.style.backgroundColor = '#121212';
     return () => {
@@ -105,6 +108,52 @@ const DuckAdmin = () => {
     });
     setUnapprovedPhotos(photos);
     setPhotosLoading(false);
+  };
+
+  const fetchInactiveDucks = async () => {
+    try {
+      const ducksSnapshot = await getDocs(collection(db, 'ducks'));
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+      const inactive = [];
+
+      for (const duckDoc of ducksSnapshot.docs) {
+        const locationsQuery = query(
+          collection(db, 'locations'),
+          where('duckId', '==', duckDoc.id),
+          orderBy('createdAt', 'desc')
+        );
+        const locationsSnapshot = await getDocs(locationsQuery);
+
+        if (locationsSnapshot.empty) {
+          // No locations at all - inactive
+          inactive.push({
+            id: duckDoc.id,
+            name: duckDoc.data().name,
+            lastUpdate: null,
+            daysInactive: 'Never'
+          });
+        } else {
+          const lastLocation = locationsSnapshot.docs[0];
+          const lastUpdate = lastLocation.data().createdAt?.toDate();
+
+          if (lastUpdate && lastUpdate < sixMonthsAgo) {
+            const daysInactive = Math.floor((new Date() - lastUpdate) / (1000 * 60 * 60 * 24));
+            inactive.push({
+              id: duckDoc.id,
+              name: duckDoc.data().name,
+              lastUpdate: lastUpdate,
+              daysInactive: daysInactive
+            });
+          }
+        }
+      }
+
+      setInactiveDucks(inactive);
+    } catch (error) {
+      console.error('Error fetching inactive ducks:', error);
+    }
   };
 
   const handleApprovePhoto = async (photoId) => {
@@ -430,11 +479,13 @@ const DuckAdmin = () => {
             totalDucks={totalDucks}
             totalDistance={totalDistance}
             mostActiveDuck={mostActiveDuck}
+            inactiveDucks={inactiveDucks}
             unapprovedPhotos={unapprovedPhotos}
             onTotalDucksClick={() => setActiveTab('manage_ducks')}
             onRegisterClick={() => setActiveTab('register')}
             onApprovalsClick={() => setActiveTab('approvals')}
             onMostActiveDuckClick={(duckId) => window.location.href = `/duck/${duckId}`}
+            onInactiveDucksClick={() => setActiveTab('inactive_ducks')}
           />
         }
 
@@ -467,6 +518,10 @@ const DuckAdmin = () => {
             handleApprovePhoto={handleApprovePhoto}
             handleDeletePhoto={handleDeletePhoto}
           />
+        }
+
+        {activeTab === 'inactive_ducks' &&
+          <InactiveDucks inactiveDucks={inactiveDucks} />
         }
 
         {activeTab === 'danger' &&

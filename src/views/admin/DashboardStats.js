@@ -5,11 +5,13 @@ const DashboardStats = ({
     totalDucks,
     totalDistance,
     mostActiveDuck,
+    inactiveDucks,
     unapprovedPhotos,
     onTotalDucksClick,
     onRegisterClick,
     onApprovalsClick,
-    onMostActiveDuckClick
+    onMostActiveDuckClick,
+    onInactiveDucksClick
 }) => {
     // Format number with commas
     const formatNumber = (num) => {
@@ -30,7 +32,22 @@ const DashboardStats = ({
 
             {/* Stats Grid - 2 rows x 3 columns */}
             <div className="stats-grid">
-                {/* Row 1 */}
+                {/* Row 1 - Reordered: Register, Total Ducks, Pending Photos */}
+                <div
+                    className="stat-card"
+                    onClick={onRegisterClick}
+                    style={{
+                        cursor: 'pointer',
+                        borderColor: 'var(--neon-blue)',
+                        background: 'rgba(0, 240, 255, 0.05)'
+                    }}
+                >
+                    <Icon name='plus circle' className="stat-icon" style={{ color: 'var(--neon-blue)', background: 'rgba(0, 240, 255, 0.1)' }} />
+                    <div className="stat-content">
+                        <h3>Register New Duck</h3>
+                        <div className="value" style={{ fontSize: '1.2rem', color: 'var(--neon-blue)' }}>+ Add</div>
+                    </div>
+                </div>
                 <div
                     className="stat-card"
                     onClick={onTotalDucksClick}
@@ -53,21 +70,6 @@ const DashboardStats = ({
                         <div className="value" style={{ color: unapprovedPhotos.length > 0 ? 'var(--neon-yellow)' : 'white' }}>
                             {unapprovedPhotos.length}
                         </div>
-                    </div>
-                </div>
-                <div
-                    className="stat-card"
-                    onClick={onRegisterClick}
-                    style={{
-                        cursor: 'pointer',
-                        borderColor: 'var(--neon-blue)',
-                        background: 'rgba(0, 240, 255, 0.05)'
-                    }}
-                >
-                    <Icon name='plus circle' className="stat-icon" style={{ color: 'var(--neon-blue)', background: 'rgba(0, 240, 255, 0.1)' }} />
-                    <div className="stat-content">
-                        <h3>Register New Duck</h3>
-                        <div className="value" style={{ fontSize: '1.2rem', color: 'var(--neon-blue)' }}>+ Add</div>
                     </div>
                 </div>
 
@@ -103,11 +105,26 @@ const DashboardStats = ({
                         )}
                     </div>
                 </div>
-                <div className="stat-card" style={{ borderColor: 'rgba(255,255,255,0.1)', opacity: 0.5 }}>
-                    <Icon name='chart line' className="stat-icon" style={{ color: '#888', background: 'rgba(255, 255, 255, 0.05)' }} />
+                <div
+                    className="stat-card"
+                    onClick={onInactiveDucksClick}
+                    style={{
+                        cursor: 'pointer',
+                        borderColor: inactiveDucks.length > 0 ? '#ff6b6b' : 'rgba(255,255,255,0.1)'
+                    }}
+                >
+                    <Icon name='warning sign' className="stat-icon" style={{
+                        color: inactiveDucks.length > 0 ? '#ff6b6b' : '#888',
+                        background: inactiveDucks.length > 0 ? 'rgba(255, 107, 107, 0.1)' : 'rgba(255, 255, 255, 0.05)'
+                    }} />
                     <div className="stat-content">
-                        <h3>Coming Soon</h3>
-                        <div className="value" style={{ fontSize: '1rem', color: '#888' }}>-</div>
+                        <h3>Inactive Ducks</h3>
+                        <div className="value" style={{
+                            fontSize: '1.2rem',
+                            color: inactiveDucks.length > 0 ? '#ff6b6b' : '#888'
+                        }}>
+                            {inactiveDucks.length}
+                        </div>
                     </div>
                 </div>
             </div>
