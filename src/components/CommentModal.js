@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase/Config';
 
