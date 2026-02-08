@@ -92,18 +92,14 @@ const DashboardStats = ({
                                 alignItems: 'center',
                                 gap: '0.5rem'
                             }}>
-                                <Icon name='comment' size='big' style={{
-                                    color: pendingComments.length > 0 ? 'var(--neon-yellow)' : '#888',
-                                    margin: 0
-                                }} />
                                 <div style={{
-                                    fontSize: '1.8rem',
+                                    fontSize: '2.5rem',
                                     fontWeight: 'bold',
                                     color: pendingComments.length > 0 ? 'var(--neon-yellow)' : 'white'
                                 }}>
                                     {pendingComments.length}
                                 </div>
-                                <div style={{ fontSize: '0.85rem', color: '#aaa' }}>
+                                <div style={{ fontSize: '0.9rem', color: '#aaa' }}>
                                     Comments
                                 </div>
                             </div>
@@ -111,7 +107,7 @@ const DashboardStats = ({
                             {/* Vertical Divider */}
                             <div style={{
                                 width: '1px',
-                                height: '80px',
+                                height: '60px',
                                 background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent)'
                             }} />
 
@@ -124,18 +120,14 @@ const DashboardStats = ({
                                 alignItems: 'center',
                                 gap: '0.5rem'
                             }}>
-                                <Icon name='camera' size='big' style={{
-                                    color: unapprovedPhotos.length > 0 ? 'var(--neon-yellow)' : '#888',
-                                    margin: 0
-                                }} />
                                 <div style={{
-                                    fontSize: '1.8rem',
+                                    fontSize: '2.5rem',
                                     fontWeight: 'bold',
                                     color: unapprovedPhotos.length > 0 ? 'var(--neon-yellow)' : 'white'
                                 }}>
                                     {unapprovedPhotos.length}
                                 </div>
-                                <div style={{ fontSize: '0.85rem', color: '#aaa' }}>
+                                <div style={{ fontSize: '0.9rem', color: '#aaa' }}>
                                     Photos
                                 </div>
                             </div>
