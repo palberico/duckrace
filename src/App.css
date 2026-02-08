@@ -560,10 +560,6 @@ body {
   }
 }
 
-.timeline-card {
-  padding: 0.6rem 1rem !important;
-}
-
 .timeline-card:hover {
   transform: translateX(5px);
   background: rgba(255, 255, 255, 0.05) !important;
@@ -894,6 +890,12 @@ body {
   padding: 2rem;
   margin-bottom: 2rem;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+  \n
+}
+
+/* Timeline card compact padding - must come after .glass-card */
+.glass-card.timeline-card {
+  padding: 0.6rem 1rem !important;
 }
 
 .glass-card.danger {
