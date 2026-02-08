@@ -33,7 +33,7 @@ const DashboardMap = () => {
             for (const duckDoc of ducksSnapshot.docs) {
                 const duckData = duckDoc.data();
                 console.log('🦆 DashboardMap: Processing duck:', duckData.name, 'ID:', duckDoc.id);
-                
+
                 // Get all locations for this duck
                 const locationsQuery = query(
                     collection(db, 'locations'),
@@ -50,11 +50,11 @@ const DashboardMap = () => {
                         const timeB = b.timestamp?.toDate() || new Date(0);
                         return timeB - timeA;
                     });
-                    
+
                     const locationData = allLocations[0];
                     const coords = locationData.newLocation?.coordinates;
                     console.log('🦆 DashboardMap: Most recent coords for', duckData.name, ':', coords);
-                    
+
                     if (coords && coords.latitude && coords.longitude) {
                         locations.push({
                             duckId: duckDoc.id,
@@ -90,7 +90,7 @@ const DashboardMap = () => {
 
         const duckIcon = L.divIcon({
             className: 'custom-duck-marker',
-            html: '<div style="background: #00f0ff; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,240,255,0.5);"></div>',
+            html: '<div style="background: #ff4444; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(255,68,68,0.5);"></div>',
             iconSize: [16, 16],
             iconAnchor: [8, 8],
             popupAnchor: [0, -8]
@@ -116,7 +116,7 @@ const DashboardMap = () => {
             bounds.push(latLng);
 
             const marker = L.marker(latLng, { icon: duckIcon }).addTo(map);
-            
+
             marker.bindPopup(`
                 <div style="color: #000; padding: 0.5rem;">
                     <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem;">${duck.duckName}</h4>
@@ -152,8 +152,8 @@ const DashboardMap = () => {
 
     if (loading) {
         return (
-            <div style={{ 
-                textAlign: 'center', 
+            <div style={{
+                textAlign: 'center',
                 padding: '2rem',
                 color: '#aaa'
             }}>
@@ -165,8 +165,8 @@ const DashboardMap = () => {
 
     if (duckLocations.length === 0) {
         return (
-            <div style={{ 
-                textAlign: 'center', 
+            <div style={{
+                textAlign: 'center',
                 padding: '2rem',
                 color: '#aaa',
                 background: 'rgba(255, 255, 255, 0.05)',
@@ -181,8 +181,8 @@ const DashboardMap = () => {
 
     return (
         <div style={{ marginTop: '2rem' }}>
-            <h3 style={{ 
-                color: 'var(--neon-blue)', 
+            <h3 style={{
+                color: 'var(--neon-blue)',
                 marginBottom: '1rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -190,24 +190,24 @@ const DashboardMap = () => {
             }}>
                 <Icon name='map' />
                 Duck Locations Map
-                <span style={{ 
-                    fontSize: '0.9rem', 
+                <span style={{
+                    fontSize: '0.9rem',
                     color: '#aaa',
                     fontWeight: 'normal'
                 }}>
                     ({duckLocations.length} ducks)
                 </span>
             </h3>
-            
-            <div 
-                ref={mapRef} 
-                style={{ 
-                    height: '500px', 
+
+            <div
+                ref={mapRef}
+                style={{
+                    height: '500px',
                     width: '100%',
                     borderRadius: '12px',
                     overflow: 'hidden',
                     border: '1px solid rgba(255, 255, 255, 0.1)'
-                }} 
+                }}
             />
         </div>
     );
