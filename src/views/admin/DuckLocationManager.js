@@ -135,12 +135,12 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
 
     return (
         <div style={{ padding: '2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem', justifyContent: 'space-between' }}>
+            <div className="glass-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Button icon onClick={onBack} basic inverted className="btn-icon">
                         <Icon name='arrow left' />
                     </Button>
-                    <h2 style={{ color: 'white', margin: '0 0 0 1rem' }}>Editing: {duck.name}</h2>
+                    <h2 style={{ margin: '0 0 0 1rem' }}>Editing: {duck.name}</h2>
                 </div>
                 <Button
                     icon labelPosition='left'

@@ -56,7 +56,9 @@ const DuckManager = () => {
 
     return (
         <div style={{ padding: '2rem' }}>
-            <h2 style={{ color: 'white', marginBottom: '2rem' }}>Manage Duck Locations</h2>
+            <div className="glass-header">
+                <h2>Manage Duck Locations</h2>
+            </div>
 
             <Input
                 icon='search'
