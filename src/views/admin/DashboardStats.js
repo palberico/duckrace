@@ -4,13 +4,15 @@ import { Icon } from 'semantic-ui-react';
 const DashboardStats = ({ totalDucks, unapprovedPhotos, onTotalDucksClick }) => {
     return (
         <div className="dashboard-view fade-in">
-            {/* Welcome Card - Top & White */}
-            <div className="glass-card light" style={{ textAlign: 'center', marginBottom: '3rem', maxWidth: '100%' }}>
-                <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: '#333' }}>Welcome Administrator</h2>
-                <p style={{ color: '#555', fontSize: '1.2rem' }}>
-                    Manage your fleet, approve photos, and monitor system status below.
-                </p>
+            {/* Header with glass-header class */}
+            <div className="glass-header">
+                <h2>Welcome Administrator</h2>
             </div>
+
+            {/* Subtitle below divider */}
+            <p style={{ color: '#aaa', fontSize: '1.1rem', textAlign: 'center', marginBottom: '2rem' }}>
+                Manage your fleet, approve photos, and monitor system status below.
+            </p>
 
             {/* Stats Row - Bottom */}
             <div className="stats-grid">
