@@ -43,6 +43,7 @@ const DuckAdmin = () => {
   const [photosLoading, setPhotosLoading] = useState(false);
   const [totalDucks, setTotalDucks] = useState(0);
   const [successMessage, setSuccessMessage] = useState('');
+  const [deleteSuccessMessage, setDeleteSuccessMessage] = useState('');
 
 
   useEffect(() => {
@@ -234,13 +235,17 @@ const DuckAdmin = () => {
 
       console.log(`${docsToDelete.length} duck(s) and their locations deleted.`);
       fetchStats(); // Update stats
+
+      // Show success message
+      setDeleteSuccessMessage(`🦆 "${deleteInput}" is gone foreves!`);
+      setTimeout(() => setDeleteSuccessMessage(''), 5000);
+      setDeleteInput(''); // Clear the delete input field
     } catch (error) {
       console.error("Error deleting ducks and locations:", error);
       setError(`Error deleting ducks and locations: ${error.message}`);
     }
 
     setIsLoading(false);
-    setDeleteInput(''); // Clear the delete input field
   };
   const validateBioWordCount = (text) => {
     const words = text.trim().split(/\s+/); // Split based on one or more whitespace characters
@@ -363,6 +368,27 @@ const DuckAdmin = () => {
             maxWidth: '400px'
           }}>
             {successMessage}
+          </div>
+        )}
+
+        {/* Delete Success Toast Notification */}
+        {deleteSuccessMessage && (
+          <div style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: 'linear-gradient(135deg, #ff3b3b 0%, #ff6b6b 100%)',
+            color: 'white',
+            padding: '1rem 1.5rem',
+            borderRadius: '12px',
+            boxShadow: '0 8px 32px rgba(255, 59, 59, 0.4)',
+            zIndex: 9999,
+            fontWeight: 'bold',
+            fontSize: '1rem',
+            animation: 'slideInRight 0.3s ease',
+            maxWidth: '400px'
+          }}>
+            {deleteSuccessMessage}
           </div>
         )}
 
