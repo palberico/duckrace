@@ -1568,6 +1568,20 @@ body {
     padding-top: 1rem !important;
   }
 
+  /* Duck Profile: Make Hometown card full-width below Position/Distance */
+  .info-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .info-grid .stat-box:nth-child(3) {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* Reduce timeline card padding on mobile */
+  .timeline-card {
+    padding: 1rem !important;
+  }
+
   /* Stack grid layouts vertically on mobile */
   .custom-form>div[style*="grid"] {
     display: flex !important;
