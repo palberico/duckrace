@@ -58,7 +58,7 @@ const Home = () => {
           Your browser does not support the video tag.
         </video>
         <div className="heroContent">
-          <h1 className="heroTitle">Join the Global Duck Race</h1>
+          <h1 className="heroTitle">Join the Race</h1>
           <p className="heroSubtitle">Track, Log, and Hide ducks around the world.</p>
         </div>
       </div>
@@ -66,7 +66,9 @@ const Home = () => {
       <div className="scrollContent">
         <Card fluid className="welcome-card" style={{ background: 'transparent', boxShadow: 'none', border: 'none' }}>
           <Segment size='large' basic style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '1.2rem', padding: '0' }}>
-            <p>A hidden duck is an invitation to adventure. Find it, log it, hide it.</p>
+            <p>Quack! You've discovered a Race Duck!</p>
+            <p>These ducks are racing around the globe, and every find helps track their journey.</p>
+            <p>Enter the code above to log your find — or, if you know which duck you've got, add its distance on the leaderboard.</p>
           </Segment>
         </Card>
 
