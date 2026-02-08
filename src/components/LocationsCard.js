@@ -174,7 +174,7 @@ const LocationsCard = ({ duckId }) => {
             }}>
               {/* Top row: Date and Miles */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 'auto', maxHeight: '20px' }}>
-                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.85rem', lineHeight: '1', display: 'block', paddingLeft: '0.75rem' }}>{formatDate(location.timestamp)}</span>
+                <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.85rem', lineHeight: '1', display: 'block', paddingLeft: '0.8rem' }}>{formatDate(location.timestamp)}</span>
                 <span style={{ fontSize: '0.8rem', color: '#888', lineHeight: '1', display: 'block' }}>
                   {getDistance(location)} Miles
                 </span>
