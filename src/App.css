@@ -1557,6 +1557,17 @@ body {
     font-size: 1.5rem !important;
   }
 
+  /* Adjust button positioning on mobile */
+  .custom-form button[style*="position: absolute"] {
+    position: static !important;
+    margin-top: 0.5rem !important;
+  }
+
+  /* Add top padding to dashboard to prevent menu icon overlap */
+  .dashboard-view {
+    padding-top: 1rem !important;
+  }
+
   /* Stack grid layouts vertically on mobile */
   .custom-form>div[style*="grid"] {
     display: flex !important;
