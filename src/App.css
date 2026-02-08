@@ -1328,3 +1328,210 @@ body {
   width: 100% !important;
   height: 100% !important;
 }
+
+/* ========================================
+   MOBILE APP-LIKE EXPERIENCE
+   ======================================== */
+
+@media only screen and (max-width: 768px) {
+
+  /* Hide address bar on scroll */
+  body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Full-width mobile layout for DuckForm */
+  .profile-content {
+    padding: 0 !important;
+    margin-top: -80px !important;
+  }
+
+  .profile-content .glass-card {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Edge-to-edge form container */
+  .profile-content .glass-card>div:last-child {
+    padding: 1.5rem 1rem !important;
+  }
+
+  /* Full-width inputs with larger touch targets */
+  .custom-input,
+  .custom-input-dropdown {
+    width: 100% !important;
+    padding: 1rem 1rem !important;
+    font-size: 16px !important;
+    /* Prevents zoom on iOS */
+    min-height: 48px !important;
+    /* Minimum touch target */
+    margin-bottom: 1rem !important;
+    border-radius: 12px !important;
+  }
+
+  /* Larger, more tappable dropdowns */
+  .ui.selection.dropdown.custom-input-dropdown {
+    padding: 1rem 1rem !important;
+    min-height: 48px !important;
+  }
+
+  .ui.selection.dropdown.custom-input-dropdown .menu {
+    max-height: 60vh !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  .ui.selection.dropdown.custom-input-dropdown .item {
+    padding: 1rem 1.5rem !important;
+    font-size: 16px !important;
+    min-height: 48px !important;
+  }
+
+  /* Larger checkboxes/toggles */
+  .ui.toggle.checkbox {
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .ui.toggle.checkbox label {
+    font-size: 16px !important;
+    padding-left: 4.5rem !important;
+  }
+
+  .ui.toggle.checkbox input:checked~.box:before,
+  .ui.toggle.checkbox input:checked~label:before {
+    width: 3.5rem !important;
+    height: 1.75rem !important;
+  }
+
+  .ui.toggle.checkbox input:checked~.box:after,
+  .ui.toggle.checkbox input:checked~label:after {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  /* Full-width buttons with better spacing */
+  .mobile-buttons-container {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    margin-top: 1.5rem !important;
+  }
+
+  .mobile-buttons-container .custom-btn,
+  .mobile-buttons-container a {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  .custom-btn {
+    padding: 1.25rem 2rem !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+    border-radius: 12px !important;
+    /* Add tactile feedback */
+    transition: transform 0.1s ease, box-shadow 0.1s ease !important;
+  }
+
+  .custom-btn:active {
+    transform: scale(0.98) !important;
+  }
+
+  /* Stack checkboxes vertically on mobile */
+  .mobile-stack-container {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  /* Prevent text selection on UI elements */
+  .custom-btn,
+  .ui.toggle.checkbox label,
+  .ui.selection.dropdown {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  /* Better form labels */
+  .ui.form .field>label {
+    font-size: 14px !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 600 !important;
+  }
+
+  /* Segment text sizing */
+  .ui.segment {
+    font-size: 15px !important;
+    line-height: 1.6 !important;
+    padding: 1.25rem !important;
+  }
+
+  /* Duck header image - better mobile sizing */
+  .profile-content .glass-card>div:first-child {
+    height: 250px !important;
+    border-radius: 0 !important;
+  }
+
+  .profile-content .glass-card h1 {
+    font-size: 2rem !important;
+  }
+
+  /* Remove extra padding from hero section on mobile */
+  .heroSection {
+    min-height: 100px !important;
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Add subtle bounce to interactive elements */
+  .custom-input:focus,
+  .custom-input-dropdown.active {
+    transform: scale(1.01);
+    transition: transform 0.2s ease;
+  }
+
+  /* Better dropdown menu positioning */
+  .ui.selection.dropdown.custom-input-dropdown.active .menu {
+    animation: slideUp 0.2s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Backdrop for dropdown (app-like feel) */
+  .ui.selection.dropdown.custom-input-dropdown.active:before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+}
