@@ -87,7 +87,10 @@ const DashboardStats = ({
                 <div
                     className="stat-card"
                     onClick={() => mostActiveDuck && onMostActiveDuckClick(mostActiveDuck.id)}
-                    style={{ cursor: mostActiveDuck ? 'pointer' : 'default' }}
+                    style={{
+                        cursor: mostActiveDuck ? 'pointer' : 'default',
+                        border: '2px solid #ffd700'
+                    }}
                 >
                     <Icon name='trophy' className="stat-icon" style={{ color: 'var(--neon-yellow)', background: 'rgba(255, 255, 0, 0.1)' }} />
                     <div className="stat-content">
