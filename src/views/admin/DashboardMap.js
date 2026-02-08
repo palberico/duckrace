@@ -33,7 +33,7 @@ const DashboardMap = () => {
                 const locationsQuery = query(
                     collection(db, 'locations'),
                     where('duckId', '==', duckDoc.id),
-                    orderBy('createdAt', 'desc'),
+                    orderBy('timestamp', 'desc'),
                     limit(1)
                 );
                 const locationsSnapshot = await getDocs(locationsQuery);

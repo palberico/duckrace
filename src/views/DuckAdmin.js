@@ -124,7 +124,7 @@ const DuckAdmin = () => {
         const locationsQuery = query(
           collection(db, 'locations'),
           where('duckId', '==', duckDoc.id),
-          orderBy('createdAt', 'desc')
+          orderBy('timestamp', 'desc')
         );
         const locationsSnapshot = await getDocs(locationsQuery);
 
