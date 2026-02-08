@@ -14,8 +14,15 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
     const [recalculating, setRecalculating] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+    // Comment management state
+    const [comments, setComments] = useState([]);
+    const [commentsLoading, setCommentsLoading] = useState(true);
+    const [commentToDelete, setCommentToDelete] = useState(null);
+    const [deleteCommentConfirmOpen, setDeleteCommentConfirmOpen] = useState(false);
+
     useEffect(() => {
         fetchLocations();
+        fetchComments();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [duck.id]);
 
@@ -38,6 +45,32 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
             console.error("Error fetching locations:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchComments = async () => {
+        setCommentsLoading(true);
+        try {
+            const commentsQuery = query(
+                collection(db, 'comments'),
+                where('duckId', '==', duck.id)
+            );
+            const snapshot = await getDocs(commentsQuery);
+            const commentsList = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            // Sort client-side by timestamp descending
+            commentsList.sort((a, b) => {
+                const timeA = a.timestamp?.toDate() || new Date(0);
+                const timeB = b.timestamp?.toDate() || new Date(0);
+                return timeB - timeA;
+            });
+            setComments(commentsList);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        } finally {
+            setCommentsLoading(false);
         }
     };
 
@@ -144,6 +177,27 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
         }
     };
 
+    const handleDeleteCommentClick = (comment) => {
+        setCommentToDelete(comment);
+        setDeleteCommentConfirmOpen(true);
+    };
+
+    const handleConfirmDeleteComment = async () => {
+        if (!commentToDelete) return;
+        setDeleteCommentConfirmOpen(false);
+
+        try {
+            await deleteDoc(doc(db, 'comments', commentToDelete.id));
+            // Refresh the comments list
+            fetchComments();
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            alert('Failed to delete comment. Please try again.');
+        }
+
+        setCommentToDelete(null);
+    };
+
     return (
         <div style={{ padding: '2rem' }}>
             <div className="glass-header">
@@ -222,14 +276,82 @@ const DuckLocationManager = ({ duck, onBack, onDuckUpdate }) => {
                 </>
             )}
 
+            {/* Comments Section */}
+            {!loading && !commentsLoading && (
+                <div style={{ marginTop: '3rem' }}>
+                    <div className="glass-header" style={{ marginBottom: '1rem' }}>
+                        <h3>Comments ({comments.length})</h3>
+                    </div>
+
+                    {comments.length === 0 ? (
+                        <div className="glass-card" style={{ padding: '2rem', textAlign: 'center' }}>
+                            <Icon name="comment outline" size="huge" style={{ color: '#666', marginBottom: '1rem' }} />
+                            <p style={{ color: '#aaa' }}>No comments for this duck yet</p>
+                        </div>
+                    ) : (
+                        <div className="custom-table-container">
+                            <table className="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Hometown</th>
+                                        <th>Comment</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {comments.map(comment => (
+                                        <tr key={comment.id}>
+                                            <td>{comment.timestamp?.toDate().toLocaleDateString()}</td>
+                                            <td>{comment.firstName}</td>
+                                            <td>{comment.hometown}</td>
+                                            <td style={{ maxWidth: '300px', whiteSpace: 'normal' }}>
+                                                "{comment.comment}"
+                                            </td>
+                                            <td>
+                                                {comment.approved && <span style={{ color: 'var(--neon-blue)' }}>✓ Approved</span>}
+                                                {comment.rejected && <span style={{ color: '#ff4444' }}>✗ Rejected</span>}
+                                                {!comment.approved && !comment.rejected && <span style={{ color: 'var(--neon-yellow)' }}>⏳ Pending</span>}
+                                            </td>
+                                            <td>
+                                                <Button
+                                                    icon="trash"
+                                                    size="small"
+                                                    basic
+                                                    color="red"
+                                                    onClick={() => handleDeleteCommentClick(comment)}
+                                                    title="Delete this comment"
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            )}
+
             <Confirm
                 open={deleteConfirmOpen}
                 onCancel={() => setDeleteConfirmOpen(false)}
                 onConfirm={handleConfirmDelete}
                 content="Are you sure you want to delete this location? This will permanently remove the record and recalculate the duck's total distance."
-                confirmButton="Usage Delete"
+                confirmButton="Delete"
                 cancelButton="Cancel"
                 className="glass-card" // You might need custom styles for semantic modals if they don't inherit
+            />
+
+            <Confirm
+                open={deleteCommentConfirmOpen}
+                onCancel={() => setDeleteCommentConfirmOpen(false)}
+                onConfirm={handleConfirmDeleteComment}
+                content={`Are you sure you want to delete this comment from ${commentToDelete?.firstName}? This action cannot be undone.`}
+                confirmButton="Delete Comment"
+                cancelButton="Cancel"
+                className="glass-card"
             />
 
             <EditDuckModal
