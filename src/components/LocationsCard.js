@@ -164,25 +164,31 @@ const LocationsCard = ({ duckId }) => {
             {/* Content Card */}
             <div className="glass-card timeline-card" style={{
               flex: 1,
-              padding: '0.75rem',
+              padding: '0.75rem 1rem',
               marginBottom: '0',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              transition: 'transform 0.2s, background 0.2s'
+              transition: 'transform 0.2s, background 0.2s',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem'
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+              {/* Top row: Date and Miles */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: 'var(--neon-blue)', fontWeight: 'bold', fontSize: '0.9rem' }}>{formatDate(location.timestamp)}</span>
                 <span style={{ fontSize: '0.85rem', color: '#888' }}>
                   {getDistance(location)} Miles
                 </span>
               </div>
 
-              <h4 style={{ margin: '0 0 0.25rem', color: 'white', fontSize: '1rem' }}>
-                {location.newLocation.city}, {location.newLocation.state || getCountryFullName(location.newLocation.country)}
-              </h4>
-
-              <div style={{ fontSize: '0.85rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Icon name='map marker alternate' />
-                <span>View on Map</span>
+              {/* Bottom row: Location and View on Map */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'white', fontSize: '1rem', fontWeight: '500' }}>
+                  {location.newLocation.city}, {location.newLocation.state || getCountryFullName(location.newLocation.country)}
+                </span>
+                <div style={{ fontSize: '0.85rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap' }}>
+                  <Icon name='map marker alternate' />
+                  <span>View on Map</span>
+                </div>
               </div>
             </div>
           </div>
